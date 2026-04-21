@@ -3,190 +3,514 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Colectivo Multimedia</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="description" content="Empresa multimedia especializada en producción audiovisual, animación, VFX y experiencias inmersivas AR/VR." />
+  <title>Nombre del Estudio | Producción audiovisual y experiencias inmersivas</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-  <header class="hero">
-    <nav class="navbar">
-      <div class="logo">PICTORIS STUDIO </div>
-      <ul class="nav-links">
-        <li><a href="#nosotros">Nosotros</a></li>
-        <li><a href="#servicios">Áreas</a></li>
-        <li><a href="#proyectos">Proyectos</a></li>
-        <li><a href="#contacto">Contacto</a></li>
+  <!-- Botón flotante WhatsApp -->
+  <a href="https://wa.me/573000000000" class="whatsapp-float" target="_blank" aria-label="Contactar por WhatsApp">
+    WhatsApp
+  </a>
+
+  <!-- Header -->
+ <header class="site-header">
+  <div class="container header-content">
+    <a href="index.html" class="logo">
+      <span class="logo-mark"></span>
+      <span class="logo-text">Pictoris Studio</span>
+    </a>
+
+    <nav class="main-nav" id="main-navigation">
+      <ul>
+        <li><a href="index.html" class="nav-link active">Inicio</a></li>
+        <li><a href="proyectos.html" class="nav-link">Proyectos</a></li>
+        <li><a href="experiencias.html" class="nav-link">Experiencias</a></li>
+        <li><a href="nosotros.html" class="nav-link">Nosotros</a></li>
+        <li><a href="contacto.html" class="nav-link">Contacto</a></li>
       </ul>
     </nav>
 
+    <div class="header-actions">
+      <a href="contacto.html" class="btn btn-primary header-cta">Contáctanos</a>
+
+      <button
+        class="menu-toggle"
+        aria-label="Abrir menú de navegación"
+        aria-expanded="false"
+        aria-controls="main-navigation"
+      >
+        ☰
+      </button>
+    </div>
+  </div>
+</header>
+  <main>
+
+    <!-- Hero -->
+   <section class="hero">
+  <div class="hero-video">
+  <video
+    class="hero-video-element"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="auto"
+  >
+    <source src="assets/video/VideoPrueba01.mp4" type="video/mp4" />
+    Tu navegador no soporta video HTML5.
+  </video>
+  </div>
+
+  <div class="hero-overlay"></div>
+  <div class="hero-noise"></div>
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+
+  <div class="container hero-layout">
     <div class="hero-content">
-      <p class="hero-tag">Arte digital · Motion · VFX · XR</p>
-      <h1>
-        Transformamos ideas en experiencias
-        visuales.
-      </h1>
+      <p class="eyebrow">Producción audiovisual · Animación · AR/VR</p>
+
+      <h1>Producción audiovisual y experiencias inmersivas</h1>
+
       <p class="hero-text">
-        Combinamos imágenes, vectores, audiovisuales, motion graphics,
-        animación 2D y 3D, VFX y realidades extendidas para crear piezas
-        contemporáneas con identidad, narrativa e impacto.
+        Creamos piezas audiovisuales, animaciones y experiencias interactivas
+        con una visión contemporánea, narrativa y tecnológica.
       </p>
-      <div class="hero-buttons">
-        <a href="#proyectos" class="btn btn-primary">Ver proyectos</a>
-        <a href="#contacto" class="btn btn-secondary">Trabajemos juntos</a>
+
+      <div class="hero-actions">
+        <a href="proyectos.html" class="btn btn-primary">Ver proyectos</a>
+        <a href="experiencias.html" class="btn btn-secondary">Explorar experiencias</a>
       </div>
     </div>
 
-    <div class="hero-gradient"></div>
-  </header>
+    <aside class="hero-panel">
+      <div class="hero-panel-inner">
+        <span class="panel-tag">Línea premium</span>
+        <h2>Experiencias inmersivas para proyectos con mayor impacto visual</h2>
+        <p>
+          Integramos narrativa, diseño visual y tecnología para desarrollar
+          activaciones, piezas interactivas y entornos digitales memorables.
+        </p>
 
-  <main>
-    <section id="nosotros" class="section about">
-      <div class="section-header">
-        <span>Nosotros</span>
-        <h2>Arte, tecnología y narrativa en un mismo espacio</h2>
+        <div class="hero-panel-metrics">
+          <div class="metric">
+            <strong>Audiovisual</strong>
+            <span>Documentales, videoclips y cortometrajes</span>
+          </div>
+          <div class="metric">
+            <strong>AR / VR</strong>
+            <span>Experiencias digitales y activaciones expandidas</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+    <!-- Proyectos destacados -->
+  <section class="featured-projects section">
+  <div class="container">
+    <div class="featured-projects-top">
+      <div class="section-heading">
+        <p class="section-label">Proyectos destacados</p>
+        <h2>Una selección curada de trabajos audiovisuales y visuales</h2>
+        <p>
+          Proyectos desarrollados desde una mirada narrativa, estética y técnica,
+          con especial atención a la calidad visual y la experiencia del usuario.
+        </p>
+      </div>
+
+      <div class="featured-note">
+        <span class="featured-note-tag">Selección</span>
+        <p>
+          Mostramos solo una parte del portafolio para mantener una experiencia clara,
+          curada y enfocada en calidad.
+        </p>
+      </div>
+    </div>
+
+    <div class="projects-grid">
+      <article class="project-card project-card-large">
+        <div class="project-media">
+          <video
+                class="project-video"
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="metadata"
+              >
+                <source src="assets/video/VideoPrueba01.mp4" type="video/mp4" />
+                Tu navegador no soporta video HTML5.
+              </video>
+          <span class="media-badge">Destacado</span>
+          <div class="project-media-overlay"></div>
+          <span class="media-label">Preview visual</span>
+        </div>
+
+        <div class="project-info">
+          <div class="project-meta">
+            <span class="project-category">Audiovisual</span>
+            <span class="project-year">2026</span>
+          </div>
+
+          <h3>Nombre del proyecto principal</h3>
+
+          <p>
+            Proyecto narrativo con enfoque cinematográfico, dirección visual definida
+            y construcción atmosférica orientada a una experiencia audiovisual de alto valor estético.
+          </p>
+
+          <a href="proyectos.html" class="project-link">Ver proyecto</a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div class="project-media">
+            <video
+                class="project-video"
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="metadata"
+              >
+                <source src="assets/video/VideoPrueba02.mp4" type="video/mp4" />
+                Tu navegador no soporta video HTML5.
+              </video>
+          <span class="media-badge">Animación</span>
+          <div class="project-media-overlay"></div>
+          <span class="media-label">Preview visual</span>
+        </div>
+
+        <div class="project-info">
+          <div class="project-meta">
+            <span class="project-category">Animación</span>
+            <span class="project-year">2026</span>
+          </div>
+
+          <h3>Nombre del proyecto</h3>
+
+          <p>
+            Desarrollo visual y animado con énfasis en ritmo, estilo gráfico y tratamiento contemporáneo.
+          </p>
+
+          <a href="proyectos.html" class="project-link">Ver proyecto</a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div class="project-media">
+            <video
+    class="project-video"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+  >
+    <source src="assets/video/VideoPrueba02.mp4" type="video/mp4" />
+    Tu navegador no soporta video HTML5.
+  </video>
+          <span class="media-badge">Motion & VFX</span>
+          <div class="project-media-overlay"></div>
+          <span class="media-label">Preview visual</span>
+        </div>
+
+        <div class="project-info">
+          <div class="project-meta">
+            <span class="project-category">Motion & VFX</span>
+            <span class="project-year">2025</span>
+          </div>
+
+          <h3>Nombre del proyecto</h3>
+
+          <p>
+            Pieza visual desarrollada con integración de composición, ritmo gráfico y acabados digitales.
+          </p>
+
+          <a href="proyectos.html" class="project-link">Ver proyecto</a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div class="project-media">
+          <video
+          class="project-video"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+        >
+          <source src="assets/video/VideoPrueba02.mp4" type="video/mp4" />
+          Tu navegador no soporta video HTML5.
+          </video>
+          <span class="media-badge">Audiovisual</span>
+          <div class="project-media-overlay"></div>
+          <span class="media-label">Preview visual</span>
+        </div>
+
+        <div class="project-info">
+          <div class="project-meta">
+            <span class="project-category">Audiovisual</span>
+            <span class="project-year">2025</span>
+          </div>
+
+          <h3>Nombre del proyecto</h3>
+
+          <p>
+            Producción con énfasis en atmósfera, identidad visual y articulación entre narrativa e imagen.
+          </p>
+
+          <a href="proyectos.html" class="project-link">Ver proyecto</a>
+        </div>
+      </article>
+    </div>
+
+    <div class="section-action">
+      <a href="proyectos.html" class="btn btn-secondary">Ver todos los proyectos</a>
+    </div>
+  </div>
+</section>
+    <!-- Categorías -->
+   <section class="services section">
+  <div class="container">
+    <div class="section-heading">
+      <p class="section-label">Capacidades</p>
+      <h2>Servicios creativos y tecnológicos</h2>
+    </div>
+
+    <div class="services-grid">
+      <article class="service-card">
+        <div class="service-media">
+          <span class="service-icon">01</span>
+        </div>
+        <div class="service-body">
+          <h3>Audiovisual</h3>
+          <p>Documentales, videoclips, cortometrajes y piezas narrativas de alto valor visual.</p>
+        </div>
+      </article>
+
+      <article class="service-card">
+        <div class="service-media">
+          <span class="service-icon">02</span>
+        </div>
+        <div class="service-body">
+          <h3>Animación & VFX</h3>
+          <p>Animación 2D, 3D, motion graphics, compositing y procesos visuales híbridos.</p>
+        </div>
+      </article>
+
+      <article class="service-card">
+        <div class="service-media">
+          <span class="service-icon">03</span>
+        </div>
+        <div class="service-body">
+          <h3>Experiencias inmersivas</h3>
+          <p>Proyectos interactivos en realidad aumentada y virtual con enfoque narrativo y experiencial.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+    <!-- Experiencias -->
+    <section class="immersive section">
+      <div class="container">
+        <div class="section-heading">
+          <p class="section-label">Experiencias</p>
+          <h2>AR y VR como línea premium del estudio</h2>
+        </div>
+
+        <div class="immersive-grid">
+          <article class="immersive-card">
+                <div class="immersive-media">
+                <video
+                  class="immersive-video"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                  preload="metadata"
+                >
+                  <source src="assets/video/VideoPrueba02.mp4" type="video/mp4" />
+                  Tu navegador no soporta video HTML5.
+                </video>
+              </div>
+            <div class="immersive-info">
+              <h3>Realidad aumentada</h3>
+              <p>Experiencias interactivas accesibles desde web, móvil o activaciones físicas.</p>
+              <a href="experiencias.html" class="btn btn-primary">Abrir experiencia</a>
+            </div>
+          </article>
+
+          <article class="immersive-card">
+              <div class="immersive-media">
+              <video
+                class="immersive-video"
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="metadata"
+              >
+                <source src="assets/video/VideoPrueba02.mp4" type="video/mp4" />
+                Tu navegador no soporta video HTML5.
+              </video>
+            </div>
+            <div class="immersive-info">
+              <h3>Realidad virtual</h3>
+              <p>Entornos inmersivos y recorridos diseñados para explorar contenidos de manera expandida.</p>
+              <a href="experiencias.html" class="btn btn-secondary">Explorar</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Nosotros -->
+<section class="about section">
+  <div class="container">
+    <div class="about-shell">
+      <div class="about-intro">
+        <p class="section-label">Nosotros</p>
+        <h2>Un estudio que integra narrativa, lenguaje visual y tecnología</h2>
+        <p class="about-lead">
+          Desarrollamos proyectos audiovisuales, visuales e inmersivos con una
+          mirada contemporánea, cuidando tanto la dirección estética como la
+          experiencia final del usuario.
+        </p>
       </div>
 
       <div class="about-grid">
-        <div class="about-text">
+        <article class="about-card">
+          <span class="about-card-tag">Enfoque</span>
+          <h3>Visión creativa con estructura técnica</h3>
           <p>
-            Somos un colectivo artístico multimedia enfocado en la exploración
-            de lenguajes visuales contemporáneos. Nuestro trabajo integra
-            diferentes formas de creación digital para desarrollar proyectos
-            innovadores, sensibles y técnicamente sólidos.
-          </p>
-          <p>
-            Nos movemos entre lo experimental y lo estratégico, dando vida a
-            universos visuales que dialogan con el arte, la cultura, la comunicación
-            y las nuevas tecnologías inmersivas.
-          </p>
-        </div>
-
-        <div class="about-card">
-          <h3>Enfoque creativo</h3>
-          <p>
-            Diseñamos experiencias visuales que conectan estética, concepto y emoción.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section id="servicios" class="section services">
-      <div class="section-header">
-        <span>Áreas creativas</span>
-        <h2>Lo que hacemos</h2>
-      </div>
-
-      <div class="services-grid">
-        <article class="service-card">
-          <h3>Imagen y vector</h3>
-          <p>
-            Creación de piezas gráficas, identidades visuales, ilustración digital
-            y composición vectorial.
+            Combinamos sensibilidad visual, intención narrativa y desarrollo técnico
+            para producir piezas con identidad clara, valor estético y ejecución sólida.
           </p>
         </article>
 
-        <article class="service-card">
-          <h3>Audiovisual</h3>
+        <article class="about-card">
+          <span class="about-card-tag">Capacidad</span>
+          <h3>Audiovisual, animación y experiencias expandidas</h3>
           <p>
-            Desarrollo de contenido audiovisual, dirección visual, edición y narrativa
-            para distintos formatos.
+            Integramos producción audiovisual, motion graphics, VFX, animación y
+            tecnologías inmersivas para construir proyectos que no se quedan solo
+            en la imagen, sino en la experiencia.
           </p>
         </article>
 
-        <article class="service-card">
-          <h3>Motion graphics</h3>
-          <p>
-            Animación de piezas gráficas y secuencias visuales dinámicas para campañas,
-            marcas y proyectos artísticos.
-          </p>
+        <article class="about-stat">
+          <strong>Visual</strong>
+          <span>Dirección estética y narrativa para proyectos con identidad.</span>
         </article>
 
-        <article class="service-card">
-          <h3>VFX</h3>
-          <p>
-            Integración de efectos visuales, composición digital y expansión de universos
-            narrativos con alto impacto.
-          </p>
-        </article>
-
-        <article class="service-card">
-          <h3>Animación 2D y 3D</h3>
-          <p>
-            Producción de animación en distintos estilos, desde propuestas gráficas
-            expresivas hasta desarrollos tridimensionales.
-          </p>
-        </article>
-
-        <article class="service-card">
-          <h3>Realidades extendidas</h3>
-          <p>
-            Exploración de experiencias XR, entornos inmersivos, interacción digital
-            y nuevas formas de relación con la imagen.
-          </p>
+        <article class="about-stat">
+          <strong>Tecnología</strong>
+          <span>Interacción, experiencias AR/VR y desarrollo digital aplicado.</span>
         </article>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
 
-    <section id="proyectos" class="section projects">
-      <div class="section-header">
-        <span>Proyectos</span>
-        <h2>Exploraciones visuales recientes</h2>
-      </div>
-
-      <div class="projects-grid">
-        <div class="project-card large">
-          <div class="project-overlay">
-            <p class="project-type">Motion / Audiovisual</p>
-            <h3>Universos en movimiento</h3>
-          </div>
-        </div>
-
-        <div class="project-card">
-          <div class="project-overlay">
-            <p class="project-type">2D / Ilustración</p>
-            <h3>Narrativas gráficas</h3>
-          </div>
-        </div>
-
-        <div class="project-card">
-          <div class="project-overlay">
-            <p class="project-type">3D / VFX</p>
-            <h3>Espacios digitales</h3>
-          </div>
+    <!-- CTA final -->
+    <section class="final-cta section">
+      <div class="container final-cta-content">
+        <p class="section-label">Hablemos</p>
+        <h2>Construyamos una experiencia visual con identidad, tecnología y narrativa</h2>
+        <div class="hero-actions">
+          <a href="contacto.html" class="btn btn-primary">Contacto</a>
+          <a href="https://wa.me/573000000000" target="_blank" class="btn btn-secondary">WhatsApp</a>
         </div>
       </div>
     </section>
 
-    <section class="section manifesto">
-      <div class="manifesto-box">
-        <p>
-          Creemos en la imagen como experiencia, en el movimiento como lenguaje
-          y en la tecnología como una herramienta para expandir la sensibilidad artística.
-        </p>
-      </div>
-    </section>
-
-    <section id="contacto" class="section contact">
-      <div class="section-header">
-        <span>Contacto</span>
-        <h2>Hablemos de tu próximo proyecto</h2>
-      </div>
-
-      <div class="contact-content">
-        <p>
-          Si buscas desarrollar una propuesta visual potente, contemporánea y con identidad,
-          estamos listos para colaborar.
-        </p>
-        <a href="mailto:contacto@colectivox.com" class="btn btn-primary">
-          contacto@colectivox.com
-        </a>
-      </div>
-    </section>
   </main>
 
-  <footer class="footer">
-    <p>© 2026 Colectivo X · Arte digital y experiencias multimedia</p>
-  </footer>
+  <!-- Footer -->
+ <footer class="site-footer">
+  <div class="container">
+    <div class="footer-shell">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-logo">NOMBRE ESTUDIO</a>
+        <p class="footer-description">
+          Producción audiovisual, animación, motion graphics y experiencias inmersivas
+          desarrolladas con enfoque narrativo, visual y tecnológico.
+        </p>
 
+          <div class="footer-socials">
+            <a href="#" aria-label="Instagram" class="social-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5Zm8.88 1.12a1.13 1.13 0 1 1 0 2.26 1.13 1.13 0 0 1 0-2.26ZM12 6.5A5.5 5.5 0 1 1 6.5 12 5.5 5.5 0 0 1 12 6.5Zm0 1.5A4 4 0 1 0 16 12a4 4 0 0 0-4-4Z"/>
+              </svg>
+            </a>
+
+            <a href="#" aria-label="YouTube" class="social-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M21.58 7.19a2.99 2.99 0 0 0-2.1-2.12C17.62 4.5 12 4.5 12 4.5s-5.62 0-7.48.57a2.99 2.99 0 0 0-2.1 2.12A31.2 31.2 0 0 0 2 12a31.2 31.2 0 0 0 .42 4.81 2.99 2.99 0 0 0 2.1 2.12c1.86.57 7.48.57 7.48.57s5.62 0 7.48-.57a2.99 2.99 0 0 0 2.1-2.12A31.2 31.2 0 0 0 22 12a31.2 31.2 0 0 0-.42-4.81ZM10 15.5v-7l6 3.5-6 3.5Z"/>
+              </svg>
+            </a>
+
+            <a href="#" aria-label="TikTok" class="social-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M14.5 2c.4 1.9 1.5 3.2 3.5 3.4v2.2a6.1 6.1 0 0 1-3.4-1v6.3a5.9 5.9 0 1 1-5.9-5.9c.3 0 .6 0 .9.1v2.3a3.6 3.6 0 1 0 2.7 3.5V2h2.2Z"/>
+              </svg>
+            </a>
+
+            <a href="#" aria-label="Facebook" class="social-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M13.5 22v-8h2.7l.4-3h-3.1V9.1c0-.9.3-1.6 1.6-1.6h1.7V4.8a20.7 20.7 0 0 0-2.4-.1c-2.4 0-4 1.5-4 4.2V11H8v3h2.4v8h3.1Z"/>
+              </svg>
+            </a>
+          </div>
+      </div>
+
+      <div class="footer-links-group">
+        <h3>Mapa del sitio</h3>
+        <ul>
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="proyectos.html">Proyectos</a></li>
+          <li><a href="experiencias.html">Experiencias</a></li>
+          <li><a href="nosotros.html">Nosotros</a></li>
+          <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links-group">
+        <h3>Servicios</h3>
+        <ul>
+          <li><a href="proyectos.html">Producción audiovisual</a></li>
+          <li><a href="proyectos.html">Animación & VFX</a></li>
+          <li><a href="experiencias.html">Experiencias AR/VR</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-contact">
+        <h3>Contacto</h3>
+        <p>correo@estudio.com</p>
+        <p>+57 300 000 0000</p>
+        <p>Sogamoso · Boyacá · Colombia</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 Nombre Estudio. Todos los derechos reservados.</p>
+      <a href="contacto.html">Hablemos de tu proyecto</a>
+    </div>
+  </div>
+</footer>
+
+  <script src="js/script.js"></script>
 </body>
 </html>
