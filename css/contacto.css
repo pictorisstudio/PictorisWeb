@@ -1,0 +1,301 @@
+/* ============================================================
+   contacto.css — Estilos exclusivos de contacto.html
+   Complementa style.css sin modificarlo
+============================================================ */
+
+/* ── HERO DE CONTACTO ───────────────────────────────────── */
+.contact-hero {
+  position: relative;
+  min-height: 72vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 7rem 0 4rem;
+}
+
+.contact-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.contact-hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.44;
+}
+
+.contact-hero-orb-1 {
+  top: -14%;
+  left: -6%;
+  width: 400px;
+  height: 400px;
+  background: rgba(108, 59, 255, 0.22);
+}
+
+.contact-hero-orb-2 {
+  top: 8%;
+  right: -5%;
+  width: 280px;
+  height: 280px;
+  background: rgba(45, 140, 255, 0.15);
+}
+
+.contact-hero-noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background-image: radial-gradient(rgba(255,255,255,0.65) 0.5px, transparent 0.5px);
+  background-size: 8px 8px;
+  mask-image: linear-gradient(180deg, rgba(0,0,0,0.55), transparent 85%);
+}
+
+.contact-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 840px;
+}
+
+.contact-hero-content h1 {
+  font-size: clamp(3rem, 7vw, 5.4rem);
+  line-height: 0.93;
+  letter-spacing: -0.055em;
+  margin-bottom: 1.1rem;
+  max-width: 10ch;
+  text-wrap: balance;
+}
+
+.contact-hero-text {
+  max-width: 680px;
+  color: var(--color-text-soft);
+  font-size: 1.08rem;
+  line-height: 1.74;
+}
+
+/* ── BLOQUE PRINCIPAL ───────────────────────────────────── */
+.contact-main {
+  padding-top: 3.5rem;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 360px);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* ── FORMULARIO ─────────────────────────────────────────── */
+.contact-form-card {
+  padding: 1.6rem 1.4rem 1.5rem;
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background:
+    linear-gradient(180deg, rgba(19, 15, 34, 0.96), rgba(10, 8, 18, 0.99));
+  box-shadow: var(--shadow-card);
+}
+
+.contact-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.form-field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.form-field label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  color: #ffffff;
+  border-radius: 16px;
+  padding: 0.95rem 1rem;
+  outline: none;
+  transition:
+    border-color var(--transition),
+    background-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+  color: rgba(255,255,255,0.42);
+}
+
+.form-field select {
+  appearance: none;
+}
+
+.form-field textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  border-color: rgba(45, 140, 255, 0.34);
+  background: rgba(255,255,255,0.05);
+  box-shadow: 0 0 0 4px rgba(45, 140, 255, 0.10);
+}
+
+.form-actions {
+  padding-top: 0.5rem;
+}
+
+/* ── BLOQUE LATERAL ─────────────────────────────────────── */
+.contact-side {
+  display: grid;
+  gap: 1rem;
+}
+
+.contact-side-card {
+  padding: 1.3rem 1.15rem 1.25rem;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background:
+    linear-gradient(180deg, rgba(19, 15, 34, 0.96), rgba(10, 8, 18, 0.99));
+  box-shadow: var(--shadow-card);
+}
+
+.contact-side-card h3 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.contact-list {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.contact-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.contact-list li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.contact-list span {
+  color: rgba(255,255,255,0.48);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.contact-list strong {
+  color: #ffffff;
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+
+.contact-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.contact-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 0.8rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.72);
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+/* ── RESPONSIVE ─────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 820px) {
+  .contact-hero {
+    min-height: auto;
+    padding: 5rem 0 3rem;
+  }
+
+  .contact-hero-content h1 {
+    font-size: clamp(2.8rem, 12vw, 4.4rem);
+    max-width: 10ch;
+  }
+
+  .contact-hero-text {
+    max-width: 100%;
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .contact-main {
+    padding-top: 2.5rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .contact-hero {
+    padding: 4.25rem 0 2.5rem;
+  }
+
+  .contact-hero-content h1 {
+    font-size: clamp(2.25rem, 12vw, 3.5rem);
+    max-width: 100%;
+  }
+
+  .contact-hero-text {
+    font-size: 0.96rem;
+  }
+
+  .contact-form-card,
+  .contact-side-card {
+    border-radius: 20px;
+  }
+
+  .contact-form-card {
+    padding: 1.2rem 1rem 1.15rem;
+  }
+
+  .contact-side-card {
+    padding: 1.15rem 1rem 1.1rem;
+  }
+
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
+    border-radius: 14px;
+    padding: 0.9rem 0.95rem;
+  }
+}

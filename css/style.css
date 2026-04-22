@@ -21,6 +21,11 @@
   --radius-lg: 28px;
   --container: 1200px;
   --transition: 0.28s ease;
+  
+}
+
+[hidden] {
+  display: none !important;
 }
 
 /* =========================
@@ -191,14 +196,17 @@ body {
 ========================= */
 .whatsapp-float {
   position: fixed;
-  right: 1rem;
-  bottom: 1rem;
+  right: 1.25rem;
+  bottom: 1.25rem;
   z-index: 1000;
-  background: linear-gradient(135deg, #2d8cff 0%, #6c3bff 100%);
-  color: #fff;
-  padding: 0.95rem 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.75rem 1.1rem 0.75rem 0.85rem;
   border-radius: 999px;
-  font-size: 0.92rem;
+  background: linear-gradient(135deg, #25d366 0%, #1da851 100%);
+  color: #fff;
+  font-size: 0.88rem;
   font-weight: 700;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.32);
   transition: transform var(--transition), box-shadow var(--transition);
@@ -207,6 +215,16 @@ body {
 .whatsapp-float:hover {
   transform: translateY(-3px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.38);
+}
+
+.whatsapp-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.whatsapp-label {
+  line-height: 1;
 }
 
 /* =========================
@@ -1170,8 +1188,8 @@ body {
 
 .footer-socials {
   display: flex;
-  flex-wrap: wrap;
   gap: 0.75rem;
+  align-items: center;
 }
 
 .footer-socials a {
@@ -1202,9 +1220,9 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 50px;
-  height: 50px;
-  border-radius: 9px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.07);
   color: var(--color-text-soft);
@@ -1216,8 +1234,8 @@ body {
 }
 
 .social-icon svg {
-  width: 50px;
-  height: 50px;
+  width: 18px;
+  height: 18px;
   fill: currentColor;
 }
 
