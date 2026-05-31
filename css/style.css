@@ -505,8 +505,7 @@ body {
   z-index: 3;
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(320px, 430px);
-  gap: clamp(2rem, 4vw, 4.5rem);
+  grid-template-columns: minmax(0, 760px);
   align-items: end;
   padding: 7rem clamp(1rem, 3vw, 2.25rem) 5rem;
 }
@@ -520,8 +519,18 @@ body {
   font-size: clamp(2.9rem, 7vw, 5.8rem);
   line-height: 0.93;
   letter-spacing: -0.055em;
-  margin-bottom: 1.2rem;
-  max-width: 9.8ch;
+  margin-bottom: 0.75rem;
+  max-width: 12ch;
+  text-wrap: balance;
+}
+
+.hero-subtitle {
+  max-width: 650px;
+  margin-bottom: 1rem;
+  font-size: clamp(1.2rem, 2.4vw, 1.8rem);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color-text);
   text-wrap: balance;
 }
 
@@ -1635,7 +1644,12 @@ body.menu-open {
     max-width: 100%;
     font-size: clamp(2.7rem, 12vw, 4.2rem);
     line-height: 0.95;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-subtitle {
+    max-width: 100%;
+    font-size: 1.2rem;
   }
 
   .hero-text {
@@ -1745,6 +1759,10 @@ body.menu-open {
   .hero h1 {
     max-width: 100%;
     font-size: clamp(2.45rem, 14vw, 3.7rem);
+  }
+
+  .hero-subtitle {
+    font-size: 1.08rem;
   }
 
   .hero-text {
