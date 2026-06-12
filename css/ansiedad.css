@@ -153,6 +153,12 @@ img {
   padding: 4.5rem 0 5.5rem;
 }
 
+.anxiety-video {
+  width: min(100% - 2rem, var(--container));
+  margin: 0 auto;
+  padding: 0 0 5.5rem;
+}
+
 .anxiety-section-head {
   display: grid;
   grid-template-columns: minmax(0, 0.68fr) minmax(0, 1.32fr);
@@ -184,6 +190,25 @@ img {
 .anxiety-grid img:nth-child(3),
 .anxiety-grid img:nth-child(5) {
   grid-column: span 2;
+}
+
+.youtube-frame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--anxiety-line);
+  background: var(--anxiety-card);
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.42),
+    0 0 30px rgba(255, 47, 125, 0.12);
+}
+
+.youtube-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 @media (max-width: 900px) {
