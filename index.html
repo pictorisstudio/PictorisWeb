@@ -33,9 +33,7 @@
     <nav class="main-nav" id="main-navigation">
       <ul>
         <li><a href="index.html" class="nav-link active">Inicio</a></li>
-        <li><a href="proyectos.html" class="nav-link">Proyectos</a></li>
-        <li><a href="experiencias.html" class="nav-link">AR/VR</a></li>
-        <li><a href="paz.html" class="nav-link">Paz</a></li>
+        <li><a href="experiencias.html" class="nav-link">Proyectos</a></li>
       </ul>
     </nav>
 
@@ -99,7 +97,7 @@
 </section>
 
     <!-- Proyectos destacados -->
-  <section class="featured-projects section">
+  <section class="featured-projects section" id="proyectos">
   <div class="container">
     <div class="featured-projects-top">
       <div class="section-heading">
@@ -110,39 +108,45 @@
     </div>
 
     <div class="projects-grid">
-      <article class="project-card project-card-large">
-        <div class="project-media">
-          <video
-                class="project-video"
-                autoplay
-                muted
-                loop
-                playsinline
-                preload="metadata"
-              >
-                <source src="assets/video/VideoPrueba01.mp4" type="video/mp4" />
-                Tu navegador no soporta video HTML5.
-              </video>
-          <span class="media-badge">Destacado</span>
-          <div class="project-media-overlay"></div>
-          <span class="media-label">Preview visual</span>
-        </div>
-
-        <div class="project-info">
-          <div class="project-meta">
-            <span class="project-category">Audiovisual</span>
-            <span class="project-year">2026</span>
+      <article class="project-card project-card-large project-card-clickable">
+        <a
+          href="infinity-marsquake.html"
+          class="project-card-link"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Abrir información del proyecto INFINITY - Marsquake"
+        >
+          <div class="project-media">
+            <video
+                  class="project-video"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                  preload="metadata"
+                >
+                  <source src="assets/video/VideoPrueba01.mp4" type="video/mp4" />
+                  Tu navegador no soporta video HTML5.
+                </video>
+            <span class="media-badge">Destacado</span>
+            <div class="project-media-overlay"></div>
+            <span class="media-label">Preview visual</span>
           </div>
 
-          <h3>Nombre del proyecto principal</h3>
+          <div class="project-info">
+            <div class="project-meta">
+              <span class="project-category">Audiovisual</span>
+              <span class="project-year">2026</span>
+            </div>
 
-          <p>
-            Proyecto narrativo con enfoque cinematográfico, dirección visual definida
-            y construcción atmosférica orientada a una experiencia audiovisual de alto valor estético.
-          </p>
+            <h3>INFINITY - Marsquake</h3>
 
-          <a href="proyectos.html" class="project-link">Ver proyecto</a>
-        </div>
+            <p>
+              Videoclip sci-fi con una atmósfera envolvente, integración de 3D
+              y VFX para construir un universo visual inmersivo.
+            </p>
+          </div>
+        </a>
       </article>
 
       <article class="project-card">
@@ -169,48 +173,114 @@
             <span class="project-year">2026</span>
           </div>
 
-          <h3>Nombre del proyecto</h3>
+          <h3>Domesticado</h3>
 
           <p>
-            Desarrollo visual y animado con énfasis en ritmo, estilo gráfico y tratamiento contemporáneo.
+            Filminuto animado ganador de FESTIVAR, Breve: Bazar de Cine Breve Vertical,
+            realizado en Piedecuesta, Santander.
           </p>
 
           <a href="proyectos.html" class="project-link">Ver proyecto</a>
         </div>
       </article>
 
-      <article class="project-card">
-        <div class="project-media">
-            <video
-    class="project-video"
-    autoplay
-    muted
-    loop
-    playsinline
-    preload="metadata"
-  >
-    <source src="assets/video/VideoPrueba02.mp4" type="video/mp4" />
-    Tu navegador no soporta video HTML5.
-  </video>
-          <span class="media-badge">Motion & VFX</span>
-          <div class="project-media-overlay"></div>
-          <span class="media-label">Preview visual</span>
-        </div>
-
-        <div class="project-info">
-          <div class="project-meta">
-            <span class="project-category">Motion & VFX</span>
-            <span class="project-year">2025</span>
+      <article class="project-card project-card-clickable">
+        <a
+          href="ansiedad.html"
+          class="project-card-link project-card-link-stacked"
+          aria-label="Abrir proyecto Ansiedad"
+        >
+          <div class="project-media">
+            <img
+              class="project-video"
+              src="assets/Portafolio/Ansiedad/poster copia.jpg"
+              alt="Poster del videoclip animado Ansiedad"
+            />
+            <span class="media-badge">Animación</span>
+            <div class="project-media-overlay"></div>
+            <span class="media-label">Preview visual</span>
           </div>
 
-          <h3>Nombre del proyecto</h3>
+          <div class="project-info">
+            <div class="project-meta">
+              <span class="project-category">Animación</span>
+              <span class="project-year">2026</span>
+            </div>
 
-          <p>
-            Pieza visual desarrollada con integración de composición, ritmo gráfico y acabados digitales.
-          </p>
+            <h3>Ansiedad</h3>
 
-          <a href="proyectos.html" class="project-link">Ver proyecto</a>
-        </div>
+            <p>
+              Videoclip de animación que combina 2D y 3D desde una mirada experimental
+              sobre música punk, explorando cómo transmitir emociones en este contexto artístico.
+            </p>
+          </div>
+        </a>
+      </article>
+
+      <article class="project-card project-card-clickable">
+        <a
+          href="shortfilm-3d.html"
+          class="project-card-link project-card-link-stacked"
+          aria-label="Abrir proyecto Shortfilm"
+        >
+          <div class="project-media">
+            <img
+              class="project-video"
+              src="assets/Portafolio/Ansiedad/04.jpg"
+              alt="Preview visual del proyecto Shortfilm"
+            />
+            <span class="media-badge">Animación 3D</span>
+            <div class="project-media-overlay"></div>
+            <span class="media-label">Preview visual</span>
+          </div>
+
+          <div class="project-info">
+            <div class="project-meta">
+              <span class="project-category">Animación 3D</span>
+              <span class="project-year">2025</span>
+            </div>
+
+            <h3>Humo Polvo y Metal</h3>
+
+            <p>
+              Mirada detrás de cámaras a una producción 3D original, desde modelado,
+              rigging y texturizado hasta animación y render para dar vida a la historia.
+            </p>
+          </div>
+        </a>
+      </article>
+
+      <article class="project-card project-card-clickable">
+        <a
+          href="adopta-frailejon.html"
+          class="project-card-link project-card-link-stacked"
+          aria-label="Abrir proyecto Adopta un Frailejón"
+        >
+          <div class="project-media">
+            <img
+              class="project-video"
+              src="assets/Portafolio/AdoptaUnFrailejon/00.gif"
+              alt="Preview animado del documental Adopta un Frailejón"
+            />
+            <span class="media-badge">Documental</span>
+            <div class="project-media-overlay"></div>
+            <span class="media-label">Preview visual</span>
+          </div>
+
+          <div class="project-info">
+            <div class="project-meta">
+              <span class="project-category">Documental</span>
+              <span class="project-year">2024</span>
+            </div>
+
+            <h3>Adopta un Frailejón</h3>
+
+            <p>
+              Documental ambiental que combina VFX, animación y tomas live action
+              para construir una narrativa entre lo natural y la urgencia de cuidar los páramos.
+            </p>
+          </div>
+        </a>
       </article>
 
       <article class="project-card">

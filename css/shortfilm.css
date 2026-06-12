@@ -1,0 +1,220 @@
+:root {
+  --short-bg: #06070b;
+  --short-ink: #10131d;
+  --short-card: #171c2a;
+  --short-cyan: #55e6ff;
+  --short-blue: #5377ff;
+  --short-silver: #eef4ff;
+  --short-muted: rgba(238, 244, 255, 0.68);
+  --short-line: rgba(85, 230, 255, 0.18);
+  --container: 1180px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 16% 12%, rgba(85, 230, 255, 0.15), transparent 28%),
+    radial-gradient(circle at 84% 18%, rgba(83, 119, 255, 0.18), transparent 30%),
+    linear-gradient(180deg, var(--short-bg), #090b12 48%, #05060a);
+  color: var(--short-silver);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.short-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  width: min(100% - 2rem, var(--container));
+  min-height: 74px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: rgba(6, 7, 11, 0.72);
+  backdrop-filter: blur(14px);
+}
+
+.short-logo {
+  color: var(--short-cyan);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.short-nav {
+  display: flex;
+  gap: 1rem;
+  color: var(--short-muted);
+  font-size: 0.92rem;
+}
+
+.short-nav a:hover {
+  color: var(--short-cyan);
+}
+
+.short-hero,
+.short-process {
+  width: min(100% - 2rem, var(--container));
+  margin: 0 auto;
+}
+
+.short-hero {
+  min-height: calc(100vh - 74px);
+  display: grid;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr);
+  gap: 2rem;
+  align-items: center;
+  padding: 4rem 0;
+}
+
+.short-scene {
+  position: relative;
+  min-height: 520px;
+  overflow: hidden;
+  border: 1px solid var(--short-line);
+  background:
+    linear-gradient(90deg, rgba(85, 230, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(85, 230, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(23, 28, 42, 0.94), rgba(7, 8, 13, 0.98));
+  background-size: 46px 46px, 46px 46px, auto;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+}
+
+.short-frame,
+.short-core {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%) rotateX(58deg) rotateZ(42deg);
+  border: 1px solid rgba(85, 230, 255, 0.34);
+}
+
+.short-frame-a {
+  width: 300px;
+  height: 300px;
+}
+
+.short-frame-b {
+  width: 210px;
+  height: 210px;
+  border-color: rgba(83, 119, 255, 0.5);
+}
+
+.short-core {
+  width: 96px;
+  height: 96px;
+  background: linear-gradient(135deg, rgba(85, 230, 255, 0.9), rgba(83, 119, 255, 0.72));
+  box-shadow: 0 0 60px rgba(85, 230, 255, 0.34);
+}
+
+.short-kicker {
+  margin: 0 0 1rem;
+  color: var(--short-cyan);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.short-copy h1 {
+  margin: 0;
+  font-size: clamp(3.4rem, 10vw, 9rem);
+  line-height: 0.82;
+  text-transform: uppercase;
+}
+
+.short-copy p:not(.short-kicker),
+.process-list p {
+  color: var(--short-muted);
+  font-size: 1.02rem;
+  line-height: 1.76;
+}
+
+.short-copy p:not(.short-kicker) {
+  max-width: 760px;
+  margin: 1.5rem 0 0;
+}
+
+.short-process {
+  padding: 5rem 0;
+  border-top: 1px solid var(--short-line);
+}
+
+.short-section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+  gap: 2rem;
+  align-items: end;
+  margin-bottom: 1.5rem;
+}
+
+.short-section-head h2 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 4.8rem);
+  line-height: 0.95;
+}
+
+.process-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.process-list article {
+  min-height: 280px;
+  padding: 1.1rem;
+  border: 1px solid var(--short-line);
+  background: linear-gradient(180deg, rgba(23, 28, 42, 0.94), rgba(9, 11, 18, 0.98));
+}
+
+.process-list span {
+  color: var(--short-cyan);
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+.process-list h3 {
+  margin: 1rem 0 0.7rem;
+  font-size: 1.45rem;
+}
+
+@media (max-width: 940px) {
+  .short-hero,
+  .short-section-head {
+    grid-template-columns: 1fr;
+  }
+
+  .process-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .short-header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 1rem 0;
+  }
+
+  .short-hero {
+    min-height: auto;
+    padding: 3rem 0;
+  }
+
+  .short-scene {
+    min-height: 340px;
+  }
+
+  .process-list {
+    grid-template-columns: 1fr;
+  }
+}

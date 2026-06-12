@@ -1,0 +1,228 @@
+:root {
+  --adopta-bg: #07100b;
+  --adopta-deep: #0d1a12;
+  --adopta-card: #122319;
+  --adopta-green: #74a15d;
+  --adopta-moss: #b6d08c;
+  --adopta-fog: #edf4de;
+  --adopta-muted: rgba(237, 244, 222, 0.68);
+  --adopta-line: rgba(182, 208, 140, 0.18);
+  --container: 1180px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 18% 10%, rgba(116, 161, 93, 0.18), transparent 28%),
+    radial-gradient(circle at 82% 16%, rgba(182, 208, 140, 0.10), transparent 26%),
+    linear-gradient(180deg, var(--adopta-bg), #09130d 46%, #050907);
+  color: var(--adopta-fog);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.adopta-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  width: min(100% - 2rem, var(--container));
+  min-height: 74px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: rgba(7, 16, 11, 0.72);
+  backdrop-filter: blur(14px);
+}
+
+.adopta-logo {
+  color: var(--adopta-moss);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.adopta-nav {
+  display: flex;
+  gap: 1rem;
+  color: var(--adopta-muted);
+  font-size: 0.92rem;
+}
+
+.adopta-nav a:hover {
+  color: var(--adopta-moss);
+}
+
+.adopta-hero,
+.adopta-statement,
+.adopta-gallery,
+.adopta-process {
+  width: min(100% - 2rem, var(--container));
+  margin: 0 auto;
+}
+
+.adopta-hero {
+  min-height: calc(100vh - 74px);
+  display: grid;
+  grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+  gap: 2rem;
+  align-items: center;
+  padding: 4rem 0;
+}
+
+.adopta-hero-media {
+  overflow: hidden;
+  border: 1px solid var(--adopta-line);
+  background: var(--adopta-card);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.38);
+}
+
+.adopta-hero-media img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.adopta-kicker {
+  margin: 0 0 1rem;
+  color: var(--adopta-moss);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.adopta-hero-copy h1 {
+  max-width: 820px;
+  margin: 0;
+  font-size: clamp(3rem, 8vw, 8rem);
+  line-height: 0.88;
+}
+
+.adopta-hero-copy p:not(.adopta-kicker),
+.adopta-statement > p {
+  color: var(--adopta-muted);
+  font-size: 1.05rem;
+  line-height: 1.78;
+}
+
+.adopta-hero-copy p:not(.adopta-kicker) {
+  max-width: 680px;
+  margin: 1.4rem 0 0;
+}
+
+.adopta-statement {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  gap: 2rem;
+  align-items: start;
+  padding: 5rem 0;
+  border-top: 1px solid var(--adopta-line);
+}
+
+.adopta-statement h2,
+.adopta-section-head h2 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 4.6rem);
+  line-height: 0.96;
+}
+
+.adopta-gallery,
+.adopta-process {
+  padding: 4.5rem 0;
+}
+
+.adopta-section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+  gap: 2rem;
+  align-items: end;
+  margin-bottom: 1.5rem;
+}
+
+.gif-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.gif-grid figure {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--adopta-line);
+  background: var(--adopta-card);
+}
+
+.gif-grid img,
+.process-grid img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.gif-grid figcaption {
+  padding: 0.9rem 1rem 1rem;
+  color: var(--adopta-muted);
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.process-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.process-grid img {
+  border: 1px solid var(--adopta-line);
+  background: var(--adopta-card);
+}
+
+@media (max-width: 900px) {
+  .adopta-hero,
+  .adopta-statement,
+  .adopta-section-head {
+    grid-template-columns: 1fr;
+  }
+
+  .process-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .adopta-header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 1rem 0;
+  }
+
+  .adopta-hero {
+    min-height: auto;
+    padding: 3rem 0;
+  }
+
+  .gif-grid,
+  .process-grid {
+    grid-template-columns: 1fr;
+  }
+}
