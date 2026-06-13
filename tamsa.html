@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="css/tamsa.css" />
 </head>
 <body>
@@ -39,8 +40,47 @@
         <h2 id="map-title">Ubicación de los murales</h2>
       </div>
 
-      <div class="tamsa-map-placeholder" aria-label="Espacio reservado para el mapa del recorrido TAMSA">
-        <span>Espacio reservado para mapa interactivo</span>
+      <div class="tamsa-map-shell" aria-label="Mapa del recorrido TAMSA desde archivo KML">
+        <div class="tamsa-map-canvas">
+          <div id="tamsa-map" class="tamsa-leaflet-map" role="img" aria-label="Mapa con calles, ruta y puntos del recorrido TAMSA"></div>
+          <p>Recorrido georreferenciado desde el archivo KML · 30 puntos registrados</p>
+        </div>
+
+        <aside class="tamsa-map-list" aria-label="Puntos del recorrido">
+          <h3>Puntos del recorrido</h3>
+          <ol>
+            <li><span>1</span>CASA QUINCHA CHICHIMUT</li>
+            <li><span>2</span>1 MASPAZ</li>
+            <li><span>3</span>2</li>
+            <li><span>4</span>3 CAUCHO Y TIEMPO</li>
+            <li><span>5</span>4</li>
+            <li><span>6</span>5 MARGO</li>
+            <li><span>7</span>6 GAREK</li>
+            <li><span>8</span>7 NEGRA</li>
+            <li><span>9</span>8 Wosnan</li>
+            <li><span>10</span>10 NEGRO JOSE / CHUCHO</li>
+            <li><span>11</span>11 YELA</li>
+            <li><span>12</span>12 AXA</li>
+            <li><span>13</span>13 TIERRARA</li>
+            <li><span>14</span>14</li>
+            <li><span>15</span>15 TRIANA</li>
+            <li><span>16</span>16 GODIE</li>
+            <li><span>17</span>17 GUACHE</li>
+            <li><span>18</span>19 HOWIE / KYNSHA</li>
+            <li><span>19</span>20 RITO</li>
+            <li><span>20</span>21</li>
+            <li><span>21</span>22</li>
+            <li><span>22</span>23</li>
+            <li><span>23</span>24</li>
+            <li><span>24</span>29 LEO</li>
+            <li><span>25</span>30</li>
+            <li><span>26</span>LA PILITA</li>
+            <li><span>27</span>31 Jaime Sierra</li>
+            <li><span>28</span>32 PAVEL</li>
+            <li><span>29</span>GRONE / JUANCHO</li>
+            <li><span>30</span>Marcador sin titulo</li>
+          </ol>
+        </aside>
       </div>
     </section>
 
@@ -53,7 +93,7 @@
       <div class="mural-timeline">
         <article class="mural-item">
           <div class="mural-image-slot">
-            <span>Imagen mural 01</span>
+            <img src="assets/ProyectosTrasmedia/Tamsa/Chichimut.jpg" alt="Mural CASA QUINCHA CHICHIMUT" loading="lazy" />
           </div>
           <div class="mural-copy">
             <span class="mural-number">01</span>
@@ -95,5 +135,7 @@
       </div>
     </section>
   </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/tamsa-map.js"></script>
 </body>
 </html>

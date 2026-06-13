@@ -1,0 +1,264 @@
+:root {
+  --sailor-black: #050407;
+  --sailor-card: #151019;
+  --sailor-pink: #ff2d95;
+  --sailor-yellow: #ffe14a;
+  --sailor-cyan: #38e7ff;
+  --sailor-text: #fff6f8;
+  --sailor-muted: rgba(255, 246, 248, 0.68);
+  --sailor-line: rgba(255, 45, 149, 0.24);
+  --container: 1180px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 15% 16%, rgba(255, 45, 149, 0.22), transparent 28%),
+    radial-gradient(circle at 84% 18%, rgba(56, 231, 255, 0.16), transparent 26%),
+    radial-gradient(circle at 50% 78%, rgba(255, 225, 74, 0.12), transparent 30%),
+    linear-gradient(180deg, var(--sailor-black), #09060d 48%, #040306);
+  color: var(--sailor-text);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+.sailor-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  width: min(100% - 2rem, var(--container));
+  min-height: 74px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: rgba(5, 4, 7, 0.72);
+  backdrop-filter: blur(14px);
+}
+
+.sailor-logo {
+  color: var(--sailor-yellow);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.sailor-nav {
+  display: flex;
+  gap: 1rem;
+  color: var(--sailor-muted);
+  font-size: 0.92rem;
+}
+
+.sailor-nav a:hover {
+  color: var(--sailor-cyan);
+}
+
+.sailor-hero,
+.sailor-info,
+.sailor-gallery,
+.sailor-frames,
+.sailor-video {
+  width: min(100% - 2rem, var(--container));
+  margin: 0 auto;
+}
+
+.sailor-hero {
+  min-height: calc(100vh - 74px);
+  display: grid;
+  grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.1fr);
+  gap: 2rem;
+  align-items: center;
+  padding: 4rem 0;
+}
+
+.sailor-visual {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--sailor-line);
+  background:
+    linear-gradient(135deg, rgba(255, 45, 149, 0.2), transparent 38%),
+    linear-gradient(315deg, rgba(56, 231, 255, 0.16), transparent 42%),
+    var(--sailor-card);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+}
+
+.sailor-visual img {
+  width: 100%;
+  min-height: 420px;
+  object-fit: cover;
+}
+
+.sailor-kicker {
+  margin: 0 0 1rem;
+  color: var(--sailor-yellow);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.sailor-copy h1 {
+  margin: 0;
+  font-size: clamp(3.3rem, 10vw, 9rem);
+  line-height: 0.82;
+  text-transform: uppercase;
+}
+
+.sailor-copy p:not(.sailor-kicker),
+.sailor-info > p {
+  max-width: 760px;
+  color: var(--sailor-muted);
+  font-size: 1.05rem;
+  line-height: 1.76;
+}
+
+.sailor-copy p:not(.sailor-kicker) {
+  margin: 1.5rem 0 0;
+}
+
+.sailor-info {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 2rem;
+  align-items: start;
+  padding: 5rem 0;
+  border-top: 1px solid var(--sailor-line);
+}
+
+.sailor-info h2 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 4.8rem);
+  line-height: 0.95;
+}
+
+.sailor-gallery,
+.sailor-frames,
+.sailor-video {
+  padding: 4.5rem 0;
+}
+
+.sailor-section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+  gap: 2rem;
+  align-items: end;
+  margin-bottom: 1.5rem;
+}
+
+.sailor-section-head h2 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 4.8rem);
+  line-height: 0.95;
+}
+
+.sailor-gif-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.sailor-gif-grid figure {
+  grid-column: span 3;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--sailor-line);
+  background: var(--sailor-card);
+}
+
+.sailor-gif-grid figure:nth-child(5) {
+  grid-column: 2 / span 4;
+}
+
+.sailor-gif-grid img,
+.sailor-frame-grid img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.sailor-gif-grid figcaption {
+  padding: 0.85rem 1rem 1rem;
+  color: var(--sailor-muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sailor-frame-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.sailor-frame-grid img {
+  border: 1px solid var(--sailor-line);
+  background: var(--sailor-card);
+}
+
+.sailor-youtube {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--sailor-line);
+  background: var(--sailor-card);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+}
+
+.sailor-youtube iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+@media (max-width: 900px) {
+  .sailor-hero,
+  .sailor-info,
+  .sailor-section-head {
+    grid-template-columns: 1fr;
+  }
+
+  .sailor-gif-grid,
+  .sailor-frame-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sailor-gif-grid figure,
+  .sailor-gif-grid figure:nth-child(5) {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .sailor-header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 1rem 0;
+  }
+
+  .sailor-hero {
+    min-height: auto;
+    padding: 3rem 0;
+  }
+
+  .sailor-visual img {
+    min-height: 260px;
+  }
+}

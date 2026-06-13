@@ -129,20 +129,229 @@ a {
   line-height: 0.95;
 }
 
-.tamsa-map-placeholder {
-  min-height: 520px;
+.tamsa-map-shell {
   display: grid;
-  place-items: center;
+  grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.68fr);
+  gap: 1rem;
   border: 1px solid var(--tamsa-line);
   background:
-    linear-gradient(90deg, rgba(225, 184, 109, 0.05) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(225, 184, 109, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 18% 20%, rgba(197, 138, 50, 0.18), transparent 28%),
+    radial-gradient(circle at 88% 10%, rgba(225, 184, 109, 0.13), transparent 22%),
     linear-gradient(180deg, rgba(26, 23, 17, 0.96), rgba(12, 10, 7, 0.98));
-  background-size: 44px 44px, 44px 44px, auto;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.36);
+  padding: 1rem;
 }
 
-.tamsa-map-placeholder span,
+.tamsa-map-canvas {
+  min-height: 520px;
+  display: grid;
+  align-content: stretch;
+  gap: 0.8rem;
+}
+
+.tamsa-leaflet-map {
+  width: 100%;
+  min-height: 520px;
+  border: 1px solid rgba(225, 184, 109, 0.3);
+  background: rgba(9, 8, 7, 0.92);
+}
+
+.tamsa-leaflet-map .leaflet-tile-pane {
+  filter: saturate(0.82) contrast(1.04) sepia(0.12);
+}
+
+.tamsa-leaflet-map .leaflet-control-zoom a {
+  background: rgba(16, 14, 11, 0.94);
+  border-color: rgba(225, 184, 109, 0.24);
+  color: var(--tamsa-paper);
+}
+
+.tamsa-leaflet-map .leaflet-control-attribution {
+  background: rgba(16, 14, 11, 0.78);
+  color: rgba(245, 234, 216, 0.68);
+}
+
+.tamsa-leaflet-map .leaflet-control-attribution a {
+  color: var(--tamsa-ochre);
+}
+
+.tamsa-leaflet-map .leaflet-popup-content-wrapper,
+.tamsa-leaflet-map .leaflet-popup-tip {
+  background: rgba(16, 14, 11, 0.96);
+  color: var(--tamsa-paper);
+  border: 1px solid rgba(225, 184, 109, 0.28);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.34);
+}
+
+.tamsa-leaflet-map .leaflet-popup-content {
+  margin: 0;
+  width: 230px;
+}
+
+.tamsa-map-popup {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.72rem;
+}
+
+.tamsa-map-popup img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 1px solid rgba(225, 184, 109, 0.28);
+}
+
+.tamsa-map-popup span {
+  color: var(--tamsa-ochre);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.tamsa-map-popup strong {
+  color: var(--tamsa-paper);
+  font-size: 0.96rem;
+  line-height: 1.22;
+}
+
+.tamsa-map-marker {
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--tamsa-ochre);
+  color: #100e0b;
+  border: 2px solid #100e0b;
+  box-shadow: 0 0 0 3px rgba(245, 234, 216, 0.9), 0 8px 18px rgba(0, 0, 0, 0.38);
+  font-size: 0.66rem;
+  font-weight: 900;
+}
+
+.tamsa-map-marker span {
+  line-height: 1;
+}
+
+.tamsa-route-map {
+  width: 100%;
+  min-height: 470px;
+  display: block;
+  overflow: visible;
+}
+
+.map-ground {
+  fill: rgba(9, 8, 7, 0.92);
+  stroke: rgba(225, 184, 109, 0.22);
+  stroke-width: 2;
+}
+
+.map-contour {
+  fill: none;
+  stroke: rgba(245, 234, 216, 0.12);
+  stroke-width: 2;
+  stroke-dasharray: 9 14;
+}
+
+.map-contour-two {
+  stroke: rgba(225, 184, 109, 0.12);
+}
+
+.map-contour-three {
+  stroke: rgba(197, 138, 50, 0.2);
+}
+
+.map-route {
+  fill: none;
+  stroke: var(--tamsa-ochre);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 12px rgba(197, 138, 50, 0.42));
+}
+
+.map-point circle {
+  fill: var(--tamsa-paper);
+  stroke: var(--tamsa-ochre);
+  stroke-width: 3;
+  transition: transform 180ms ease, fill 180ms ease;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.map-point text {
+  fill: var(--tamsa-paper);
+  font-size: 20px;
+  font-weight: 800;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: rgba(9, 8, 7, 0.9);
+  stroke-width: 4px;
+}
+
+.map-point:hover circle {
+  fill: var(--tamsa-ochre);
+  transform: scale(1.45);
+}
+
+.tamsa-map-canvas p {
+  margin: 0;
+  color: rgba(245, 234, 216, 0.62);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.tamsa-map-list {
+  max-height: 590px;
+  overflow: auto;
+  border-left: 1px solid rgba(225, 184, 109, 0.18);
+  padding: 0.2rem 0.2rem 0.2rem 1rem;
+}
+
+.tamsa-map-list h3 {
+  margin: 0 0 1rem;
+  color: var(--tamsa-paper);
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tamsa-map-list ol {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tamsa-map-list li {
+  display: grid;
+  grid-template-columns: 2.15rem minmax(0, 1fr);
+  gap: 0.55rem;
+  align-items: center;
+  color: var(--tamsa-muted);
+  cursor: pointer;
+  font-size: 0.86rem;
+  line-height: 1.35;
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.tamsa-map-list li:hover {
+  color: var(--tamsa-paper);
+  transform: translateX(4px);
+}
+
+.tamsa-map-list li span {
+  display: inline-grid;
+  width: 1.85rem;
+  height: 1.85rem;
+  place-items: center;
+  border: 1px solid rgba(225, 184, 109, 0.36);
+  color: var(--tamsa-paper);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
 .mural-image-slot span {
   color: rgba(245, 234, 216, 0.52);
   font-size: 0.82rem;
@@ -176,6 +385,14 @@ a {
   background:
     radial-gradient(circle at 25% 20%, rgba(197, 138, 50, 0.18), transparent 32%),
     linear-gradient(135deg, rgba(111, 66, 31, 0.22), rgba(8, 7, 6, 0.9));
+}
+
+.mural-image-slot img {
+  width: 100%;
+  height: 100%;
+  min-height: 260px;
+  display: block;
+  object-fit: cover;
 }
 
 .mural-copy {
@@ -223,8 +440,27 @@ a {
     padding: 4rem 0 3rem;
   }
 
-  .tamsa-map-placeholder {
+  .tamsa-map-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .tamsa-map-canvas {
+    min-height: auto;
+  }
+
+  .tamsa-route-map {
+    min-height: 320px;
+  }
+
+  .tamsa-leaflet-map {
     min-height: 360px;
+  }
+
+  .tamsa-map-list {
+    max-height: 310px;
+    border-left: 0;
+    border-top: 1px solid rgba(225, 184, 109, 0.18);
+    padding: 1rem 0 0;
   }
 
   .mural-image-slot {
