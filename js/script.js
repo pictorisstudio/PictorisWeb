@@ -10,10 +10,11 @@
 const transitionOverlay = document.createElement("div");
 transitionOverlay.id = "page-transition";
 transitionOverlay.innerHTML = `<div class="pt-inner"></div>`;
+transitionOverlay.classList.add("pt-out");
 document.documentElement.appendChild(transitionOverlay);
 
-// Entrada: fade out del overlay al cargar
-window.addEventListener("load", () => {
+// Entrada: no esperamos a window.load porque en móvil puede demorarse por videos/GIFs pesados.
+document.addEventListener("DOMContentLoaded", () => {
   requestAnimationFrame(() => {
     transitionOverlay.classList.add("pt-out");
   });
