@@ -1,0 +1,345 @@
+.marketing-hero {
+  position: relative;
+  min-height: 88vh;
+  display: grid;
+  align-items: center;
+  overflow: hidden;
+  padding: 9rem 0 5rem;
+}
+
+.marketing-hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 16% 22%, rgba(45, 140, 255, 0.22), transparent 32%),
+    radial-gradient(circle at 76% 28%, rgba(108, 59, 255, 0.22), transparent 30%),
+    linear-gradient(135deg, rgba(12, 9, 24, 0.98), rgba(8, 7, 16, 0.98));
+}
+
+.marketing-hero-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.85), transparent 88%);
+}
+
+.marketing-hero-layout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 0.98fr) minmax(320px, 0.82fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: center;
+}
+
+.marketing-hero-copy h1 {
+  max-width: 12ch;
+  margin: 0.8rem 0 1rem;
+  font-size: clamp(3.2rem, 8vw, 7rem);
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+}
+
+.marketing-hero-copy p:not(.eyebrow) {
+  max-width: 680px;
+  color: var(--color-text-soft);
+  font-size: clamp(1.05rem, 2vw, 1.26rem);
+  line-height: 1.68;
+}
+
+.marketing-preview {
+  min-height: 540px;
+  position: relative;
+}
+
+.mockup-window,
+.mockup-phone,
+.mockup-stats,
+.marketing-card,
+.marketing-process article {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
+    rgba(13, 10, 24, 0.86);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(18px);
+}
+
+.mockup-window-main {
+  width: min(100%, 520px);
+  min-height: 340px;
+  padding: 1rem;
+  transform: rotate(-2deg);
+}
+
+.mockup-bar {
+  height: 2.2rem;
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.18), transparent),
+    rgba(255, 255, 255, 0.06);
+}
+
+.mockup-hero-line {
+  width: 78%;
+  height: 6.5rem;
+  margin: 2rem 0;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #2d8cff, #6c3bff);
+  box-shadow: var(--glow-accent);
+}
+
+.mockup-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
+}
+
+.mockup-grid span {
+  min-height: 110px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mockup-phone {
+  position: absolute;
+  right: 0;
+  bottom: 5rem;
+  width: 180px;
+  min-height: 310px;
+  padding: 1rem;
+  border-radius: 32px;
+}
+
+.mockup-phone span {
+  display: block;
+  width: 45%;
+  height: 0.38rem;
+  margin: 0 auto 1rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.mockup-phone div {
+  height: 210px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.26), transparent 18%),
+    linear-gradient(145deg, #2d8cff, #6c3bff 58%, #0f0a1d);
+}
+
+.mockup-phone p {
+  margin: 0.9rem 0 0;
+  color: var(--color-text-soft);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.mockup-stats {
+  position: absolute;
+  left: 2rem;
+  bottom: 0;
+  width: min(78%, 360px);
+  display: grid;
+  gap: 0.5rem;
+  padding: 1.2rem;
+}
+
+.mockup-stats strong {
+  color: #ffffff;
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.mockup-stats span {
+  color: var(--color-text-soft);
+  font-size: 0.92rem;
+}
+
+.marketing-section {
+  padding: 5.5rem 0;
+}
+
+.marketing-package-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+.marketing-card {
+  display: flex;
+  min-height: 360px;
+  flex-direction: column;
+  padding: 1.35rem;
+  transition: transform 220ms ease, border-color 220ms ease;
+}
+
+.marketing-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(45, 140, 255, 0.38);
+}
+
+.marketing-card-icon {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 1.4rem;
+  place-items: center;
+  border-radius: 16px;
+  background: rgba(45, 140, 255, 0.14);
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.marketing-card h3 {
+  margin: 0 0 0.8rem;
+  font-size: 1.28rem;
+}
+
+.marketing-card p {
+  margin: 0 0 1.1rem;
+  color: var(--color-text-soft);
+  line-height: 1.62;
+}
+
+.marketing-card ul {
+  display: grid;
+  gap: 0.62rem;
+  margin: auto 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.marketing-card li {
+  color: var(--color-text-soft);
+  font-size: 0.94rem;
+}
+
+.marketing-card li::before {
+  content: "+";
+  margin-right: 0.45rem;
+  color: #2d8cff;
+  font-weight: 900;
+}
+
+.marketing-sales-strip {
+  padding: 4rem 0;
+  background:
+    linear-gradient(135deg, rgba(45, 140, 255, 0.13), rgba(108, 59, 255, 0.12)),
+    rgba(255, 255, 255, 0.02);
+}
+
+.marketing-strip-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1fr);
+  gap: 2rem;
+  align-items: center;
+}
+
+.marketing-strip-grid h2 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1.08;
+}
+
+.marketing-benefits {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.marketing-benefits span {
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-text-soft);
+}
+
+.marketing-process {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.marketing-process article {
+  min-height: 240px;
+  padding: 1.1rem;
+}
+
+.marketing-process span {
+  display: inline-grid;
+  width: 2.2rem;
+  height: 2.2rem;
+  margin-bottom: 1rem;
+  place-items: center;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #080610;
+  font-weight: 900;
+}
+
+.marketing-process h3 {
+  margin: 0 0 0.7rem;
+}
+
+.marketing-process p {
+  margin: 0;
+  color: var(--color-text-soft);
+  line-height: 1.58;
+}
+
+@media (max-width: 980px) {
+  .marketing-hero-layout,
+  .marketing-strip-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .marketing-package-grid,
+  .marketing-process {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .marketing-hero {
+    min-height: auto;
+    padding: 7rem 0 3.5rem;
+  }
+
+  .marketing-hero-copy h1 {
+    max-width: 10ch;
+  }
+
+  .marketing-preview {
+    min-height: 460px;
+  }
+
+  .mockup-window-main {
+    min-height: 290px;
+  }
+
+  .mockup-phone {
+    width: 150px;
+    min-height: 270px;
+    bottom: 4rem;
+  }
+
+  .mockup-phone div {
+    height: 176px;
+  }
+
+  .marketing-package-grid,
+  .marketing-process,
+  .marketing-benefits {
+    grid-template-columns: 1fr;
+  }
+
+  .marketing-card,
+  .marketing-process article {
+    min-height: auto;
+  }
+}

@@ -126,11 +126,27 @@
   position: relative;
 }
 
+#ar-section {
+  padding-bottom: 1.25rem;
+}
+
+#vr-section {
+  padding-top: 1.25rem;
+}
+
 .exp-showcase {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(340px, 0.9fr);
   gap: 1.5rem;
   align-items: stretch;
+}
+
+.exp-showcase + .exp-showcase {
+  margin-top: 0.85rem;
+}
+
+.exp-showcase-carnotaurus {
+  margin-top: 0.85rem;
 }
 
 .exp-showcase-link {
@@ -139,6 +155,8 @@
   cursor: pointer;
 }
 
+.exp-showcase-featured .exp-media,
+.exp-showcase-featured .exp-info,
 .exp-showcase-link .exp-media,
 .exp-showcase-link .exp-info {
   transition:
@@ -148,6 +166,8 @@
     background var(--transition);
 }
 
+.exp-showcase-featured:hover .exp-media,
+.exp-showcase-featured:hover .exp-info,
 .exp-showcase-link:hover .exp-media,
 .exp-showcase-link:hover .exp-info {
   transform: translateY(-6px);
@@ -157,6 +177,7 @@
     0 0 26px rgba(108, 59, 255, 0.12);
 }
 
+.exp-showcase-featured:hover .exp-info,
 .exp-showcase-link:hover .exp-info {
   background:
     linear-gradient(180deg, rgba(24, 18, 43, 0.98), rgba(12, 9, 22, 1));
