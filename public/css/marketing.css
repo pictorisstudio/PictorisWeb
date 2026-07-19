@@ -7,6 +7,103 @@
   padding: 9rem 0 5rem;
 }
 
+/* =========================
+   MARKETING - COLOR PLANO
+========================= */
+body {
+  --color-primary: #EA45BE;
+  --color-accent: #3650CF;
+  --glow-primary: 0 0 24px rgba(234, 69, 190, 0.18);
+  --glow-accent: 0 0 24px rgba(54, 80, 207, 0.18);
+  background: #07050d;
+}
+
+.site-header::after {
+  background: #3650CF;
+  opacity: 0.45;
+}
+
+.nav-link.active::after,
+.nav-link:hover::after {
+  background: #3650CF;
+}
+
+.header-cta,
+.btn-primary {
+  background: #3650CF;
+  color: #ffffff;
+  box-shadow: 0 12px 28px rgba(54, 80, 207, 0.24);
+}
+
+.header-cta:hover,
+.btn-primary:hover {
+  box-shadow: 0 14px 30px rgba(54, 80, 207, 0.30);
+}
+
+.btn-secondary {
+  border-color: rgba(234, 69, 190, 0.42);
+  background: rgba(234, 69, 190, 0.10);
+}
+
+.btn-secondary:hover {
+  border-color: rgba(234, 69, 190, 0.68);
+  background: rgba(234, 69, 190, 0.16);
+}
+
+.marketing-hero,
+.marketing-hero-bg,
+.marketing-sales-strip {
+  background: #090611;
+}
+
+.marketing-hero-bg::after {
+  display: none;
+}
+
+.mockup-window,
+.mockup-phone,
+.mockup-stats,
+.marketing-card,
+.marketing-process article,
+.marketing-benefits span {
+  background: #120e20;
+  border-color: rgba(234, 69, 190, 0.20);
+}
+
+.mockup-bar,
+.mockup-grid span,
+.mockup-phone span {
+  background: rgba(234, 69, 190, 0.14);
+}
+
+.mockup-hero-line,
+.mockup-phone div,
+.marketing-card-icon,
+.marketing-process span {
+  background: #EA45BE;
+  color: #ffffff;
+  box-shadow: 0 0 28px rgba(234, 69, 190, 0.18);
+}
+
+.marketing-card:hover {
+  border-color: rgba(54, 80, 207, 0.44);
+  box-shadow:
+    0 26px 58px rgba(0, 0, 0, 0.40),
+    0 0 24px rgba(54, 80, 207, 0.16);
+}
+
+.section-label,
+.eyebrow,
+.marketing-card li::before {
+  color: #EA45BE;
+}
+
+.marketing-benefits span:nth-child(even),
+.marketing-process article:nth-child(even),
+.marketing-card:nth-child(even) {
+  border-color: rgba(54, 80, 207, 0.24);
+}
+
 .marketing-hero-bg {
   position: absolute;
   inset: 0;
@@ -342,4 +439,84 @@
   .marketing-process article {
     min-height: auto;
   }
+}
+
+/* Overrides finales: composición plana azul/violeta */
+body {
+  --color-primary: #EA45BE;
+  --color-accent: #3650CF;
+  --glow-primary: 0 0 24px rgba(234, 69, 190, 0.18);
+  --glow-accent: 0 0 24px rgba(54, 80, 207, 0.18);
+  background: #07050d;
+}
+
+.site-header::after,
+.nav-link.active::after,
+.nav-link:hover::after {
+  background: #3650CF;
+}
+
+.header-cta,
+.btn-primary {
+  background: #3650CF;
+  color: #ffffff;
+  box-shadow: 0 12px 28px rgba(54, 80, 207, 0.24);
+}
+
+.btn-secondary {
+  border-color: rgba(234, 69, 190, 0.42);
+  background: rgba(234, 69, 190, 0.10);
+}
+
+.marketing-hero,
+.marketing-hero-bg,
+.marketing-sales-strip,
+.mockup-window,
+.mockup-phone,
+.mockup-stats,
+.marketing-card,
+.marketing-process article,
+.marketing-benefits span {
+  background: #120e20;
+}
+
+.marketing-hero-bg::after {
+  display: none;
+}
+
+.mockup-bar,
+.mockup-grid span,
+.mockup-phone span {
+  background: rgba(234, 69, 190, 0.14);
+}
+
+.mockup-hero-line,
+.mockup-phone div,
+.marketing-card-icon,
+.marketing-process span {
+  background: #EA45BE;
+  color: #ffffff;
+  box-shadow: 0 0 28px rgba(234, 69, 190, 0.18);
+}
+
+.mockup-window,
+.mockup-phone,
+.mockup-stats,
+.marketing-card,
+.marketing-process article,
+.marketing-benefits span {
+  border-color: rgba(234, 69, 190, 0.20);
+}
+
+.marketing-card:hover {
+  border-color: rgba(54, 80, 207, 0.44);
+  box-shadow:
+    0 26px 58px rgba(0, 0, 0, 0.40),
+    0 0 24px rgba(54, 80, 207, 0.16);
+}
+
+.section-label,
+.eyebrow,
+.marketing-card li::before {
+  color: #EA45BE;
 }

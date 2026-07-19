@@ -353,10 +353,10 @@ body {
 }
 
 .logo-mark {
-  width: 14px;
-  height: 14px;
-  border-radius: 4px;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: url("../assets/logos/favicon-pictoris.png") center / contain no-repeat;
   box-shadow:
     0 0 18px rgba(108, 59, 255, 0.28),
     0 0 12px rgba(45, 140, 255, 0.18);
@@ -546,6 +546,32 @@ body {
   margin-bottom: 0.75rem;
   max-width: 12ch;
   text-wrap: balance;
+}
+
+.hero h1.hero-title-wide {
+  max-width: 14ch;
+  font-size: clamp(2.75rem, 6.2vw, 5rem);
+  animation: heroTitleReveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: opacity, transform;
+}
+
+@keyframes heroTitleReveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero h1.hero-title-wide {
+    animation: none;
+    will-change: auto;
+  }
 }
 
 .hero-subtitle {
@@ -1602,6 +1628,158 @@ body {
 }
 
 /* =========================
+   HOME VISUALES - COLOR PLANO
+========================= */
+body.visuales-page {
+  --color-primary: #EA45BE;
+  --color-accent: #EA45BE;
+  --color-secondary-accent: #3650CF;
+  --glow-primary: 0 0 24px rgba(234, 69, 190, 0.18);
+  --glow-accent: 0 0 24px rgba(234, 69, 190, 0.18);
+  background: #07050d;
+}
+
+.visuales-page .site-header::after,
+.visuales-page .featured-projects::before,
+.visuales-page .services::before,
+.visuales-page .about::before {
+  background: #3650CF;
+  opacity: 0.45;
+}
+
+.visuales-page .nav-link.active {
+  color: #ffffff;
+}
+
+.visuales-page .nav-link.active::after,
+.visuales-page .nav-link:hover::after {
+  background: #3650CF;
+}
+
+.visuales-page .btn-primary {
+  background: #EA45BE;
+  color: #07050d;
+  box-shadow: 0 12px 28px rgba(234, 69, 190, 0.18);
+}
+
+.visuales-page .btn-primary:hover {
+  box-shadow: 0 14px 30px rgba(234, 69, 190, 0.24);
+}
+
+.visuales-page .header-cta {
+  background: #3650CF;
+  color: #ffffff;
+  box-shadow: 0 12px 28px rgba(54, 80, 207, 0.24);
+}
+
+.visuales-page .header-cta:hover {
+  box-shadow: 0 14px 30px rgba(54, 80, 207, 0.30);
+}
+
+.visuales-page .btn-secondary {
+  border-color: rgba(54, 80, 207, 0.44);
+  background: rgba(54, 80, 207, 0.10);
+}
+
+.visuales-page .btn-secondary:hover {
+  border-color: rgba(54, 80, 207, 0.70);
+  background: rgba(54, 80, 207, 0.16);
+}
+
+.visuales-page .hero {
+  background: #090611;
+}
+
+.visuales-page .hero-video,
+.visuales-page .project-media,
+.visuales-page .service-media,
+.visuales-page .immersive-media {
+  background: #120e20;
+}
+
+.visuales-page .hero-overlay {
+  background: rgba(7, 5, 13, 0.48);
+}
+
+.visuales-page .project-media-overlay,
+.visuales-page .immersive-media::before {
+  background: rgba(7, 5, 13, 0.48);
+}
+
+.visuales-page .project-card-clickable:hover .project-media-overlay {
+  background: rgba(7, 5, 13, 0.56);
+}
+
+.visuales-page .logo-mark {
+  box-shadow:
+    0 0 18px rgba(234, 69, 190, 0.24),
+    0 0 12px rgba(54, 80, 207, 0.22);
+}
+
+.visuales-page .hero-noise,
+.visuales-page .hero-orb,
+.visuales-page .project-card::before,
+.visuales-page .service-card::before,
+.visuales-page .immersive-card::before,
+.visuales-page .immersive::before {
+  display: none;
+}
+
+.visuales-page .project-card,
+.visuales-page .service-card,
+.visuales-page .immersive-card,
+.visuales-page .hero-panel-inner,
+.visuales-page .final-cta-content,
+.visuales-page .featured-note,
+.visuales-page .immersive-info,
+.visuales-page .about-card,
+.visuales-page .about-stat {
+  background: #120e20;
+  border-color: rgba(234, 69, 190, 0.18);
+}
+
+.visuales-page .project-card:nth-child(even),
+.visuales-page .service-card:nth-child(2) {
+  border-color: rgba(54, 80, 207, 0.24);
+}
+
+.visuales-page .project-card:hover,
+.visuales-page .service-card:hover,
+.visuales-page .immersive-card:hover {
+  border-color: rgba(54, 80, 207, 0.44);
+  box-shadow:
+    0 26px 58px rgba(0, 0, 0, 0.40),
+    0 0 24px rgba(54, 80, 207, 0.16);
+}
+
+.visuales-page .media-badge,
+.visuales-page .panel-tag,
+.visuales-page .featured-note-tag,
+.visuales-page .about-card-tag {
+  background: rgba(234, 69, 190, 0.14);
+  border-color: rgba(234, 69, 190, 0.28);
+  color: #ffd9f5;
+}
+
+.visuales-page .service-icon {
+  background: #EA45BE;
+  color: #07050d;
+  border-color: rgba(234, 69, 190, 0.42);
+  box-shadow: 0 0 28px rgba(234, 69, 190, 0.18);
+}
+
+.visuales-page .service-card:nth-child(2) .service-icon,
+.visuales-page .project-card:nth-child(even) .media-badge {
+  background: rgba(54, 80, 207, 0.18);
+  border-color: rgba(54, 80, 207, 0.42);
+  color: #dfe5ff;
+}
+
+.visuales-page .site-footer {
+  background: #08060d;
+}
+
+/* =========================
    MENÚ
 ========================= */
 body.menu-open {
@@ -1892,6 +2070,10 @@ body.menu-open {
     margin-bottom: 0.75rem;
   }
 
+  .hero h1.hero-title-wide {
+    font-size: clamp(2.35rem, 10vw, 3.7rem);
+  }
+
   .hero-subtitle {
     max-width: 100%;
     font-size: 1.2rem;
@@ -2023,6 +2205,10 @@ body.menu-open {
   .hero h1 {
     max-width: 100%;
     font-size: clamp(2.45rem, 14vw, 3.7rem);
+  }
+
+  .hero h1.hero-title-wide {
+    font-size: clamp(2.1rem, 11vw, 3.1rem);
   }
 
   .hero-subtitle {

@@ -56,10 +56,22 @@ img {
 }
 
 .anxiety-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.62rem;
   color: var(--anxiety-lime);
   font-weight: 900;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+.anxiety-logo::before {
+  content: "";
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  background: url("../assets/logos/favicon-pictoris.png") center / contain no-repeat;
 }
 
 .anxiety-nav {

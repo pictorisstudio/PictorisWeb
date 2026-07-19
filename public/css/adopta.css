@@ -54,10 +54,22 @@ img {
 }
 
 .adopta-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.62rem;
   color: var(--adopta-moss);
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+.adopta-logo::before {
+  content: "";
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  background: url("../assets/logos/favicon-pictoris.png") center / contain no-repeat;
 }
 
 .adopta-nav {

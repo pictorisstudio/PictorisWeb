@@ -45,8 +45,20 @@ a {
 }
 
 .roberta-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.62rem;
   font-weight: 900;
   letter-spacing: -0.03em;
+}
+
+.roberta-logo::before {
+  content: "";
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  background: url("../assets/logos/favicon-pictoris.png") center / contain no-repeat;
 }
 
 .roberta-nav {

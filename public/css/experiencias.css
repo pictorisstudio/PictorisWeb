@@ -14,6 +14,104 @@
   padding: 7rem 0 4.5rem;
 }
 
+/* =========================
+   EXPERIENCIAS - COLOR PLANO
+========================= */
+body {
+  --color-primary: #EA45BE;
+  --color-accent: #3650CF;
+  --glow-primary: 0 0 24px rgba(234, 69, 190, 0.18);
+  --glow-accent: 0 0 24px rgba(54, 80, 207, 0.18);
+  background: #07050d;
+}
+
+.site-header::after {
+  background: #3650CF;
+  opacity: 0.45;
+}
+
+.nav-link.active::after,
+.nav-link:hover::after {
+  background: #3650CF;
+}
+
+.header-cta,
+.btn-primary {
+  background: #3650CF;
+  color: #ffffff;
+  box-shadow: 0 12px 28px rgba(54, 80, 207, 0.24);
+}
+
+.header-cta:hover,
+.btn-primary:hover {
+  box-shadow: 0 14px 30px rgba(54, 80, 207, 0.30);
+}
+
+.btn-secondary {
+  border-color: rgba(234, 69, 190, 0.42);
+  background: rgba(234, 69, 190, 0.10);
+}
+
+.btn-secondary:hover {
+  border-color: rgba(234, 69, 190, 0.68);
+  background: rgba(234, 69, 190, 0.16);
+}
+
+.hero,
+.exp-hero {
+  background: #090611;
+}
+
+.hero-overlay,
+.exp-media-overlay {
+  background: rgba(7, 5, 13, 0.50);
+}
+
+.hero-noise,
+.hero-orb,
+.exp-hero-orb,
+.exp-hero-noise,
+.exp-hero-bg {
+  display: none;
+}
+
+.exp-hero-panel-inner,
+.exp-media,
+.exp-info,
+.exp-showcase-featured:hover .exp-info,
+.exp-showcase-link:hover .exp-info {
+  background: #120e20;
+  border-color: rgba(234, 69, 190, 0.20);
+}
+
+.exp-showcase-featured:hover .exp-media,
+.exp-showcase-featured:hover .exp-info,
+.exp-showcase-link:hover .exp-media,
+.exp-showcase-link:hover .exp-info {
+  border-color: rgba(54, 80, 207, 0.44);
+  box-shadow:
+    0 28px 62px rgba(0, 0, 0, 0.42),
+    0 0 26px rgba(54, 80, 207, 0.16);
+}
+
+.exp-kicker,
+.section-label,
+.eyebrow {
+  color: #EA45BE;
+}
+
+.exp-tag,
+.panel-tag {
+  background: rgba(234, 69, 190, 0.14);
+  border-color: rgba(234, 69, 190, 0.32);
+  color: #ece6ff;
+}
+
+.exp-showcase:nth-child(even) .exp-info,
+.exp-showcase:nth-child(even) .exp-media {
+  border-color: rgba(54, 80, 207, 0.24);
+}
+
 .exp-hero-bg {
   position: absolute;
   inset: 0;
@@ -492,4 +590,88 @@
     padding: 1.15rem 1rem 1.2rem;
     border-radius: 20px;
   }
+}
+
+/* Overrides finales: composición plana azul/violeta */
+body {
+  --color-primary: #EA45BE;
+  --color-accent: #3650CF;
+  --glow-primary: 0 0 24px rgba(234, 69, 190, 0.18);
+  --glow-accent: 0 0 24px rgba(54, 80, 207, 0.18);
+  background: #07050d;
+}
+
+.site-header::after,
+.nav-link.active::after,
+.nav-link:hover::after {
+  background: #3650CF;
+}
+
+.header-cta,
+.btn-primary {
+  background: #3650CF;
+  color: #ffffff;
+  box-shadow: 0 12px 28px rgba(54, 80, 207, 0.24);
+}
+
+.btn-secondary {
+  border-color: rgba(234, 69, 190, 0.42);
+  background: rgba(234, 69, 190, 0.10);
+}
+
+.hero,
+.exp-hero,
+.exp-media,
+.exp-info,
+.exp-hero-panel-inner,
+.exp-cap-card {
+  background: #120e20;
+}
+
+.exp-showcase-featured:hover .exp-info,
+.exp-showcase-link:hover .exp-info {
+  background: #120e20;
+}
+
+.hero-overlay,
+.exp-media-overlay {
+  background: rgba(7, 5, 13, 0.50);
+}
+
+.hero-noise,
+.hero-orb,
+.exp-hero-orb,
+.exp-hero-noise,
+.exp-hero-bg {
+  display: none;
+}
+
+.exp-media,
+.exp-info,
+.exp-hero-panel-inner,
+.exp-cap-card {
+  border-color: rgba(234, 69, 190, 0.20);
+}
+
+.exp-showcase-featured:hover .exp-media,
+.exp-showcase-featured:hover .exp-info,
+.exp-showcase-link:hover .exp-media,
+.exp-showcase-link:hover .exp-info {
+  border-color: rgba(54, 80, 207, 0.44);
+  box-shadow:
+    0 28px 62px rgba(0, 0, 0, 0.42),
+    0 0 26px rgba(54, 80, 207, 0.16);
+}
+
+.exp-kicker,
+.section-label,
+.eyebrow {
+  color: #EA45BE;
+}
+
+.exp-tag,
+.panel-tag {
+  background: rgba(234, 69, 190, 0.14);
+  border-color: rgba(234, 69, 190, 0.32);
+  color: #ece6ff;
 }
