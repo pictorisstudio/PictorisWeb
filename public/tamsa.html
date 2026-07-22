@@ -1,13 +1,17 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="CUCHAVIRA AÚN RESPIRA TAMSA, recorrido transmedia por los murales del evento TAMSA alrededor de Cuchavira." />
   <title>CUCHAVIRA AÚN RESPIRA TAMSA | Pictoris Studio</title>
-  <link rel="icon" type="image/png" sizes="512x512" href="assets/logos/favicon-pictoris.png" />
-  <link rel="apple-touch-icon" href="assets/logos/favicon-pictoris.png" />
-  <meta property="og:site_name" content="Pictoris Studio" />
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.png" type="image/png" sizes="512x512" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
+
+<meta property="og:site_name" content="Pictoris Studio" />
   <meta property="og:image" content="https://pictoris.co/assets/logos/favicon-pictoris.png" />
   <meta name="twitter:image" content="https://pictoris.co/assets/logos/favicon-pictoris.png" />
   <script type="application/ld+json">
@@ -17,19 +21,43 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="css/tamsa.css" />
 </head>
 <body>
-  <header class="tamsa-header">
-    <a href="index.html" class="tamsa-logo">Pictoris Studio</a>
-    <nav class="tamsa-nav" aria-label="Navegación principal">
-      <a href="index.html">Visuales</a>
-      <a href="experiencias.html">Experiencias</a>
-      <a href="marketing.html">Marketing</a>
+  <!-- Header -->
+ <header class="site-header">
+  <div class="container header-content">
+      <a href="index.html" class="logo">
+        <span class="logo-mark"></span>
+        <span class="logo-text">Pictoris Studio</span>
+      </a>
+
+
+    <nav class="main-nav" id="main-navigation">
+      <ul>
+        <li><a href="index.html" class="nav-link">Visuales</a></li>
+        <li><a href="experiencias.html" class="nav-link active">Experiencias</a></li>
+        <li><a href="marketing.html" class="nav-link">Marketing</a></li>
+      </ul>
     </nav>
-  </header>
+
+    <div class="header-actions">
+      <a href="https://wa.me/573143155217" class="btn btn-primary header-cta" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+
+      <button
+        class="menu-toggle"
+        aria-label="Abrir menú de navegación"
+        aria-expanded="false"
+        aria-controls="main-navigation"
+      >
+        ☰
+      </button>
+    </div>
+  </div>
+</header>
 
   <main>
     <section class="tamsa-hero">
@@ -144,6 +172,72 @@
       </div>
     </section>
   </main>
+
+<!-- Footer -->
+ <footer class="site-footer">
+  <div class="container">
+    <div class="footer-shell">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-logo">PICTORIS STUDIO</a>
+        <p class="footer-description">
+          Visuales, experiencias y marketing visual para marcas, artistas y proyectos
+          que necesitan verse claros, atractivos y memorables.
+        </p>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/pictoris.studio/" aria-label="Instagram" class="social-icon" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5Zm8.88 1.12a1.13 1.13 0 1 1 0 2.26 1.13 1.13 0 0 1 0-2.26ZM12 6.5A5.5 5.5 0 1 1 6.5 12 5.5 5.5 0 0 1 12 6.5Zm0 1.5A4 4 0 1 0 16 12a4 4 0 0 0-4-4Z"/>
+          </svg>
+        </a>
+
+      <a href="https://www.behance.net/Pictoris_Studio" aria-label="Behance" class="social-icon" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M7.61 11.32c1.15 0 1.82-.65 1.82-1.55 0-1.11-.8-1.56-1.92-1.56H3v8.27h4.73c1.33 0 2.26-.7 2.26-1.95 0-1.2-.82-1.82-2.38-1.82ZM5 9.56h2.23c.49 0 .82.2.82.69 0 .51-.35.71-.82.71H5V9.56Zm2.37 5.55H5V12.5h2.37c.61 0 1.09.22 1.09.84 0 .63-.45.77-1.09.77Zm5.01-5.94h5.06V8.02h-5.06v1.15Zm6.06 1.67c-.47-.76-1.29-1.18-2.46-1.18-2.01 0-3.29 1.47-3.29 3.43 0 2.01 1.23 3.4 3.34 3.4 1.48 0 2.58-.68 2.97-2.08h-1.65c-.18.47-.69.72-1.29.72-.97 0-1.52-.53-1.61-1.56h4.73c.08-1.17-.1-1.97-.49-2.73Zm-4.2 1.46c.07-.84.58-1.36 1.43-1.36.8 0 1.24.48 1.35 1.36h-2.78Z"/>
+        </svg>
+      </a>
+
+        <a href="https://www.youtube.com/@PictorisStudio" aria-label="YouTube" class="social-icon" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21.58 7.19a2.99 2.99 0 0 0-2.1-2.12C17.62 4.5 12 4.5 12 4.5s-5.62 0-7.48.57a2.99 2.99 0 0 0-2.1 2.12A31.2 31.2 0 0 0 2 12a31.2 31.2 0 0 0 .42 4.81 2.99 2.99 0 0 0 2.1 2.12c1.86.57 7.48.57 7.48.57s5.62 0 7.48-.57a2.99 2.99 0 0 0 2.1-2.12A31.2 31.2 0 0 0 22 12a31.2 31.2 0 0 0-.42-4.81ZM10 15.5v-7l6 3.5-6 3.5Z"/>
+          </svg>
+        </a>
+      </div>
+      </div>
+
+      <div class="footer-links-group">
+        <h3>Mapa del sitio</h3>
+        <ul>
+          <li><a href="index.html">Visuales</a></li>
+          <li><a href="experiencias.html">Experiencias</a></li>
+          <li><a href="marketing.html">Marketing</a></li>
+          <li><a href="nosotros.html">Nosotros</a></li>
+
+        </ul>
+      </div>
+
+      <div class="footer-links-group">
+        <h3>Servicios</h3>
+        <ul>
+          <li><a href="index.html">Visuales</a></li>
+          <li><a href="experiencias.html">Experiencias</a></li>
+          <li><a href="marketing.html">Marketing y diseño</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-contact">
+        <h3>Contacto</h3>
+        <p>+57 314 315 5217</p>
+        <p>Tunja · Boyacá · Colombia</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 Pictoris Studio. Todos los derechos reservados.</p>
+
+    </div>
+  </div>
+  </footer>
+  <script src="js/script.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="js/tamsa-map.js"></script>
 </body>

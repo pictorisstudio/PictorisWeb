@@ -15,6 +15,7 @@
 
 body {
   margin: 0;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at 16% 12%, rgba(232, 75, 75, 0.18), transparent 28%),
     radial-gradient(circle at 84% 18%, rgba(242, 189, 88, 0.14), transparent 28%),
@@ -33,60 +34,14 @@ img {
   max-width: 100%;
 }
 
-.dom-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  width: min(100% - 2rem, var(--container));
-  min-height: 74px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  background: rgba(7, 6, 9, 0.72);
-  backdrop-filter: blur(14px);
-}
-
-.dom-logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.62rem;
-  color: var(--dom-gold);
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.dom-logo::before {
-  content: "";
-  width: 24px;
-  height: 24px;
-  flex-shrink: 0;
-  border-radius: 7px;
-  background: url("../assets/logos/favicon-pictoris.png") center / contain no-repeat;
-}
-
-.dom-nav {
-  display: flex;
-  gap: 1rem;
-  color: var(--dom-muted);
-  font-size: 0.92rem;
-}
-
-.dom-nav a:hover {
-  color: var(--dom-red);
-}
-
 .dom-hero,
-.dom-info,
 .dom-gallery {
   width: min(100% - 2rem, var(--container));
   margin: 0 auto;
 }
 
 .dom-hero {
-  min-height: calc(100vh - 74px);
+  min-height: calc(88vh - 74px);
   display: grid;
   grid-template-columns: minmax(280px, 0.72fr) minmax(0, 1.28fr);
   gap: 2rem;
@@ -118,13 +73,14 @@ img {
 
 .dom-copy h1 {
   margin: 0;
-  font-size: clamp(3.5rem, 11vw, 10rem);
-  line-height: 0.82;
+  max-width: 100%;
+  font-size: clamp(2.6rem, 7.2vw, 5.9rem);
+  line-height: 0.96;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
-.dom-copy p:not(.dom-kicker),
-.dom-info > p {
+.dom-copy p:not(.dom-kicker) {
   max-width: 760px;
   color: var(--dom-muted);
   font-size: 1.05rem;
@@ -135,16 +91,6 @@ img {
   margin: 1.5rem 0 0;
 }
 
-.dom-info {
-  display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-  gap: 2rem;
-  align-items: start;
-  padding: 5rem 0;
-  border-top: 1px solid var(--dom-line);
-}
-
-.dom-info h2,
 .dom-section-head h2 {
   margin: 0;
   font-size: clamp(2rem, 5vw, 4.8rem);
@@ -152,15 +98,13 @@ img {
 }
 
 .dom-gallery {
-  padding: 4.5rem 0 5.5rem;
+  padding: 1.75rem 0 5.5rem;
 }
 
 .dom-section-head {
-  display: grid;
-  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
-  gap: 2rem;
-  align-items: end;
+  max-width: 760px;
   margin-bottom: 1.5rem;
+  text-align: left;
 }
 
 .dom-grid {
@@ -178,27 +122,29 @@ img {
 }
 
 @media (max-width: 900px) {
-  .dom-hero,
-  .dom-info,
-  .dom-section-head {
+  .dom-hero {
     grid-template-columns: 1fr;
   }
 
   .dom-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .dom-copy h1 {
+    font-size: clamp(2.2rem, 9vw, 4rem);
+    line-height: 0.98;
+  }
 }
 
 @media (max-width: 640px) {
-  .dom-header {
-    align-items: flex-start;
-    flex-direction: column;
-    padding: 1rem 0;
-  }
-
   .dom-hero {
     min-height: auto;
     padding: 3rem 0;
+  }
+
+  .dom-copy h1 {
+    font-size: clamp(1.9rem, 10vw, 2.85rem);
+    line-height: 1;
   }
 
   .dom-grid {

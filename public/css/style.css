@@ -1688,6 +1688,23 @@ body.visuales-page {
 
 .visuales-page .hero {
   background: #090611;
+  min-height: 76vh;
+}
+
+.visuales-page .hero-layout {
+  grid-template-columns: minmax(0, 620px);
+  padding-top: 5.8rem;
+  padding-bottom: 3.6rem;
+}
+
+.visuales-page .hero-content {
+  max-width: 620px;
+}
+
+.visuales-page .hero h1.hero-title-wide {
+  max-width: 11.5ch;
+  font-size: clamp(2.35rem, 5.2vw, 4.25rem);
+  line-height: 0.95;
 }
 
 .visuales-page .hero-video,
@@ -1703,11 +1720,15 @@ body.visuales-page {
 
 .visuales-page .project-media-overlay,
 .visuales-page .immersive-media::before {
-  background: rgba(7, 5, 13, 0.48);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 32%),
+    linear-gradient(180deg, transparent 44%, rgba(7, 5, 13, 0.54) 100%);
 }
 
 .visuales-page .project-card-clickable:hover .project-media-overlay {
-  background: rgba(7, 5, 13, 0.56);
+  background:
+    linear-gradient(180deg, rgba(98, 231, 255, 0.08), transparent 34%),
+    linear-gradient(180deg, transparent 48%, rgba(7, 5, 13, 0.42) 100%);
 }
 
 .visuales-page .logo-mark {
@@ -1718,9 +1739,6 @@ body.visuales-page {
 
 .visuales-page .hero-noise,
 .visuales-page .hero-orb,
-.visuales-page .project-card::before,
-.visuales-page .service-card::before,
-.visuales-page .immersive-card::before,
 .visuales-page .immersive::before {
   display: none;
 }
@@ -1734,22 +1752,77 @@ body.visuales-page {
 .visuales-page .immersive-info,
 .visuales-page .about-card,
 .visuales-page .about-stat {
-  background: #120e20;
-  border-color: rgba(234, 69, 190, 0.18);
+  background:
+    linear-gradient(180deg, rgba(35, 27, 58, 0.96), rgba(16, 13, 29, 0.98));
+  border-color: rgba(234, 69, 190, 0.24);
 }
 
 .visuales-page .project-card:nth-child(even),
 .visuales-page .service-card:nth-child(2) {
-  border-color: rgba(54, 80, 207, 0.24);
+  border-color: rgba(54, 80, 207, 0.34);
 }
 
 .visuales-page .project-card:hover,
 .visuales-page .service-card:hover,
 .visuales-page .immersive-card:hover {
-  border-color: rgba(54, 80, 207, 0.44);
+  border-color: rgba(98, 231, 255, 0.46);
   box-shadow:
-    0 26px 58px rgba(0, 0, 0, 0.40),
-    0 0 24px rgba(54, 80, 207, 0.16);
+    0 26px 58px rgba(0, 0, 0, 0.38),
+    0 0 30px rgba(54, 80, 207, 0.22),
+    0 0 42px rgba(234, 69, 190, 0.12);
+}
+
+.visuales-page .featured-projects .project-card::before,
+.visuales-page .services .service-card::before {
+  display: block;
+  background:
+    radial-gradient(circle at 16% 12%, rgba(234, 69, 190, 0.18), transparent 34%),
+    radial-gradient(circle at 88% 18%, rgba(98, 231, 255, 0.13), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), transparent 26%);
+  opacity: 0.78;
+  z-index: 0;
+}
+
+.visuales-page .featured-projects .project-card::after,
+.visuales-page .services .service-card::after {
+  background:
+    radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(98, 231, 255, 0.16), transparent 48%),
+    radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(234, 69, 190, 0.12), transparent 62%);
+  z-index: 1;
+}
+
+.visuales-page .project-card-link,
+.visuales-page .service-card > * {
+  position: relative;
+  z-index: 2;
+}
+
+.visuales-page .project-media {
+  background:
+    radial-gradient(circle at 20% 18%, rgba(234, 69, 190, 0.20), transparent 32%),
+    radial-gradient(circle at 82% 20%, rgba(98, 231, 255, 0.16), transparent 28%),
+    linear-gradient(180deg, #241a3d 0%, #120e20 100%);
+}
+
+.visuales-page .project-video {
+  filter: saturate(1.1) contrast(1.06) brightness(1.04);
+}
+
+.visuales-page .project-card:hover .project-video {
+  filter: saturate(1.18) contrast(1.08) brightness(1.08);
+}
+
+.visuales-page .project-info h3 {
+  color: #ffffff;
+  text-shadow: 0 0 18px rgba(98, 231, 255, 0.10);
+}
+
+.visuales-page .project-category {
+  color: #ff8add;
+}
+
+.visuales-page .project-card:nth-child(even) .project-category {
+  color: #8edcff;
 }
 
 .visuales-page .media-badge,
@@ -2074,6 +2147,19 @@ body.menu-open {
     font-size: clamp(2.35rem, 10vw, 3.7rem);
   }
 
+  .visuales-page .hero {
+    min-height: 68vh;
+  }
+
+  .visuales-page .hero-layout {
+    padding: 4rem 0 2.7rem;
+  }
+
+  .visuales-page .hero h1.hero-title-wide {
+    max-width: 10.5ch;
+    font-size: clamp(2.05rem, 8.5vw, 3rem);
+  }
+
   .hero-subtitle {
     max-width: 100%;
     font-size: 1.2rem;
@@ -2209,6 +2295,19 @@ body.menu-open {
 
   .hero h1.hero-title-wide {
     font-size: clamp(2.1rem, 11vw, 3.1rem);
+  }
+
+  .visuales-page .hero {
+    min-height: 58vh;
+  }
+
+  .visuales-page .hero-layout {
+    padding: 3.3rem 0 2rem;
+  }
+
+  .visuales-page .hero h1.hero-title-wide {
+    max-width: 10ch;
+    font-size: clamp(1.9rem, 9vw, 2.55rem);
   }
 
   .hero-subtitle {

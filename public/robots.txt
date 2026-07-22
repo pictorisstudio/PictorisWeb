@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Allow: /favicon.png
+Allow: /apple-touch-icon.png
 
 Sitemap: https://pictoris.co/sitemap.xml

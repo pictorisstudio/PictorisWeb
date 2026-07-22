@@ -163,11 +163,9 @@ img {
 }
 
 .adopta-section-head {
-  display: grid;
-  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
-  gap: 2rem;
-  align-items: end;
+  display: block;
   margin-bottom: 1.5rem;
+  text-align: left;
 }
 
 .gif-grid {
@@ -211,8 +209,7 @@ img {
 
 @media (max-width: 900px) {
   .adopta-hero,
-  .adopta-statement,
-  .adopta-section-head {
+  .adopta-statement {
     grid-template-columns: 1fr;
   }
 

@@ -13,11 +13,23 @@ transitionOverlay.innerHTML = `<div class="pt-inner"></div>`;
 transitionOverlay.classList.add("pt-out");
 document.documentElement.appendChild(transitionOverlay);
 
+function resetPageTransition() {
+  transitionOverlay.classList.remove("pt-in");
+  transitionOverlay.classList.add("pt-out");
+  document.documentElement.classList.remove("is-leaving-page");
+  document.body?.classList.remove("is-leaving-page");
+}
+
 // Entrada: no esperamos a window.load porque en móvil puede demorarse por videos/GIFs pesados.
 document.addEventListener("DOMContentLoaded", () => {
   requestAnimationFrame(() => {
-    transitionOverlay.classList.add("pt-out");
+    resetPageTransition();
   });
+});
+
+window.addEventListener("pageshow", resetPageTransition);
+window.addEventListener("pagehide", () => {
+  transitionOverlay.classList.remove("pt-in");
 });
 
 // Salida: interceptar clicks en links internos
@@ -37,6 +49,8 @@ document.addEventListener("click", (e) => {
 
   if (isInternal) {
     e.preventDefault();
+    document.documentElement.classList.add("is-leaving-page");
+    document.body.classList.add("is-leaving-page");
     transitionOverlay.classList.remove("pt-out");
     transitionOverlay.classList.add("pt-in");
 

@@ -135,11 +135,9 @@ a {
 }
 
 .chaos-section-head {
-  display: grid;
-  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
-  gap: 2rem;
-  align-items: end;
+  display: block;
   margin-bottom: 1.5rem;
+  text-align: left;
 }
 
 .chaos-section-head h2 {
@@ -150,13 +148,14 @@ a {
 
 .chaos-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
+  width: min(100%, 980px);
+  margin: 0 auto;
 }
 
 @media (max-width: 900px) {
-  .chaos-hero,
-  .chaos-section-head {
+  .chaos-hero {
     grid-template-columns: 1fr;
   }
 

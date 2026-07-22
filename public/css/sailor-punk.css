@@ -81,7 +81,6 @@ img {
 }
 
 .sailor-hero,
-.sailor-info,
 .sailor-gallery,
 .sailor-frames,
 .sailor-video {
@@ -131,8 +130,7 @@ img {
   text-transform: uppercase;
 }
 
-.sailor-copy p:not(.sailor-kicker),
-.sailor-info > p {
+.sailor-copy p:not(.sailor-kicker) {
   max-width: 760px;
   color: var(--sailor-muted);
   font-size: 1.05rem;
@@ -143,21 +141,6 @@ img {
   margin: 1.5rem 0 0;
 }
 
-.sailor-info {
-  display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-  gap: 2rem;
-  align-items: start;
-  padding: 5rem 0;
-  border-top: 1px solid var(--sailor-line);
-}
-
-.sailor-info h2 {
-  margin: 0;
-  font-size: clamp(2rem, 5vw, 4.8rem);
-  line-height: 0.95;
-}
-
 .sailor-gallery,
 .sailor-frames,
 .sailor-video {
@@ -165,11 +148,9 @@ img {
 }
 
 .sailor-section-head {
-  display: grid;
-  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
-  gap: 2rem;
-  align-items: end;
+  display: block;
   margin-bottom: 1.5rem;
+  text-align: left;
 }
 
 .sailor-section-head h2 {
@@ -241,9 +222,7 @@ img {
 }
 
 @media (max-width: 900px) {
-  .sailor-hero,
-  .sailor-info,
-  .sailor-section-head {
+  .sailor-hero {
     grid-template-columns: 1fr;
   }
 

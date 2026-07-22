@@ -24,3 +24,8 @@ assets/ProyectosTrasmedia/Carnotaurus/05.gif -> https://media.pictoris.co/assets
 assets/ProyectosTrasmedia/Carnotaurus/06.gif -> https://media.pictoris.co/assets/ProyectosTrasmedia/Carnotaurus/06.gif
 assets/video/VideoPrueba01.mp4 -> https://media.pictoris.co/assets/video/VideoPrueba01.mp4
 assets/video/VideoPrueba02.mp4 -> https://media.pictoris.co/assets/video/VideoPrueba02.mp4
+assets/Portafolio/Robot3D/GIF01.gif -> https://media.pictoris.co/assets/Portafolio/Robot3D/GIF01.gif
+assets/Portafolio/Robot3D/GIF02.gif -> https://media.pictoris.co/assets/Portafolio/Robot3D/GIF02.gif
+assets/Portafolio/Robot3D/GIF03.gif -> https://media.pictoris.co/assets/Portafolio/Robot3D/GIF03.gif
+assets/Portafolio/Robot3D/GIF04.gif -> https://media.pictoris.co/assets/Portafolio/Robot3D/GIF04.gif
+assets/Portafolio/Domesticado/DomesticadoPortada.gif -> https://media.pictoris.co/assets/Portafolio/Domesticado/DomesticadoPortada.gif

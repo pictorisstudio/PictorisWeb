@@ -128,9 +128,14 @@ img {
 .anxiety-copy h1 {
   margin: 0;
   color: var(--anxiety-text);
-  font-size: clamp(4rem, 14vw, 13rem);
-  line-height: 0.78;
+  font-family: "Another Danger", "Rubik Wet Paint", Impact, Inter, system-ui, sans-serif;
+  font-size: clamp(3.2rem, 8.5vw, 7.6rem);
+  line-height: 0.86;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
+  text-shadow:
+    0 0 18px rgba(255, 47, 125, 0.22),
+    0 8px 0 rgba(0, 0, 0, 0.38);
 }
 
 .anxiety-copy p:not(.anxiety-kicker),
@@ -162,7 +167,7 @@ img {
 }
 
 .anxiety-gallery {
-  padding: 4.5rem 0 5.5rem;
+  padding: 2.25rem 0 5.5rem;
 }
 
 .anxiety-video {
@@ -172,17 +177,17 @@ img {
 }
 
 .anxiety-section-head {
-  display: grid;
-  grid-template-columns: minmax(0, 0.68fr) minmax(0, 1.32fr);
-  gap: 2rem;
-  align-items: end;
+  display: block;
   margin-bottom: 1.5rem;
+  text-align: left;
 }
 
 .anxiety-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 0.85rem;
+  width: min(100%, 1060px);
+  margin: 0 auto;
 }
 
 .anxiety-grid img {
@@ -193,15 +198,18 @@ img {
   background: var(--anxiety-card);
 }
 
-.anxiety-grid img:nth-child(1),
-.anxiety-grid img:nth-child(4) {
-  grid-column: span 3;
+.anxiety-grid img:nth-child(1) {
+  grid-column: span 6;
 }
 
-.anxiety-grid img:nth-child(2),
+.anxiety-grid img:nth-child(2) {
+  grid-column: span 6;
+}
+
 .anxiety-grid img:nth-child(3),
+.anxiety-grid img:nth-child(4),
 .anxiety-grid img:nth-child(5) {
-  grid-column: span 2;
+  grid-column: span 4;
 }
 
 .youtube-frame {

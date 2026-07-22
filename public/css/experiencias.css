@@ -62,9 +62,16 @@ body {
   background: #090611;
 }
 
-.hero-overlay,
+.hero-overlay {
+  background:
+    linear-gradient(90deg, rgba(7, 5, 13, 0.68) 0%, rgba(7, 5, 13, 0.34) 48%, rgba(7, 5, 13, 0.18) 100%),
+    linear-gradient(180deg, rgba(7, 5, 13, 0.14) 0%, rgba(7, 5, 13, 0.30) 100%);
+}
+
 .exp-media-overlay {
-  background: rgba(7, 5, 13, 0.50);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 34%),
+    linear-gradient(180deg, transparent 52%, rgba(7, 5, 13, 0.30) 100%);
 }
 
 .hero-noise,
@@ -633,9 +640,16 @@ body {
   background: #120e20;
 }
 
-.hero-overlay,
+.hero-overlay {
+  background:
+    linear-gradient(90deg, rgba(7, 5, 13, 0.66) 0%, rgba(7, 5, 13, 0.34) 48%, rgba(7, 5, 13, 0.16) 100%),
+    linear-gradient(180deg, rgba(7, 5, 13, 0.12) 0%, rgba(7, 5, 13, 0.28) 100%);
+}
+
 .exp-media-overlay {
-  background: rgba(7, 5, 13, 0.50);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 34%),
+    linear-gradient(180deg, transparent 56%, rgba(7, 5, 13, 0.28) 100%);
 }
 
 .hero-noise,
@@ -650,17 +664,22 @@ body {
 .exp-info,
 .exp-hero-panel-inner,
 .exp-cap-card {
-  border-color: rgba(234, 69, 190, 0.20);
+  border-color: rgba(234, 69, 190, 0.30);
+  box-shadow:
+    0 24px 58px rgba(0, 0, 0, 0.36),
+    0 0 28px rgba(54, 80, 207, 0.12),
+    0 0 34px rgba(234, 69, 190, 0.08);
 }
 
 .exp-showcase-featured:hover .exp-media,
 .exp-showcase-featured:hover .exp-info,
 .exp-showcase-link:hover .exp-media,
 .exp-showcase-link:hover .exp-info {
-  border-color: rgba(54, 80, 207, 0.44);
+  border-color: rgba(98, 231, 255, 0.46);
   box-shadow:
-    0 28px 62px rgba(0, 0, 0, 0.42),
-    0 0 26px rgba(54, 80, 207, 0.16);
+    0 28px 62px rgba(0, 0, 0, 0.40),
+    0 0 30px rgba(54, 80, 207, 0.24),
+    0 0 42px rgba(234, 69, 190, 0.14);
 }
 
 .exp-kicker,
@@ -674,4 +693,28 @@ body {
   background: rgba(234, 69, 190, 0.14);
   border-color: rgba(234, 69, 190, 0.32);
   color: #ece6ff;
+}
+
+.exp-media .project-video,
+.hero-video-element {
+  filter: saturate(1.14) contrast(1.08) brightness(1.08);
+}
+
+.exp-showcase-link:hover .project-video {
+  filter: saturate(1.22) contrast(1.1) brightness(1.12);
+}
+
+.exp-info,
+.exp-cap-card {
+  background:
+    radial-gradient(circle at 14% 10%, rgba(234, 69, 190, 0.14), transparent 34%),
+    radial-gradient(circle at 90% 16%, rgba(98, 231, 255, 0.10), transparent 30%),
+    linear-gradient(180deg, rgba(23, 18, 42, 0.98), rgba(13, 10, 24, 0.99));
+}
+
+.exp-media {
+  background:
+    radial-gradient(circle at 20% 18%, rgba(234, 69, 190, 0.20), transparent 32%),
+    radial-gradient(circle at 82% 20%, rgba(98, 231, 255, 0.16), transparent 28%),
+    linear-gradient(180deg, #241a3d 0%, #120e20 100%);
 }

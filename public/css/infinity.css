@@ -1,0 +1,210 @@
+:root {
+  --inf-bg: #03050a;
+  --inf-panel: #08101d;
+  --inf-panel-soft: rgba(8, 16, 29, 0.74);
+  --inf-text: #f3f8ff;
+  --inf-muted: #a9b8d1;
+  --inf-cyan: #62e7ff;
+  --inf-violet: #8c6cff;
+  --inf-pink: #f06cff;
+  --inf-border: rgba(255, 255, 255, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  color: var(--inf-text);
+  background:
+    radial-gradient(circle at 20% 0%, rgba(98, 231, 255, 0.12), transparent 34rem),
+    radial-gradient(circle at 85% 18%, rgba(140, 108, 255, 0.14), transparent 32rem),
+    linear-gradient(180deg, #03050a, #070b14 48%, #020308);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.inf-hero {
+  position: relative;
+  min-height: 92vh;
+  display: grid;
+  align-items: end;
+  overflow: hidden;
+}
+
+.inf-hero img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.inf-hero-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(3, 5, 10, 0.84), rgba(3, 5, 10, 0.22) 48%, rgba(3, 5, 10, 0.7)),
+    linear-gradient(0deg, var(--inf-bg), transparent 46%);
+}
+
+.inf-hero-copy {
+  position: relative;
+  width: min(780px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 9rem 0 6rem;
+}
+
+.inf-kicker {
+  margin: 0 0 0.9rem;
+  color: var(--inf-cyan);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.inf-hero h1,
+.inf-section-head h2,
+.inf-closing h2 {
+  margin: 0;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.inf-hero h1 {
+  max-width: 780px;
+  font-size: clamp(3rem, 8vw, 7.5rem);
+}
+
+.inf-hero p:last-child {
+  max-width: 680px;
+  margin: 1.4rem 0 0;
+  color: #dbe8ff;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.7;
+}
+
+.inf-showcase,
+.inf-closing,
+.inf-video {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.inf-section-head h2,
+.inf-closing h2 {
+  font-size: clamp(2rem, 5vw, 4.7rem);
+}
+
+.inf-closing p:last-child {
+  margin: 0;
+  color: var(--inf-muted);
+  font-size: 1.08rem;
+  line-height: 1.8;
+}
+
+.inf-section-head {
+  margin-bottom: 2rem;
+}
+
+.inf-showcase {
+  padding-top: 6rem;
+}
+
+.inf-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.inf-grid figure {
+  min-height: 320px;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--inf-border);
+  background: var(--inf-panel);
+}
+
+.inf-grid .inf-wide {
+  grid-column: span 2;
+}
+
+.inf-grid img {
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  object-fit: cover;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.inf-grid figure:hover img {
+  transform: scale(1.045);
+}
+
+.inf-closing {
+  padding: 6rem 0 7rem;
+}
+
+.inf-closing h2 {
+  max-width: 920px;
+}
+
+.inf-closing p:last-child {
+  max-width: 760px;
+  margin-top: 1.4rem;
+}
+
+.inf-video {
+  padding: 0 0 7rem;
+}
+
+.inf-video-frame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--inf-border);
+  background:
+    radial-gradient(circle at 22% 16%, rgba(98, 231, 255, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(8, 16, 29, 0.94), rgba(3, 5, 10, 0.98));
+}
+
+.inf-video-frame iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+@media (max-width: 780px) {
+  .inf-hero {
+    min-height: 82vh;
+  }
+
+  .inf-hero-copy {
+    padding-bottom: 4rem;
+  }
+
+  .inf-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .inf-grid .inf-wide {
+    grid-column: auto;
+  }
+
+  .inf-grid figure,
+  .inf-grid img {
+    min-height: 260px;
+  }
+}
