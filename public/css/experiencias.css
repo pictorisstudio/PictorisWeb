@@ -718,3 +718,12 @@ body {
     radial-gradient(circle at 82% 20%, rgba(98, 231, 255, 0.16), transparent 28%),
     linear-gradient(180deg, #241a3d 0%, #120e20 100%);
 }
+
+.exp-showcase-link .exp-media,
+.exp-showcase-link .exp-info {
+  background: #151124;
+}
+
+.exp-showcase-link .exp-media-overlay {
+  background: rgba(7, 5, 13, 0.10);
+}
