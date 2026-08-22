@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Experiencia de mapping interactivo con cámara, tracking de manos y visualización WebGL de Pictoris Studio." />
+  <title>Experiencia Mapping | Pictoris Studio</title>
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.png" type="image/png" sizes="512x512" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
+
+  <meta property="og:site_name" content="Pictoris Studio" />
+  <meta property="og:image" content="https://pictoris.co/assets/logos/favicon-pictoris.png" />
+  <meta name="twitter:image" content="https://pictoris.co/assets/logos/favicon-pictoris.png" />
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"Organization","name":"Pictoris Studio","url":"https://pictoris.co/","logo":"https://pictoris.co/assets/logos/favicon-pictoris.png"}
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/mapping-experiencia.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-content">
+      <a href="index.html" class="logo">
+        <span class="logo-mark"></span>
+        <span class="logo-text">Pictoris Studio</span>
+      </a>
+
+      <nav class="main-nav" id="main-navigation">
+        <ul>
+          <li><a href="index.html" class="nav-link">Visuales</a></li>
+          <li><a href="experiencias.html" class="nav-link active">Experiencias</a></li>
+          <li><a href="marketing.html" class="nav-link">Marketing</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <a href="https://wa.me/573143155217" class="btn btn-primary header-cta" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <button class="menu-toggle" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="main-navigation">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="mapping-stage">
+    <section class="mapping-experience" aria-label="Mapping interactivo">
+      <div id="mapping-canvas" class="mapping-canvas"></div>
+
+      <video id="mapping-camera" class="mapping-camera" autoplay muted playsinline></video>
+
+      <div class="mapping-hud">
+        <a href="mapping-interactivo.html" class="mapping-back">Volver</a>
+        <span id="mapping-status" class="mapping-status">Cargando librerías...</span>
+      </div>
+
+      <div class="mapping-panel">
+        <p class="mapping-kicker">Mapping en vivo</p>
+        <h1>Activa la cámara y mueve tus manos</h1>
+        <p>
+          El sistema carga Three.js y MediaPipe en esta página. Al permitir la cámara,
+          tus manos controlan la siembra visual y empujan las partículas del espacio.
+        </p>
+        <button id="mapping-start-camera" class="mapping-start-camera" type="button" disabled>
+          Activar cámara
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/script.js"></script>
+  <script type="module" src="js/mapping-experiencia.js"></script>
+</body>
+</html>
