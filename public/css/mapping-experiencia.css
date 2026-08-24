@@ -155,6 +155,7 @@ body {
 
 .mapping-start-camera {
   align-self: center;
+  margin-top: clamp(1.25rem, 4vh, 2.75rem);
   min-height: 50px;
   padding: 0 1.4rem;
   border: 0;

@@ -2,15 +2,10 @@ import { experienceConfig } from "./config/experienceConfig.js";
 import { ExperienceManager } from "./core/ExperienceManager.js";
 import { ExperienceState } from "./core/ExperienceState.js";
 import { HandCursor } from "./interaction/HandCursor.js";
-import { AliceScene } from "./scenes/AliceScene.js";
-import { CinemaScene } from "./scenes/CinemaScene.js";
-import { FrankensteinScene } from "./scenes/FrankensteinScene.js";
-import { IntroScene } from "./scenes/IntroScene.js";
-import { LinearScene } from "./scenes/LinearScene.js";
-import { OzScene } from "./scenes/OzScene.js";
-import { TransitionAliceOzScene } from "./scenes/TransitionAliceOzScene.js";
-import { TransitionFrankensteinCinemaScene } from "./scenes/TransitionFrankensteinCinemaScene.js";
-import { TransitionOzFrankensteinScene } from "./scenes/TransitionOzFrankensteinScene.js";
+import { AliceGameScene } from "./scenes/AliceGameScene.js";
+import { AliceIntroScene } from "./scenes/AliceIntroScene.js";
+import { AliceResultScene } from "./scenes/AliceResultScene.js";
+import { IdleScene } from "./scenes/IdleScene.js";
 
 export class BookMappingExperience {
   constructor({ renderer, scene, camera, config = experienceConfig } = {}) {
@@ -27,16 +22,12 @@ export class BookMappingExperience {
     this.debugPanel = null;
     this.debugControls = null;
     this.styleNode = null;
-    this.linearScene = null;
-    this.introScene = null;
-    this.aliceScene = null;
-    this.ozScene = null;
-    this.aliceOzTransitionScene = null;
-    this.ozFrankensteinTransitionScene = null;
-    this.frankensteinScene = null;
-    this.frankensteinCinemaTransitionScene = null;
-    this.cinemaScene = null;
+    this.idleScene = null;
+    this.aliceIntroScene = null;
+    this.aliceGameScene = null;
+    this.aliceResultScene = null;
     this.unsubscribeState = null;
+    this.lastResult = null;
     this.lastFrameAt = performance.now();
     this.deltaTime = 0;
     this.fps = 0;
@@ -49,43 +40,15 @@ export class BookMappingExperience {
   init() {
     this.injectStyles();
     this.createUi();
-    this.linearScene = new LinearScene({ root: this.root, config: this.config });
-    this.introScene = new IntroScene({
-      scene: this.scene,
-      camera: this.camera,
-      config: this.config
-    });
-    this.aliceScene = new AliceScene({
+    this.idleScene = new IdleScene({ root: this.root, config: this.config });
+    this.aliceIntroScene = new AliceIntroScene({ root: this.root, config: this.config });
+    this.aliceGameScene = new AliceGameScene({
       scene: this.scene,
       camera: this.camera,
       root: this.root,
       config: this.config
     });
-    this.ozFrankensteinTransitionScene = new TransitionOzFrankensteinScene({
-      scene: this.scene,
-      camera: this.camera,
-      config: this.config
-    });
-    this.frankensteinScene = new FrankensteinScene({
-      scene: this.scene,
-      camera: this.camera,
-      config: this.config
-    });
-    this.frankensteinCinemaTransitionScene = new TransitionFrankensteinCinemaScene({
-      scene: this.scene,
-      config: this.config
-    });
-    this.cinemaScene = new CinemaScene({
-      scene: this.scene,
-      camera: this.camera,
-      config: this.config
-    });
-    this.ozScene = new OzScene({
-      scene: this.scene,
-      camera: this.camera,
-      config: this.config
-    });
-    this.aliceOzTransitionScene = new TransitionAliceOzScene({
+    this.aliceResultScene = new AliceResultScene({
       scene: this.scene,
       camera: this.camera,
       root: this.root,
@@ -111,7 +74,7 @@ export class BookMappingExperience {
     const handDetected = trackedHandsCount > 0;
     const state = this.manager.getState();
 
-    if (this.config.debug) {
+    if (this.config.debug && state !== ExperienceState.ALICE_GAME) {
       this.cursorState = this.cursor.update(input);
     } else {
       this.cursor.hide();
@@ -128,26 +91,16 @@ export class BookMappingExperience {
     const currentState = this.manager.getState();
     const snapshot = this.manager.getSnapshot();
 
-    if (currentState === ExperienceState.INTRO) {
-      this.introScene.update(this.deltaTime, input, snapshot.progress);
-    } else if (currentState === ExperienceState.ALICE) {
-      this.aliceScene.update(this.deltaTime, input);
-    } else if (currentState === ExperienceState.TRANSITION_ALICE_OZ) {
-      this.aliceScene.updateTransition(this.deltaTime, input, snapshot.progress);
-      this.aliceOzTransitionScene.update(this.deltaTime, input, snapshot.progress);
-    } else if (currentState === ExperienceState.OZ) {
-      this.ozScene.update(this.deltaTime, input, snapshot.progress);
-    } else if (currentState === ExperienceState.TRANSITION_OZ_FRANKENSTEIN) {
-      this.ozFrankensteinTransitionScene.update(this.deltaTime, input, snapshot.progress);
-    } else if (currentState === ExperienceState.FRANKENSTEIN) {
-      this.frankensteinScene.update(this.deltaTime, input, snapshot.progress);
-    } else if (currentState === ExperienceState.TRANSITION_FRANKENSTEIN_CINEMA) {
-      this.frankensteinCinemaTransitionScene.update(this.deltaTime, input, snapshot.progress);
-    } else if (currentState === ExperienceState.CINEMA) {
-      this.cinemaScene.update(this.deltaTime, input, snapshot.progress);
-    } else {
-      this.linearScene.update(this.deltaTime, input);
+    if (currentState === ExperienceState.IDLE) {
+      this.idleScene.update(this.deltaTime, input, snapshot.progress);
+    } else if (currentState === ExperienceState.ALICE_INTRO) {
+      this.aliceIntroScene.update(this.deltaTime, input, snapshot.progress);
+    } else if (currentState === ExperienceState.ALICE_GAME) {
+      this.aliceGameScene.update(this.deltaTime, input, snapshot.progress);
+    } else if (currentState === ExperienceState.ALICE_RESULT) {
+      this.aliceResultScene.update(this.deltaTime, input, snapshot.progress);
     }
+
     this.updateDebug({
       cameraActive,
       handDetected,
@@ -158,6 +111,7 @@ export class BookMappingExperience {
   reset() {
     this.handActivationElapsed = 0;
     this.absenceElapsed = 0;
+    this.lastResult = null;
     this.exitAllScenes();
     const wasIdle = this.manager.getState() === ExperienceState.IDLE;
     this.manager.reset();
@@ -169,7 +123,7 @@ export class BookMappingExperience {
 
   nextState() {
     if (this.manager.getState() === ExperienceState.IDLE) {
-      this.manager.setState(ExperienceState.INTRO);
+      this.manager.setState(ExperienceState.ALICE_INTRO);
       return;
     }
 
@@ -184,33 +138,25 @@ export class BookMappingExperience {
       this.unsubscribeState = null;
     }
 
-    this.aliceScene?.destroy();
-    this.introScene?.destroy();
-    this.ozScene?.destroy();
-    this.aliceOzTransitionScene?.destroy();
-    this.ozFrankensteinTransitionScene?.destroy();
-    this.frankensteinScene?.destroy();
-    this.frankensteinCinemaTransitionScene?.destroy();
-    this.cinemaScene?.destroy();
-    this.linearScene?.destroy();
+    this.idleScene?.destroy();
+    this.aliceIntroScene?.destroy();
+    this.aliceGameScene?.destroy();
+    this.aliceResultScene?.destroy();
     this.cursor.destroy();
     this.manager.destroy();
     this.root?.remove();
     this.debugPanel?.remove();
     this.debugControls?.remove();
     this.styleNode?.remove();
+    delete document.body.dataset.bookMappingState;
     this.root = null;
     this.debugPanel = null;
     this.debugControls = null;
     this.styleNode = null;
-    this.introScene = null;
-    this.aliceScene = null;
-    this.ozScene = null;
-    this.aliceOzTransitionScene = null;
-    this.ozFrankensteinTransitionScene = null;
-    this.frankensteinScene = null;
-    this.frankensteinCinemaTransitionScene = null;
-    this.cinemaScene = null;
+    this.idleScene = null;
+    this.aliceIntroScene = null;
+    this.aliceGameScene = null;
+    this.aliceResultScene = null;
   }
 
   createUi() {
@@ -238,82 +184,44 @@ export class BookMappingExperience {
     document.body.appendChild(this.debugControls);
   }
 
-  enterState(state, previousState = null) {
+  enterState(state) {
     this.root.dataset.state = state;
+    document.body.dataset.bookMappingState = state;
     this.handActivationElapsed = state === ExperienceState.IDLE ? 0 : this.handActivationElapsed;
     this.absenceElapsed = 0;
 
-    if (state === ExperienceState.INTRO) {
-      this.exitAllScenes();
-      this.introScene?.enter();
-      return;
-    }
-
-    if (state === ExperienceState.ALICE) {
-      this.exitAllScenes();
-      this.aliceScene?.enter();
-      return;
-    }
-
-    if (state === ExperienceState.TRANSITION_ALICE_OZ) {
-      this.introScene?.exit();
-      this.ozScene?.exit();
-      this.ozFrankensteinTransitionScene?.exit();
-      this.frankensteinScene?.exit();
-      this.frankensteinCinemaTransitionScene?.exit();
-      this.cinemaScene?.exit();
-      this.linearScene?.exit();
-      this.aliceScene?.beginTransition();
-      this.aliceOzTransitionScene?.enter();
-      return;
-    }
-
-    if (state === ExperienceState.OZ) {
-      this.exitAllScenes();
-      this.ozScene?.enter();
-      return;
-    }
-
-    if (state === ExperienceState.TRANSITION_OZ_FRANKENSTEIN) {
-      this.exitAllScenes();
-      this.ozFrankensteinTransitionScene?.enter();
-      return;
-    }
-
-    if (state === ExperienceState.FRANKENSTEIN) {
-      this.exitAllScenes();
-      this.frankensteinScene?.enter();
-      return;
-    }
-
-    if (state === ExperienceState.TRANSITION_FRANKENSTEIN_CINEMA) {
-      this.exitAllScenes();
-      this.frankensteinCinemaTransitionScene?.enter();
-      return;
-    }
-
-    if (state === ExperienceState.CINEMA) {
-      this.exitAllScenes();
-      this.cinemaScene?.enter();
-      return;
+    if (state === ExperienceState.ALICE_RESULT) {
+      this.lastResult = this.aliceGameScene?.getResult() ?? this.lastResult;
     }
 
     this.exitAllScenes();
-    this.linearScene?.enter(state, {
-      suppressTitle: state === ExperienceState.OZ && previousState === ExperienceState.TRANSITION_ALICE_OZ
-    });
+
+    if (state === ExperienceState.IDLE) {
+      this.idleScene?.enter();
+      return;
+    }
+
+    if (state === ExperienceState.ALICE_INTRO) {
+      this.aliceIntroScene?.enter();
+      return;
+    }
+
+    if (state === ExperienceState.ALICE_GAME) {
+      this.lastResult = null;
+      this.aliceGameScene?.enter();
+      return;
+    }
+
+    if (state === ExperienceState.ALICE_RESULT) {
+      this.aliceResultScene?.enter(this.lastResult);
+    }
   }
 
   exitAllScenes() {
-    this.introScene?.exit();
-    this.aliceOzTransitionScene?.exit();
-    this.ozFrankensteinTransitionScene?.exit();
-    this.frankensteinCinemaTransitionScene?.exit();
-    this.cinemaScene?.exit();
-    this.frankensteinScene?.exit();
-    this.ozScene?.exit();
-    this.aliceScene?.exit();
-    this.linearScene?.exit();
+    this.idleScene?.exit();
+    this.aliceIntroScene?.exit();
+    this.aliceGameScene?.exit();
+    this.aliceResultScene?.exit();
   }
 
   updateTime(fps) {
@@ -340,16 +248,11 @@ export class BookMappingExperience {
 
     if (this.handActivationElapsed >= this.config.idle.handActivationDelay) {
       this.handActivationElapsed = 0;
-      this.manager.setState(ExperienceState.INTRO);
+      this.manager.setState(ExperienceState.ALICE_INTRO);
     }
   }
 
   updateAbsence(handDetected) {
-    if (this.manager.getState() === ExperienceState.END) {
-      this.absenceElapsed = 0;
-      return;
-    }
-
     if (handDetected) {
       this.absenceElapsed = 0;
       return;
@@ -369,14 +272,7 @@ export class BookMappingExperience {
 
     const snapshot = this.manager.getSnapshot();
     const rendererInfo = this.renderer?.info;
-    const introStats = this.introScene?.getDebugStats();
-    const aliceStats = this.aliceScene?.getDebugStats();
-    const ozStats = this.ozScene?.getDebugStats();
-    const transitionStats = this.aliceOzTransitionScene?.getDebugStats();
-    const ozFrankensteinStats = this.ozFrankensteinTransitionScene?.getDebugStats();
-    const frankensteinStats = this.frankensteinScene?.getDebugStats();
-    const frankensteinCinemaStats = this.frankensteinCinemaTransitionScene?.getDebugStats();
-    const cinemaStats = this.cinemaScene?.getDebugStats();
+    const gameStats = this.aliceGameScene?.getDebugStats();
     const stateSeconds = (snapshot.elapsed / 1000).toFixed(1);
     const durationSeconds = snapshot.duration ? (snapshot.duration / 1000).toFixed(1) : "--";
     const absenceSeconds = (this.absenceElapsed / 1000).toFixed(1);
@@ -384,36 +280,36 @@ export class BookMappingExperience {
 
     this.debugPanel.innerHTML = `
       <span>STATE: ${snapshot.state}</span>
-      <span>STATE TIME: ${stateSeconds} / ${durationSeconds}</span>
-      <span>STATE PROGRESS: ${Math.round(snapshot.progress * 100)}%</span>
+      <span>TIME: ${stateSeconds} / ${durationSeconds}</span>
+      <span>PROGRESS: ${Math.round(snapshot.progress * 100)}%</span>
       <span>CAMERA: ${cameraActive ? "ACTIVE" : "INACTIVE"}</span>
       <span>HAND: ${handDetected ? "DETECTED" : "NONE"}</span>
       <span>INPUT: ${input?.source ?? "none"}</span>
       <span>ABSENCE: ${absenceSeconds} / ${absenceLimit}</span>
       <span>ACTIVATION: ${Math.round(this.handActivationElapsed)}ms</span>
+      <span>PLAYER X: ${(gameStats?.playerX ?? 0).toFixed(2)}</span>
+      <span>PLAYER Y: ${(gameStats?.playerY ?? 0).toFixed(2)}</span>
+      <span>RAW PALM: ${this.formatDebugPoint(gameStats?.rawPalmX, gameStats?.rawPalmY)}</span>
+      <span>TARGET: ${this.formatDebugPoint(gameStats?.targetX, gameStats?.targetY)}</span>
+      <span>COLLECTED: ${gameStats?.collected ?? 0} / ${gameStats?.target ?? this.config.aliceGame.collectibles.targetCount}</span>
+      <span>ACTIVE ITEMS: ${gameStats?.activeItems ?? 0}</span>
+      <span>POOL: ${gameStats?.poolSize ?? this.config.aliceGame.collectibles.poolSize}</span>
+      <span>FX PARTICLES: OFF</span>
       <span>LOOP: ${snapshot.loopCount}</span>
-      <span>INTRO WORDS: ${introStats?.words ?? 0}</span>
-      <span>ALICE OBJECTS: ${aliceStats?.objects ?? 0}</span>
-      <span>TRAIL ACTIVE: ${aliceStats?.activeTrail ?? 0} / ${aliceStats?.maxTrail ?? 0}</span>
-      <span>PALM FORCE: ${aliceStats?.palmForceActive ? "ACTIVE" : "NONE"}</span>
-      <span>TRANSITION PHASE: ${transitionStats?.phase ?? "NONE"}</span>
-      <span>ROAD PIECES: ${transitionStats?.roadPieces ?? 0}</span>
-      <span>OZ ROAD: ${ozStats?.roadPieces ?? 0}</span>
-      <span>OZ WIND: ${ozStats?.wind ?? 0}</span>
-      <span>OZ TRAIL: ${ozStats?.activeTrail ?? 0} / ${ozStats?.maxTrail ?? 0}</span>
-      <span>PALM WAVE: ${ozStats?.palmWaveActive ? "ACTIVE" : "NONE"}</span>
-      <span>OZ-FRANK PHASE: ${ozFrankensteinStats?.phase ?? "NONE"}</span>
-      <span>FRANK BOLTS: ${frankensteinStats?.activeBolts ?? 0}</span>
-      <span>FRANK PALM: ${frankensteinStats?.palmCharge ? "ACTIVE" : "NONE"}</span>
-      <span>FRANK-CINEMA: ${frankensteinCinemaStats?.phase ?? "NONE"}</span>
-      <span>CINEMA BURSTS: ${cinemaStats?.activeBursts ?? 0}</span>
-      <span>CINEMA PALM: ${cinemaStats?.palmDistortion ? "ACTIVE" : "NONE"}</span>
       <span>FPS: ${this.fps}</span>
       <span>THREE CHILDREN: ${this.scene?.children?.length ?? "--"}</span>
       <span>RENDER CALLS: ${rendererInfo?.render?.calls ?? "--"}</span>
       <span>GEOMETRIES: ${rendererInfo?.memory?.geometries ?? "--"}</span>
       <span>TEXTURES: ${rendererInfo?.memory?.textures ?? "--"}</span>
     `;
+  }
+
+  formatDebugPoint(x, y) {
+    if (x === null || y === null || x === undefined || y === undefined) {
+      return "--";
+    }
+
+    return `${Number(x).toFixed(2)}, ${Number(y).toFixed(2)}`;
   }
 
   injectStyles() {
@@ -433,137 +329,137 @@ export class BookMappingExperience {
         pointer-events: none;
       }
 
-      .book-linear-scene {
+      .book-idle-scene,
+      .alice-intro-scene {
         position: absolute;
         inset: 0;
         display: grid;
         place-items: center;
         padding: clamp(1rem, 4vw, 3rem);
-        opacity: 0;
-        transition: opacity 520ms ease;
       }
 
-      .book-linear-scene.is-active {
-        opacity: 1;
-      }
-
-      .book-linear-bg {
+      .book-idle-bg,
+      .alice-intro-bg {
         position: absolute;
         inset: 0;
         background:
-          radial-gradient(circle at 25% 20%, color-mix(in srgb, var(--scene-color), white 18%), transparent 28%),
-          linear-gradient(135deg, var(--scene-color), #05040a 78%);
-        opacity: 0.86;
+          radial-gradient(circle at 48% 42%, rgba(54, 80, 207, 0.28), transparent 34%),
+          #07050d;
       }
 
-      .book-linear-content {
+      .book-idle-content,
+      .alice-intro-content {
         position: relative;
         width: min(100%, 980px);
         text-align: center;
       }
 
-      .book-linear-content p {
-        margin: 0 0 0.75rem;
-        color: #ea45be;
-        font-size: 0.78rem;
-        font-weight: 900;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-      }
-
-      .book-linear-content h1 {
-        margin: 0 auto 0.8rem;
-        font-size: clamp(2.4rem, 8vw, 7rem);
-        line-height: 0.9;
-        letter-spacing: 0;
-        text-transform: uppercase;
-      }
-
-      .book-linear-scene.is-title-suppressed .book-linear-content h1 {
-        opacity: 0;
-      }
-
-      .book-linear-content span {
-        color: rgba(248, 245, 255, 0.78);
-        font-weight: 700;
-      }
-
-      .oz-transition-title {
-        position: fixed;
-        inset: auto 0 clamp(3rem, 10vh, 6rem);
-        z-index: 18;
-        display: grid;
-        place-items: center;
-        padding: 0 1rem;
-        opacity: 0;
-        pointer-events: none;
-        transform: translateY(18px);
-        transition: opacity 520ms ease, transform 520ms ease;
-      }
-
-      .oz-transition-title.is-visible {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      .oz-transition-title h1 {
-        max-width: 920px;
-        margin: 0;
-        color: #f8f5ff;
-        font-size: clamp(2rem, 6vw, 5.6rem);
-        line-height: 0.92;
-        letter-spacing: 0;
-        text-align: center;
-        text-transform: uppercase;
-      }
-
-      .book-linear-hand-orb {
-        position: fixed;
-        left: 50%;
-        top: 50%;
-        width: 92px;
-        height: 92px;
-        border-radius: 999px;
-        background: rgba(98, 231, 255, 0.18);
-        box-shadow:
-          0 0 36px rgba(98, 231, 255, 0.22),
-          inset 0 0 24px rgba(234, 69, 190, 0.14);
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.82);
-        transition: opacity 180ms ease, transform 180ms ease;
-      }
-
-      .book-linear-hand-orb.is-visible {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-      }
-
-      .alice-title {
-        position: fixed;
-        inset: 0;
-        z-index: 18;
-        display: grid;
-        place-items: center;
-        padding: clamp(1rem, 5vw, 4rem);
-        background: radial-gradient(circle at center, rgba(5, 7, 11, 0.24), rgba(5, 7, 11, 0.74));
-        opacity: 1;
-        pointer-events: none;
-        transition: opacity 720ms ease, transform 720ms ease;
-      }
-
-      .alice-title.is-hidden {
-        opacity: 0;
-        transform: translateY(-18px) scale(0.98);
-      }
-
-      .alice-title h1 {
-        margin: 0;
-        color: #f2f2f2;
+      .book-idle-content h1,
+      .alice-intro-content h1 {
+        margin: 0 auto 0.75rem;
         font-size: clamp(2.5rem, 8vw, 7rem);
         line-height: 0.9;
         letter-spacing: 0;
-        text-align: center;
         text-transform: uppercase;
+      }
+
+      .book-idle-content p,
+      .alice-intro-content p {
+        margin: 0;
+        color: #ea45be;
+        font-size: clamp(0.82rem, 2vw, 1.05rem);
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .alice-game-hud {
+        position: fixed;
+        left: 50%;
+        top: clamp(1rem, 5vh, 2.2rem);
+        z-index: 20;
+        transform: translateX(-50%);
+      }
+
+      .alice-game-tutorial {
+        position: fixed;
+        left: 50%;
+        top: clamp(4.2rem, 14vh, 7rem);
+        z-index: 20;
+        display: grid;
+        gap: 0.48rem;
+        justify-items: center;
+        transform: translateX(-50%);
+        text-align: center;
+      }
+
+      .alice-game-tutorial p {
+        margin: 0;
+        padding: 0.45rem 0.62rem;
+        border: 1px solid rgba(248, 245, 255, 0.16);
+        background: rgba(8, 7, 18, 0.58);
+        color: #f8f5ff;
+        font-size: clamp(0.78rem, 2.2vw, 1rem);
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 280ms ease, transform 280ms ease;
+      }
+
+      .alice-game-tutorial p[data-role="catch"] {
+        color: #d7a947;
+      }
+
+      .alice-game-tutorial p.is-hidden {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      .alice-progress {
+        display: flex;
+        gap: 0.42rem;
+        padding: 0.48rem 0.62rem;
+        border: 1px solid rgba(248, 245, 255, 0.16);
+        background: rgba(8, 7, 18, 0.54);
+        backdrop-filter: blur(12px);
+      }
+
+      .alice-progress span {
+        width: 0.72rem;
+        height: 0.72rem;
+        border-radius: 999px;
+        border: 1px solid rgba(248, 245, 255, 0.42);
+        background: rgba(248, 245, 255, 0.1);
+      }
+
+      .alice-progress span.is-found {
+        border-color: #ea45be;
+        background: #ea45be;
+        box-shadow: 0 0 16px rgba(234, 69, 190, 0.55);
+      }
+
+      .alice-result-label {
+        position: fixed;
+        left: 50%;
+        bottom: clamp(2rem, 9vh, 5rem);
+        z-index: 20;
+        text-align: center;
+        transform: translateX(-50%);
+      }
+
+      .alice-result-label h1 {
+        margin: 0;
+        font-size: clamp(1.5rem, 4vw, 3rem);
+        line-height: 0.95;
+        text-transform: uppercase;
+      }
+
+      .alice-result-label p {
+        margin: 0.5rem 0 0;
+        color: #ea45be;
+        font-weight: 900;
       }
 
       .book-mapping-debug,
@@ -651,6 +547,15 @@ export class BookMappingExperience {
 
       .mapping-start-camera {
         pointer-events: auto;
+      }
+
+      body[data-book-mapping-state="ALICE_GAME"] .mapping-start-camera,
+      body[data-book-mapping-state="ALICE_RESULT"] .mapping-start-camera {
+        position: fixed;
+        left: clamp(1rem, 3vw, 2rem);
+        top: clamp(5.6rem, 12vh, 7rem);
+        z-index: 22;
+        transform: none;
       }
     `;
     document.head.appendChild(this.styleNode);

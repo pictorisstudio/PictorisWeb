@@ -25,22 +25,12 @@ let handLandmarker;
 let lastDetectAt = 0;
 let lastVideoTime = -1;
 let smoothedHands = [];
-let lastFlowerAt = 0;
-let lastFlowerPosition = null;
 let pointerTarget = null;
 let cameraActive = false;
 let bookMappingExperience = null;
 
-const flowers = [];
-const pollen = [];
-const clock = new THREE.Clock();
-
 function setStatus(message) {
   statusLabel.textContent = message;
-}
-
-function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
 }
 
 function average(points) {
@@ -76,29 +66,6 @@ function normalizedToWorld(point) {
   };
 }
 
-function makeCircleTexture(color = "#ffffff", soft = true) {
-  const canvas = document.createElement("canvas");
-  const size = 128;
-  const center = size / 2;
-  canvas.width = size;
-  canvas.height = size;
-
-  const context = canvas.getContext("2d");
-  const gradient = context.createRadialGradient(center, center, 0, center, center, center);
-  gradient.addColorStop(0, color);
-  gradient.addColorStop(soft ? 0.42 : 0.7, color);
-  gradient.addColorStop(1, "rgba(255,255,255,0)");
-
-  context.fillStyle = gradient;
-  context.fillRect(0, 0, size, size);
-
-  return new THREE.CanvasTexture(canvas);
-}
-
-const pollenTexture = makeCircleTexture("rgba(98,231,255,0.9)");
-const flowerTexture = makeCircleTexture("rgba(234,69,190,0.96)", false);
-const markerTexture = makeCircleTexture("rgba(255,255,255,0.92)");
-
 function createRenderer() {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x05040a);
@@ -122,45 +89,24 @@ function buildScene() {
   grid.rotation.x = Math.PI / 2;
   grid.position.z = -0.04;
   grid.material.transparent = true;
-  grid.material.opacity = 0.26;
+  grid.material.opacity = 0.12;
+  grid.material.depthTest = false;
+  grid.material.depthWrite = false;
+  grid.renderOrder = -20;
   scene.add(grid);
 
   const glowGeometry = new THREE.PlaneGeometry(26, 14);
   const glowMaterial = new THREE.MeshBasicMaterial({
     color: 0x110b23,
     transparent: true,
-    opacity: 0.8
+    opacity: 0.62,
+    depthTest: false,
+    depthWrite: false
   });
   const glow = new THREE.Mesh(glowGeometry, glowMaterial);
   glow.position.z = -0.08;
+  glow.renderOrder = -30;
   scene.add(glow);
-
-  for (let index = 0; index < 140; index += 1) {
-    const sprite = new THREE.Sprite(
-      new THREE.SpriteMaterial({
-        map: pollenTexture,
-        transparent: true,
-        opacity: 0.58,
-        depthWrite: false,
-        color: index % 3 === 0 ? 0xea45be : 0x62e7ff
-      })
-    );
-
-    const scale = 0.035 + Math.random() * 0.08;
-    sprite.scale.set(scale, scale, 1);
-    sprite.position.set(
-      worldBounds.left + Math.random() * worldBounds.width,
-      worldBounds.bottom + Math.random() * worldBounds.height,
-      Math.random() * 0.12
-    );
-
-    pollen.push({
-      sprite,
-      velocity: new THREE.Vector2((Math.random() - 0.5) * 0.006, (Math.random() - 0.5) * 0.006),
-      drift: Math.random() * Math.PI * 2
-    });
-    scene.add(sprite);
-  }
 }
 
 function resize() {
@@ -300,114 +246,8 @@ function detectHands(now) {
   });
 }
 
-function plantFlower(position, now) {
-  const flower = new THREE.Sprite(
-    new THREE.SpriteMaterial({
-      map: flowerTexture,
-      transparent: true,
-      opacity: 0.92,
-      depthWrite: false,
-      color: Math.random() > 0.5 ? 0xea45be : 0x62e7ff
-    })
-  );
-
-  const size = 0.28 + Math.random() * 0.34;
-  flower.position.set(position.x, position.y, 0.12);
-  flower.scale.set(size, size, 1);
-  scene.add(flower);
-  flowers.push({ sprite: flower, bornAt: now, baseSize: size });
-
-  if (flowers.length > 70) {
-    const oldFlower = flowers.shift();
-    scene.remove(oldFlower.sprite);
-    oldFlower.sprite.material.dispose();
-  }
-}
-
-function maybePlantFlower(position, now) {
-  const insideScreen = position.x > worldBounds.left && position.x < worldBounds.right
-    && position.y > worldBounds.bottom && position.y < worldBounds.top;
-
-  if (!insideScreen || now - lastFlowerAt < 180) {
-    return;
-  }
-
-  const distance = lastFlowerPosition
-    ? Math.hypot(position.x - lastFlowerPosition.x, position.y - lastFlowerPosition.y)
-    : Infinity;
-
-  if (distance >= 0.35) {
-    plantFlower(position, now);
-    lastFlowerAt = now;
-    lastFlowerPosition = position;
-  }
-}
-
-function repelPollen(palm, previousPalm) {
-  const velocity = previousPalm
-    ? new THREE.Vector2(palm.x - previousPalm.x, palm.y - previousPalm.y)
-    : new THREE.Vector2(0, 0);
-
-  const force = clamp(velocity.length() * 5, 0.15, 2.5);
-  const radius = clamp(1.2 + force * 0.52, 1.2, 2.5);
-
-  pollen.forEach((particle) => {
-    const dx = particle.sprite.position.x - palm.x;
-    const dy = particle.sprite.position.y - palm.y;
-    const distance = Math.hypot(dx, dy);
-
-    if (distance > 0 && distance < radius) {
-      const push = (1 - distance / radius) * force * 0.028;
-      particle.velocity.x += (dx / distance) * push;
-      particle.velocity.y += (dy / distance) * push;
-    }
-  });
-}
-
-function updatePollen(delta, elapsed) {
-  pollen.forEach((particle) => {
-    particle.drift += delta * 0.7;
-    particle.velocity.x += Math.cos(particle.drift + elapsed) * 0.0008;
-    particle.velocity.y += Math.sin(particle.drift * 0.8 + elapsed) * 0.0008;
-    particle.velocity.multiplyScalar(0.982);
-
-    particle.sprite.position.x += particle.velocity.x * delta * 60;
-    particle.sprite.position.y += particle.velocity.y * delta * 60;
-
-    if (particle.sprite.position.x < worldBounds.left) particle.sprite.position.x = worldBounds.right;
-    if (particle.sprite.position.x > worldBounds.right) particle.sprite.position.x = worldBounds.left;
-    if (particle.sprite.position.y < worldBounds.bottom) particle.sprite.position.y = worldBounds.top;
-    if (particle.sprite.position.y > worldBounds.top) particle.sprite.position.y = worldBounds.bottom;
-  });
-}
-
-function updateFlowers(elapsed) {
-  flowers.forEach((flower, index) => {
-    const pulse = 1 + Math.sin(elapsed * 2.4 + index) * 0.08;
-    flower.sprite.scale.setScalar(flower.baseSize * pulse);
-    flower.sprite.material.opacity = clamp(0.92 - (elapsed * 1000 - flower.bornAt) / 24000, 0.18, 0.92);
-  });
-}
-
-function updateDebugMarkers(now) {
-  const hands = smoothedHands.length
-    ? smoothedHands
-    : pointerTarget
-      ? [{ indexTip: pointerTarget, palmCenter: pointerTarget, palmWorld: normalizedToWorld(pointerTarget), lastPalmWorld: null }]
-      : [];
-
-  hands.forEach((hand) => {
-    const indexWorld = normalizedToWorld(hand.indexTip);
-    maybePlantFlower(indexWorld, now);
-    repelPollen(hand.palmWorld, hand.lastPalmWorld);
-  });
-}
-
 function animate(now = performance.now()) {
   requestAnimationFrame(animate);
-
-  const delta = Math.min(clock.getDelta(), 0.05);
-  const elapsed = clock.elapsedTime;
 
   detectHands(now);
   if (ENABLE_BOOK_MAPPING) {
@@ -420,9 +260,6 @@ function animate(now = performance.now()) {
       trackedHandsCount: smoothedHands.length
     });
   }
-  updateDebugMarkers(now);
-  updatePollen(delta, elapsed);
-  updateFlowers(elapsed);
   renderer.render(scene, camera);
 }
 
