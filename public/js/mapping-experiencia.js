@@ -14,8 +14,12 @@ const ENABLE_BOOK_MAPPING = true;
 const canvasMount = document.querySelector("#mapping-canvas");
 const video = document.querySelector("#mapping-camera");
 const startButton = document.querySelector("#mapping-start-camera");
+const cameraSelect = document.querySelector("#mapping-camera-select");
 const statusLabel = document.querySelector("#mapping-status");
 const introPanel = document.querySelector(".mapping-panel");
+const debugCamera = document.querySelector("#mapping-debug-camera");
+const debugVideo = document.querySelector("#mapping-debug-video");
+const debugHands = document.querySelector("#mapping-debug-hands");
 
 let renderer;
 let scene;
@@ -28,9 +32,18 @@ let smoothedHands = [];
 let pointerTarget = null;
 let cameraActive = false;
 let bookMappingExperience = null;
+let lastHandsCount = 0;
+let lastTrackingStatusAt = 0;
+let visionModelReady = false;
 
 function setStatus(message) {
   statusLabel.textContent = message;
+}
+
+function setDebug(element, message) {
+  if (element) {
+    element.textContent = message;
+  }
 }
 
 function average(points) {
@@ -141,13 +154,47 @@ async function loadVisionModel() {
     },
     runningMode: "VIDEO",
     numHands: 2,
-    minHandDetectionConfidence: 0.5,
-    minHandPresenceConfidence: 0.5,
-    minTrackingConfidence: 0.5
+    minHandDetectionConfidence: 0.28,
+    minHandPresenceConfidence: 0.28,
+    minTrackingConfidence: 0.28
   });
 
+  visionModelReady = true;
   startButton.disabled = false;
-  setStatus("Listo. Activa la cámara para iniciar el tracking.");
+  await populateCameraOptions();
+  setDebug(debugHands, "Tracking: modelo cargado");
+  setStatus("Modelo listo. Elige cámara y activa la experiencia.");
+}
+
+async function populateCameraOptions() {
+  if (!navigator.mediaDevices?.enumerateDevices || !cameraSelect) {
+    return;
+  }
+
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const videoInputs = devices.filter((device) => device.kind === "videoinput");
+    const currentValue = cameraSelect.value;
+
+    cameraSelect.innerHTML = '<option value="">Cámara predeterminada</option>';
+    videoInputs.forEach((device, index) => {
+      const option = document.createElement("option");
+      option.value = device.deviceId;
+      option.textContent = device.label || `Cámara ${index + 1}`;
+
+      if (/kinect/i.test(option.textContent)) {
+        option.selected = true;
+      }
+
+      cameraSelect.appendChild(option);
+    });
+
+    if (currentValue && [...cameraSelect.options].some((option) => option.value === currentValue)) {
+      cameraSelect.value = currentValue;
+    }
+  } catch (error) {
+    console.warn("No se pudo listar cámaras.", error);
+  }
 }
 
 async function startCamera() {
@@ -160,24 +207,62 @@ async function startCamera() {
     startButton.disabled = true;
     setStatus("Solicitando permiso de cámara...");
 
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: {
-        width: { ideal: 640 },
-        height: { ideal: 480 },
-        facingMode: "user"
+    const selectedDeviceId = cameraSelect?.value;
+    const videoConstraints = selectedDeviceId
+      ? {
+          deviceId: { exact: selectedDeviceId },
+          width: { ideal: 960 },
+          height: { ideal: 540 },
+          frameRate: { ideal: 30, max: 30 }
+        }
+      : {
+          width: { ideal: 960 },
+          height: { ideal: 540 },
+          facingMode: "user",
+          frameRate: { ideal: 30, max: 30 }
+        };
+
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: videoConstraints
+      });
+    } catch (selectedCameraError) {
+      if (!selectedDeviceId) {
+        throw selectedCameraError;
       }
-    });
+
+      setStatus("La cámara seleccionada falló. Probando cámara predeterminada...");
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          width: { ideal: 960 },
+          height: { ideal: 540 },
+          frameRate: { ideal: 30, max: 30 }
+        }
+      });
+    }
 
     video.srcObject = stream;
     await new Promise((resolve) => {
       video.addEventListener("loadeddata", resolve, { once: true });
     });
 
+    const [track] = stream.getVideoTracks();
+    const settings = track?.getSettings?.() || {};
+    setDebug(debugCamera, `Cámara: ${track?.label || "activa"}`);
+    setDebug(debugVideo, `Video: ${video.videoWidth || settings.width || "-"}x${video.videoHeight || settings.height || "-"}`);
+
     video.classList.add("is-active");
     cameraActive = true;
+    await populateCameraOptions();
     introPanel.classList.add("is-hidden");
-    setStatus("Tracking activo. Mueve tus manos frente a la cámara.");
+    setStatus(
+      visionModelReady
+        ? "Cámara activa. Muestra la palma completa con buena luz."
+        : "Cámara activa. El tracking sigue cargando o falló, pero la webcam ya funciona."
+    );
   } catch (error) {
     startButton.disabled = false;
     setStatus("No se pudo activar la cámara. Revisa permisos o abre el sitio desde HTTPS/localhost.");
@@ -244,6 +329,26 @@ function detectHands(now) {
       palmWorld: normalizedToWorld(palmCenter)
     };
   });
+
+  if (cameraActive && now - lastTrackingStatusAt > 900) {
+    lastTrackingStatusAt = now;
+
+    if (smoothedHands.length !== lastHandsCount) {
+      lastHandsCount = smoothedHands.length;
+    }
+
+    setStatus(
+      smoothedHands.length
+        ? `Tracking activo: ${smoothedHands.length} mano${smoothedHands.length > 1 ? "s" : ""} detectada${smoothedHands.length > 1 ? "s" : ""}.`
+        : "Cámara activa, pero sin manos detectadas. Muestra la palma completa con buena luz."
+    );
+    setDebug(
+      debugHands,
+      smoothedHands.length
+        ? `Tracking: ${smoothedHands.length} mano${smoothedHands.length > 1 ? "s" : ""}`
+        : "Tracking: sin manos"
+    );
+  }
 }
 
 function animate(now = performance.now()) {
@@ -271,14 +376,20 @@ async function init() {
   }
   animate();
   startButton.addEventListener("click", startCamera);
+  cameraSelect?.addEventListener("change", () => {
+    setStatus("Cámara seleccionada. Activa la cámara para probar tracking.");
+  });
 
-  try {
-    await loadVisionModel();
-  } catch (error) {
-    startButton.disabled = true;
-    setStatus("No se pudieron cargar las librerías de tracking. Revisa la conexión a internet.");
+  startButton.disabled = false;
+  await populateCameraOptions();
+  setStatus("Puedes activar la cámara. El tracking se cargará en paralelo.");
+
+  loadVisionModel().catch((error) => {
+    startButton.disabled = false;
+    setDebug(debugHands, "Tracking: no cargó el modelo");
+    setStatus("No se pudo cargar el tracking, pero puedes probar la cámara/webcam.");
     console.error(error);
-  }
+  });
 }
 
 init();

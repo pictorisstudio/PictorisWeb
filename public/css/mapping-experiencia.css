@@ -53,23 +53,49 @@ body {
 
 .mapping-camera {
   position: absolute;
-  right: 1rem;
-  bottom: 1rem;
-  z-index: 3;
-  width: min(28vw, 260px);
+  right: clamp(1rem, 3vw, 2rem);
+  top: 6rem;
+  z-index: 8;
+  width: min(34vw, 360px);
   aspect-ratio: 4 / 3;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 2px solid rgba(98, 231, 255, 0.58);
   background: rgba(0, 0, 0, 0.4);
   object-fit: cover;
   transform: scaleX(-1);
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.42);
+  box-shadow:
+    0 20px 48px rgba(0, 0, 0, 0.42),
+    0 0 34px rgba(98, 231, 255, 0.18);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
 }
 
 .mapping-camera.is-active {
-  opacity: 0.9;
+  opacity: 1;
+}
+
+.mapping-debug {
+  position: fixed;
+  z-index: 9;
+  top: clamp(17rem, calc(6.75rem + 25.5vw), 23.75rem);
+  right: clamp(1rem, 3vw, 2rem);
+  width: min(34vw, 360px);
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.85rem 0.9rem;
+  border: 1px solid var(--map-line);
+  background: rgba(9, 7, 16, 0.78);
+  color: var(--map-muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  backdrop-filter: blur(16px);
+}
+
+.mapping-debug strong {
+  color: var(--map-text);
+  font-size: 0.76rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .mapping-hud {
@@ -153,6 +179,41 @@ body {
   line-height: 1.72;
 }
 
+.mapping-camera-field {
+  align-self: center;
+  width: min(100%, 420px);
+  display: grid;
+  gap: 0.5rem;
+  margin: 0 auto;
+  color: var(--map-muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.mapping-camera-select {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--map-line);
+  border-radius: 999px;
+  padding: 0 1rem;
+  background: rgba(9, 7, 16, 0.86);
+  color: var(--map-text);
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  outline: none;
+}
+
+.mapping-camera-select:focus {
+  border-color: rgba(98, 231, 255, 0.58);
+  box-shadow: 0 0 0 4px rgba(98, 231, 255, 0.1);
+}
+
 .mapping-start-camera {
   align-self: center;
   margin-top: clamp(1.25rem, 4vh, 2.75rem);
@@ -184,9 +245,16 @@ body {
   }
 
   .mapping-camera {
-    width: 132px;
+    width: min(44vw, 180px);
     right: 0.75rem;
-    bottom: 4.6rem;
+    top: 5.4rem;
+  }
+
+  .mapping-debug {
+    top: clamp(10.2rem, calc(6rem + 33vw), 14.4rem);
+    right: 0.75rem;
+    width: min(44vw, 180px);
+    font-size: 0.68rem;
   }
 
   .mapping-hud {
