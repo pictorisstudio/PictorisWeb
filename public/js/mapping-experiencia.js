@@ -3,10 +3,13 @@ import {
   FilesetResolver,
   HandLandmarker
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest";
+import { BookMappingExperience } from "./experiences/bookMapping/BookMappingExperience.js";
+import { createHandInput } from "./experiences/bookMapping/interaction/HandInput.js";
 
 const MODEL_URL = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task";
 const WASM_URL = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm";
 const DETECT_INTERVAL = 1000 / 30;
+const ENABLE_BOOK_MAPPING = true;
 
 const canvasMount = document.querySelector("#mapping-canvas");
 const video = document.querySelector("#mapping-camera");
@@ -25,6 +28,8 @@ let smoothedHands = [];
 let lastFlowerAt = 0;
 let lastFlowerPosition = null;
 let pointerTarget = null;
+let cameraActive = false;
+let bookMappingExperience = null;
 
 const flowers = [];
 const pollen = [];
@@ -224,6 +229,7 @@ async function startCamera() {
     });
 
     video.classList.add("is-active");
+    cameraActive = true;
     introPanel.classList.add("is-hidden");
     setStatus("Tracking activo. Mueve tus manos frente a la cámara.");
   } catch (error) {
@@ -238,6 +244,26 @@ function handlePointerMove(event) {
     x: event.clientX / window.innerWidth,
     y: event.clientY / window.innerHeight,
     z: 0
+  };
+}
+
+function getInteractionHands() {
+  return smoothedHands.map((hand) => ({
+    indexTip: hand.indexTip,
+    palmCenter: hand.palmCenter,
+    indexWorld: normalizedToWorld(hand.indexTip),
+    palmWorld: hand.palmWorld
+  }));
+}
+
+function getPointerFallback() {
+  if (!pointerTarget) {
+    return null;
+  }
+
+  return {
+    ...pointerTarget,
+    world: normalizedToWorld(pointerTarget)
   };
 }
 
@@ -384,6 +410,16 @@ function animate(now = performance.now()) {
   const elapsed = clock.elapsedTime;
 
   detectHands(now);
+  if (ENABLE_BOOK_MAPPING) {
+    bookMappingExperience?.update({
+      input: createHandInput({
+        hands: getInteractionHands(),
+        pointer: smoothedHands.length ? null : getPointerFallback()
+      }),
+      cameraActive,
+      trackedHandsCount: smoothedHands.length
+    });
+  }
   updateDebugMarkers(now);
   updatePollen(delta, elapsed);
   updateFlowers(elapsed);
@@ -392,6 +428,10 @@ function animate(now = performance.now()) {
 
 async function init() {
   createRenderer();
+  if (ENABLE_BOOK_MAPPING) {
+    bookMappingExperience = new BookMappingExperience({ renderer, scene, camera });
+    bookMappingExperience.init();
+  }
   animate();
   startButton.addEventListener("click", startCamera);
 
