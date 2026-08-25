@@ -1,4 +1,5 @@
 import { experienceConfig } from "./config/experienceConfig.js";
+import { AudioManager } from "./audio/AudioManager.js";
 import { ExperienceManager } from "./core/ExperienceManager.js";
 import { ExperienceState } from "./core/ExperienceState.js";
 import { HandCursor } from "./interaction/HandCursor.js";
@@ -6,6 +7,16 @@ import { AliceGameScene } from "./scenes/AliceGameScene.js";
 import { AliceIntroScene } from "./scenes/AliceIntroScene.js";
 import { AliceResultScene } from "./scenes/AliceResultScene.js";
 import { IdleScene } from "./scenes/IdleScene.js";
+import { LiteraryIntroScene } from "./scenes/LiteraryIntroScene.js";
+import { LiteraryTitleScene } from "./scenes/LiteraryTitleScene.js";
+import { PrinceGameScene } from "./scenes/PrinceGameScene.js";
+import { PrinceIntroScene } from "./scenes/PrinceIntroScene.js";
+import { PrinceResultScene } from "./scenes/PrinceResultScene.js";
+import { PrinceTransitionScene } from "./scenes/PrinceTransitionScene.js";
+import { SubmarineGameScene } from "./scenes/SubmarineGameScene.js";
+import { SubmarineIntroScene } from "./scenes/SubmarineIntroScene.js";
+import { SubmarineResultScene } from "./scenes/SubmarineResultScene.js";
+import { SubmarineTransitionScene } from "./scenes/SubmarineTransitionScene.js";
 
 export class BookMappingExperience {
   constructor({ renderer, scene, camera, config = experienceConfig } = {}) {
@@ -17,30 +28,61 @@ export class BookMappingExperience {
       timeline: this.config.timeline,
       initialState: ExperienceState.IDLE
     });
+    this.audioManager = new AudioManager({ config: this.config.audio });
     this.cursor = new HandCursor({ config: this.config.cursor });
     this.root = null;
     this.debugPanel = null;
     this.debugControls = null;
     this.styleNode = null;
     this.idleScene = null;
+    this.literaryIntroScene = null;
+    this.literaryTitleScene = null;
     this.aliceIntroScene = null;
     this.aliceGameScene = null;
     this.aliceResultScene = null;
+    this.princeTransitionScene = null;
+    this.princeIntroScene = null;
+    this.princeGameScene = null;
+    this.princeResultScene = null;
+    this.submarineTransitionScene = null;
+    this.submarineIntroScene = null;
+    this.submarineGameScene = null;
+    this.submarineResultScene = null;
     this.unsubscribeState = null;
     this.lastResult = null;
+    this.lastPrinceResult = null;
+    this.lastSubmarineResult = null;
     this.lastFrameAt = performance.now();
     this.deltaTime = 0;
     this.fps = 0;
     this.handActivationElapsed = 0;
+    this.coverLostTrackingElapsed = 0;
+    this.coverHandRaised = false;
     this.absenceElapsed = 0;
     this.cursorState = null;
+    this.isCoverAudioPlaying = false;
+    this.isLiteraryAudioPlaying = false;
     this.isDestroyed = false;
   }
 
   init() {
     this.injectStyles();
     this.createUi();
+    this.registerAudio();
     this.idleScene = new IdleScene({ root: this.root, config: this.config });
+    this.literaryIntroScene = new LiteraryIntroScene({
+      scene: this.scene,
+      camera: this.camera,
+      root: this.root,
+      config: this.config,
+      onComplete: () => this.manager.setState(ExperienceState.LITERARY_TITLE)
+    });
+    this.literaryTitleScene = new LiteraryTitleScene({
+      scene: this.scene,
+      camera: this.camera,
+      root: this.root,
+      config: this.config
+    });
     this.aliceIntroScene = new AliceIntroScene({ root: this.root, config: this.config });
     this.aliceGameScene = new AliceGameScene({
       scene: this.scene,
@@ -54,6 +96,56 @@ export class BookMappingExperience {
       root: this.root,
       config: this.config
     });
+    this.princeTransitionScene = new PrinceTransitionScene({
+      scene: this.scene,
+      root: this.root,
+      config: this.config
+    });
+    this.princeIntroScene = new PrinceIntroScene({
+      scene: this.scene,
+      root: this.root,
+      config: this.config
+    });
+    this.princeGameScene = new PrinceGameScene({
+      scene: this.scene,
+      root: this.root,
+      config: this.config,
+      onComplete: (result) => {
+        this.lastPrinceResult = result;
+        this.manager.setState(ExperienceState.PRINCE_RESULT);
+      }
+    });
+    this.princeResultScene = new PrinceResultScene({
+      scene: this.scene,
+      root: this.root,
+      config: this.config
+    });
+    this.submarineTransitionScene = new SubmarineTransitionScene({
+      scene: this.scene,
+      root: this.root,
+      config: this.config
+    });
+    this.submarineIntroScene = new SubmarineIntroScene({
+      scene: this.scene,
+      camera: this.camera,
+      root: this.root,
+      config: this.config
+    });
+    this.submarineGameScene = new SubmarineGameScene({
+      scene: this.scene,
+      camera: this.camera,
+      root: this.root,
+      config: this.config,
+      onComplete: (result) => {
+        this.lastSubmarineResult = result;
+        this.manager.setState(ExperienceState.SUBMARINE_RESULT);
+      }
+    });
+    this.submarineResultScene = new SubmarineResultScene({
+      scene: this.scene,
+      root: this.root,
+      config: this.config
+    });
     this.unsubscribeState = this.manager.onChange((state, previousState) => this.enterState(state, previousState));
 
     if (this.config.debug) {
@@ -64,7 +156,7 @@ export class BookMappingExperience {
     this.enterState(this.manager.getState());
   }
 
-  update({ input, cameraActive = false, trackedHandsCount = 0, fps = null } = {}) {
+  update({ input, poseInput = null, cameraActive = false, coverReady = cameraActive, trackedHandsCount = 0, trackedPose = false, fps = null } = {}) {
     if (this.isDestroyed) {
       return;
     }
@@ -72,7 +164,10 @@ export class BookMappingExperience {
     this.updateTime(fps);
 
     const handDetected = trackedHandsCount > 0;
+    const poseDetected = Boolean(trackedPose || poseInput?.stable);
     const state = this.manager.getState();
+    this.updateCoverAudio(state);
+    this.updateLiteraryAudio(state);
 
     if (this.config.debug && state !== ExperienceState.ALICE_GAME) {
       this.cursorState = this.cursor.update(input);
@@ -82,9 +177,12 @@ export class BookMappingExperience {
     }
 
     if (state === ExperienceState.IDLE) {
-      this.updateIdleActivation(handDetected);
+      this.updateIdleActivation(input, coverReady);
     } else {
-      this.updateAbsence(handDetected);
+      this.updateAbsence(
+        this.isPrinceState(state) ? poseDetected : handDetected,
+        this.isPrinceState(state) ? this.config.prince.absenceTimeout : this.config.idle.absenceResetDelay
+      );
       this.manager.update(this.deltaTime);
     }
 
@@ -92,26 +190,55 @@ export class BookMappingExperience {
     const snapshot = this.manager.getSnapshot();
 
     if (currentState === ExperienceState.IDLE) {
-      this.idleScene.update(this.deltaTime, input, snapshot.progress);
+      this.idleScene.update(this.deltaTime, input, snapshot.progress, {
+        cameraReady: coverReady,
+        holdProgress: this.getCoverHoldProgress()
+      });
+    } else if (currentState === ExperienceState.LITERARY_INTRO) {
+      this.literaryIntroScene.update(this.deltaTime, input, snapshot.progress);
+    } else if (currentState === ExperienceState.LITERARY_TITLE) {
+      this.literaryTitleScene.update(this.deltaTime, input, snapshot.progress);
     } else if (currentState === ExperienceState.ALICE_INTRO) {
       this.aliceIntroScene.update(this.deltaTime, input, snapshot.progress);
     } else if (currentState === ExperienceState.ALICE_GAME) {
       this.aliceGameScene.update(this.deltaTime, input, snapshot.progress);
     } else if (currentState === ExperienceState.ALICE_RESULT) {
       this.aliceResultScene.update(this.deltaTime, input, snapshot.progress);
+    } else if (currentState === ExperienceState.TRANSITION_TO_PRINCE) {
+      this.princeTransitionScene.update(this.deltaTime, input, snapshot.progress, { poseInput });
+    } else if (currentState === ExperienceState.PRINCE_INTRO) {
+      this.princeIntroScene.update(this.deltaTime, input, snapshot.progress, { poseInput });
+    } else if (currentState === ExperienceState.PRINCE_GAME) {
+      this.princeGameScene.update(this.deltaTime, input, snapshot.progress, { poseInput });
+    } else if (currentState === ExperienceState.PRINCE_RESULT) {
+      this.princeResultScene.update(this.deltaTime, input, snapshot.progress, { poseInput });
+    } else if (currentState === ExperienceState.TRANSITION_TO_SUBMARINE) {
+      this.submarineTransitionScene.update(this.deltaTime, input, snapshot.progress);
+    } else if (currentState === ExperienceState.SUBMARINE_INTRO) {
+      this.submarineIntroScene.update(this.deltaTime, input, snapshot.progress);
+    } else if (currentState === ExperienceState.SUBMARINE_GAME) {
+      this.submarineGameScene.update(this.deltaTime, input, snapshot.progress);
+    } else if (currentState === ExperienceState.SUBMARINE_RESULT) {
+      this.submarineResultScene.update(this.deltaTime, input, snapshot.progress);
     }
 
     this.updateDebug({
       cameraActive,
       handDetected,
+      poseDetected,
+      poseInput,
       input
     });
   }
 
   reset() {
     this.handActivationElapsed = 0;
+    this.coverLostTrackingElapsed = 0;
+    this.coverHandRaised = false;
     this.absenceElapsed = 0;
     this.lastResult = null;
+    this.lastPrinceResult = null;
+    this.lastSubmarineResult = null;
     this.exitAllScenes();
     const wasIdle = this.manager.getState() === ExperienceState.IDLE;
     this.manager.reset();
@@ -123,7 +250,7 @@ export class BookMappingExperience {
 
   nextState() {
     if (this.manager.getState() === ExperienceState.IDLE) {
-      this.manager.setState(ExperienceState.ALICE_INTRO);
+      this.manager.setState(ExperienceState.LITERARY_INTRO);
       return;
     }
 
@@ -139,10 +266,21 @@ export class BookMappingExperience {
     }
 
     this.idleScene?.destroy();
+    this.literaryIntroScene?.destroy();
+    this.literaryTitleScene?.destroy();
     this.aliceIntroScene?.destroy();
     this.aliceGameScene?.destroy();
     this.aliceResultScene?.destroy();
+    this.princeTransitionScene?.destroy();
+    this.princeIntroScene?.destroy();
+    this.princeGameScene?.destroy();
+    this.princeResultScene?.destroy();
+    this.submarineTransitionScene?.destroy();
+    this.submarineIntroScene?.destroy();
+    this.submarineGameScene?.destroy();
+    this.submarineResultScene?.destroy();
     this.cursor.destroy();
+    this.audioManager.destroy();
     this.manager.destroy();
     this.root?.remove();
     this.debugPanel?.remove();
@@ -153,10 +291,21 @@ export class BookMappingExperience {
     this.debugPanel = null;
     this.debugControls = null;
     this.styleNode = null;
+    this.audioManager = null;
     this.idleScene = null;
+    this.literaryIntroScene = null;
+    this.literaryTitleScene = null;
     this.aliceIntroScene = null;
     this.aliceGameScene = null;
     this.aliceResultScene = null;
+    this.princeTransitionScene = null;
+    this.princeIntroScene = null;
+    this.princeGameScene = null;
+    this.princeResultScene = null;
+    this.submarineTransitionScene = null;
+    this.submarineIntroScene = null;
+    this.submarineGameScene = null;
+    this.submarineResultScene = null;
   }
 
   createUi() {
@@ -188,16 +337,36 @@ export class BookMappingExperience {
     this.root.dataset.state = state;
     document.body.dataset.bookMappingState = state;
     this.handActivationElapsed = state === ExperienceState.IDLE ? 0 : this.handActivationElapsed;
+    this.coverLostTrackingElapsed = state === ExperienceState.IDLE ? 0 : this.coverLostTrackingElapsed;
+    this.coverHandRaised = state === ExperienceState.IDLE ? false : this.coverHandRaised;
     this.absenceElapsed = 0;
 
     if (state === ExperienceState.ALICE_RESULT) {
       this.lastResult = this.aliceGameScene?.getResult() ?? this.lastResult;
     }
 
+    if (state === ExperienceState.PRINCE_RESULT) {
+      this.lastPrinceResult = this.princeGameScene?.getResult() ?? this.lastPrinceResult;
+    }
+
+    if (state === ExperienceState.SUBMARINE_RESULT) {
+      this.lastSubmarineResult = this.submarineGameScene?.getResult() ?? this.lastSubmarineResult;
+    }
+
     this.exitAllScenes();
 
     if (state === ExperienceState.IDLE) {
       this.idleScene?.enter();
+      return;
+    }
+
+    if (state === ExperienceState.LITERARY_INTRO) {
+      this.literaryIntroScene?.enter();
+      return;
+    }
+
+    if (state === ExperienceState.LITERARY_TITLE) {
+      this.literaryTitleScene?.enter();
       return;
     }
 
@@ -214,14 +383,183 @@ export class BookMappingExperience {
 
     if (state === ExperienceState.ALICE_RESULT) {
       this.aliceResultScene?.enter(this.lastResult);
+      return;
     }
+
+    if (state === ExperienceState.TRANSITION_TO_PRINCE) {
+      this.princeTransitionScene?.enter();
+      return;
+    }
+
+    if (state === ExperienceState.PRINCE_INTRO) {
+      this.princeIntroScene?.enter();
+      return;
+    }
+
+    if (state === ExperienceState.PRINCE_GAME) {
+      this.lastPrinceResult = null;
+      this.princeGameScene?.enter();
+      return;
+    }
+
+    if (state === ExperienceState.PRINCE_RESULT) {
+      this.princeResultScene?.enter(this.lastPrinceResult);
+      return;
+    }
+
+    if (state === ExperienceState.TRANSITION_TO_SUBMARINE) {
+      this.submarineTransitionScene?.enter();
+      return;
+    }
+
+    if (state === ExperienceState.SUBMARINE_INTRO) {
+      this.submarineIntroScene?.enter();
+      return;
+    }
+
+    if (state === ExperienceState.SUBMARINE_GAME) {
+      this.lastSubmarineResult = null;
+      this.submarineGameScene?.enter();
+      return;
+    }
+
+    if (state === ExperienceState.SUBMARINE_RESULT) {
+      this.submarineResultScene?.enter(this.lastSubmarineResult);
+    }
+  }
+
+  registerAudio() {
+    const coverAudio = this.config.audio?.cover;
+    const coverConfirm = this.config.audio?.coverConfirm;
+    const literaryAudio = this.config.literaryIntro?.audio;
+
+    if (coverAudio) {
+      this.audioManager.registerLoop(coverAudio.id, {
+        src: coverAudio.src,
+        volume: coverAudio.volume,
+        fadeIn: coverAudio.fadeIn,
+        fadeOut: coverAudio.fadeOut,
+        resetOnStop: coverAudio.resetOnStop
+      });
+    }
+
+    if (coverConfirm) {
+      this.audioManager.registerSfx(coverConfirm.id, {
+        src: coverConfirm.src,
+        volume: coverConfirm.volume
+      });
+    }
+
+    if (!literaryAudio) {
+      return;
+    }
+
+    this.audioManager.registerLoop(literaryAudio.id, {
+      src: literaryAudio.src,
+      volume: literaryAudio.volume,
+      fadeIn: literaryAudio.fadeIn,
+      fadeOut: literaryAudio.fadeOut
+    });
   }
 
   exitAllScenes() {
     this.idleScene?.exit();
+    this.literaryIntroScene?.exit();
+    this.literaryTitleScene?.exit();
     this.aliceIntroScene?.exit();
     this.aliceGameScene?.exit();
     this.aliceResultScene?.exit();
+    this.princeTransitionScene?.exit();
+    this.princeIntroScene?.exit();
+    this.princeGameScene?.exit();
+    this.princeResultScene?.exit();
+    this.submarineTransitionScene?.exit();
+    this.submarineIntroScene?.exit();
+    this.submarineGameScene?.exit();
+    this.submarineResultScene?.exit();
+  }
+
+  getState() {
+    return this.manager.getState();
+  }
+
+  updateCoverAudio(state = this.manager.getState()) {
+    const coverAudio = this.config.audio?.cover;
+
+    if (!coverAudio || !this.audioManager) {
+      return;
+    }
+
+    const shouldPlay = state === ExperienceState.IDLE;
+
+    if (shouldPlay && !this.isCoverAudioPlaying) {
+      this.audioManager.play(coverAudio.id);
+      this.isCoverAudioPlaying = true;
+      return;
+    }
+
+    if (!shouldPlay && this.isCoverAudioPlaying) {
+      this.audioManager.stop(coverAudio.id);
+      this.isCoverAudioPlaying = false;
+    }
+  }
+
+  updateLiteraryAudio(state = this.manager.getState()) {
+    const literaryAudio = this.config.literaryIntro?.audio;
+
+    if (!literaryAudio || !this.audioManager) {
+      return;
+    }
+
+    const shouldPlay = state === ExperienceState.LITERARY_INTRO
+      || state === ExperienceState.LITERARY_TITLE;
+
+    if (shouldPlay && !this.isLiteraryAudioPlaying) {
+      this.audioManager.play(literaryAudio.id);
+      this.isLiteraryAudioPlaying = true;
+      return;
+    }
+
+    if (!shouldPlay && this.isLiteraryAudioPlaying) {
+      this.audioManager.stop(literaryAudio.id);
+      this.isLiteraryAudioPlaying = false;
+    }
+  }
+
+  isPrinceState(state = this.manager.getState()) {
+    return state === ExperienceState.TRANSITION_TO_PRINCE
+      || state === ExperienceState.PRINCE_INTRO
+      || state === ExperienceState.PRINCE_GAME
+      || state === ExperienceState.PRINCE_RESULT;
+  }
+
+  isSubmarineState(state = this.manager.getState()) {
+    return state === ExperienceState.TRANSITION_TO_SUBMARINE
+      || state === ExperienceState.SUBMARINE_INTRO
+      || state === ExperienceState.SUBMARINE_GAME
+      || state === ExperienceState.SUBMARINE_RESULT;
+  }
+
+  needsHandTracking() {
+    const state = this.manager.getState();
+    return state === ExperienceState.IDLE
+      || state === ExperienceState.LITERARY_INTRO
+      || state === ExperienceState.LITERARY_TITLE
+      || state === ExperienceState.ALICE_INTRO
+      || state === ExperienceState.ALICE_GAME
+      || state === ExperienceState.ALICE_RESULT
+      || state === ExperienceState.TRANSITION_TO_SUBMARINE
+      || state === ExperienceState.SUBMARINE_INTRO
+      || state === ExperienceState.SUBMARINE_GAME
+      || state === ExperienceState.SUBMARINE_RESULT;
+  }
+
+  needsPoseTracking() {
+    const state = this.manager.getState();
+    return state === ExperienceState.TRANSITION_TO_PRINCE
+      || state === ExperienceState.PRINCE_INTRO
+      || state === ExperienceState.PRINCE_GAME
+      || state === ExperienceState.PRINCE_RESULT;
   }
 
   updateTime(fps) {
@@ -238,34 +576,71 @@ export class BookMappingExperience {
     this.fps = delta > 0 ? Math.round(1000 / delta) : 0;
   }
 
-  updateIdleActivation(handDetected) {
-    if (!handDetected) {
+  updateIdleActivation(input, cameraReady) {
+    if (!cameraReady) {
       this.handActivationElapsed = 0;
+      this.coverLostTrackingElapsed = 0;
+      this.coverHandRaised = false;
       return;
     }
 
-    this.handActivationElapsed += this.deltaTime;
+    const palm = input?.primaryHand?.palm ?? null;
+    const gesture = this.config.idle.gesture;
+    const hasPalm = Boolean(palm);
+    const y = palm?.y ?? 1;
+    const raised = this.coverHandRaised
+      ? hasPalm && y < gesture.exitThreshold
+      : hasPalm && y < gesture.enterThreshold;
 
-    if (this.handActivationElapsed >= this.config.idle.handActivationDelay) {
+    if (raised) {
+      this.coverHandRaised = true;
+      this.coverLostTrackingElapsed = 0;
+      this.handActivationElapsed += this.deltaTime;
+    } else if (!hasPalm && this.handActivationElapsed > 0 && this.coverLostTrackingElapsed < gesture.lostTrackingGrace) {
+      this.coverLostTrackingElapsed += this.deltaTime;
+    } else {
+      this.coverHandRaised = false;
+      this.coverLostTrackingElapsed = 0;
+      this.handActivationElapsed = Math.max(0, this.handActivationElapsed - this.deltaTime * 1.8);
+    }
+
+    if (this.handActivationElapsed >= gesture.holdDuration) {
       this.handActivationElapsed = 0;
-      this.manager.setState(ExperienceState.ALICE_INTRO);
+      this.coverHandRaised = false;
+      this.playCoverConfirmSfx();
+      this.manager.setState(ExperienceState.LITERARY_INTRO);
     }
   }
 
-  updateAbsence(handDetected) {
-    if (handDetected) {
+  getCoverHoldProgress() {
+    const duration = this.config.idle.gesture?.holdDuration ?? 1;
+    return Math.min(this.handActivationElapsed / duration, 1);
+  }
+
+  playCoverConfirmSfx() {
+    const coverConfirm = this.config.audio?.coverConfirm;
+
+    if (!coverConfirm || !this.audioManager) {
+      return;
+    }
+
+    this.audioManager.playSfx(coverConfirm.id);
+  }
+
+  updateAbsence(userDetected, absenceResetDelay = this.config.idle.absenceResetDelay) {
+    if (userDetected) {
       this.absenceElapsed = 0;
       return;
     }
 
     this.absenceElapsed += this.deltaTime;
 
-    if (this.absenceElapsed >= this.config.idle.absenceResetDelay) {
+    if (this.absenceElapsed >= absenceResetDelay) {
       this.reset();
     }
   }
 
-  updateDebug({ cameraActive, handDetected, input }) {
+  updateDebug({ cameraActive, handDetected, poseDetected, poseInput, input }) {
     if (!this.debugPanel) {
       return;
     }
@@ -273,10 +648,13 @@ export class BookMappingExperience {
     const snapshot = this.manager.getSnapshot();
     const rendererInfo = this.renderer?.info;
     const gameStats = this.aliceGameScene?.getDebugStats();
+    const literaryStats = this.literaryIntroScene?.getDebugStats();
+    const princeStats = this.princeGameScene?.getDebugStats();
+    const submarineStats = this.submarineGameScene?.getDebugStats();
     const stateSeconds = (snapshot.elapsed / 1000).toFixed(1);
     const durationSeconds = snapshot.duration ? (snapshot.duration / 1000).toFixed(1) : "--";
     const absenceSeconds = (this.absenceElapsed / 1000).toFixed(1);
-    const absenceLimit = (this.config.idle.absenceResetDelay / 1000).toFixed(1);
+    const absenceLimit = ((this.isPrinceState(snapshot.state) ? this.config.prince.absenceTimeout : this.config.idle.absenceResetDelay) / 1000).toFixed(1);
 
     this.debugPanel.innerHTML = `
       <span>STATE: ${snapshot.state}</span>
@@ -284,7 +662,15 @@ export class BookMappingExperience {
       <span>PROGRESS: ${Math.round(snapshot.progress * 100)}%</span>
       <span>CAMERA: ${cameraActive ? "ACTIVE" : "INACTIVE"}</span>
       <span>HAND: ${handDetected ? "DETECTED" : "NONE"}</span>
+      <span>POSE DETECTED: ${poseDetected ? "YES" : "NO"}</span>
+      <span>POSE CONF: ${Number(poseInput?.confidence ?? 0).toFixed(2)}</span>
       <span>INPUT: ${input?.source ?? "none"}</span>
+      <span>LITERARY PHASE: ${literaryStats?.phase ?? "--"}</span>
+      <span>MOVEMENT: ${Number(literaryStats?.movement ?? 0).toFixed(2)}</span>
+      <span>CAN CONTINUE: ${literaryStats?.canContinue ? "YES" : "NO"}</span>
+      <span>HAND RAISED: ${literaryStats?.handRaised ? "YES" : "NO"}</span>
+      <span>HOLD: ${Number(literaryStats?.holdProgress ?? 0).toFixed(2)}</span>
+      <span>LETTER COUNT: ${literaryStats?.letterCount ?? this.config.literaryIntro.letters.count}</span>
       <span>ABSENCE: ${absenceSeconds} / ${absenceLimit}</span>
       <span>ACTIVATION: ${Math.round(this.handActivationElapsed)}ms</span>
       <span>PLAYER X: ${(gameStats?.playerX ?? 0).toFixed(2)}</span>
@@ -292,6 +678,15 @@ export class BookMappingExperience {
       <span>RAW PALM: ${this.formatDebugPoint(gameStats?.rawPalmX, gameStats?.rawPalmY)}</span>
       <span>TARGET: ${this.formatDebugPoint(gameStats?.targetX, gameStats?.targetY)}</span>
       <span>COLLECTED: ${gameStats?.collected ?? 0} / ${gameStats?.target ?? this.config.aliceGame.collectibles.targetCount}</span>
+      <span>LEFT WRIST: ${this.formatDebugPoint(princeStats?.leftWrist?.x, princeStats?.leftWrist?.y)}</span>
+      <span>RIGHT WRIST: ${this.formatDebugPoint(princeStats?.rightWrist?.x, princeStats?.rightWrist?.y)}</span>
+      <span>STARS RECOVERED: ${princeStats?.starsRecovered ?? 0} / ${this.config.prince.stars.count}</span>
+      <span>PRINCE TIME: ${((princeStats?.gameTime ?? 0) / 1000).toFixed(1)}s</span>
+      <span>LIGHT: ${this.formatDebugPoint(submarineStats?.lightX, submarineStats?.lightY)}</span>
+      <span>SUB DISCOVERED: ${submarineStats?.discoveredCount ?? 0} / ${this.config.submarine.discovery.objectCount}</span>
+      <span>ACTIVE OBJECT: ${submarineStats?.activeObject ?? "--"}</span>
+      <span>REVEAL: ${Number(submarineStats?.activeRevealProgress ?? 0).toFixed(2)}</span>
+      <span>SUB TIME: ${((submarineStats?.time ?? 0) / 1000).toFixed(1)}s</span>
       <span>ACTIVE ITEMS: ${gameStats?.activeItems ?? 0}</span>
       <span>POOL: ${gameStats?.poolSize ?? this.config.aliceGame.collectibles.poolSize}</span>
       <span>FX PARTICLES: OFF</span>
@@ -371,6 +766,56 @@ export class BookMappingExperience {
         font-weight: 900;
         letter-spacing: 0.12em;
         text-transform: uppercase;
+      }
+
+      .book-idle-gesture {
+        display: grid;
+        justify-items: center;
+        gap: 0.65rem;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 260ms ease, transform 260ms ease;
+      }
+
+      .book-idle-scene.is-camera-ready .book-idle-gesture {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .book-idle-hold-circle {
+        width: clamp(3.4rem, 7vw, 5.2rem);
+        aspect-ratio: 1;
+        transform: scale(1);
+        transition: transform 160ms ease;
+      }
+
+      .book-idle-scene.is-hold-complete .book-idle-hold-circle {
+        transform: scale(1.1);
+      }
+
+      .book-idle-hold-circle svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+        transform: rotate(-90deg);
+      }
+
+      .book-idle-hold-track,
+      .book-idle-hold-progress {
+        fill: none;
+        stroke-width: 6;
+      }
+
+      .book-idle-hold-track {
+        stroke: rgba(248, 245, 255, 0.18);
+      }
+
+      .book-idle-hold-progress {
+        stroke: #d8bd74;
+        stroke-linecap: round;
+        stroke-dasharray: 163.36;
+        stroke-dashoffset: 163.36;
+        transition: stroke-dashoffset 120ms linear;
       }
 
       .alice-game-hud {
@@ -539,6 +984,19 @@ export class BookMappingExperience {
         pointer-events: none;
       }
 
+      body[data-book-mapping-state="IDLE"] .mapping-panel {
+        position: fixed;
+        inset: auto 1rem clamp(2.4rem, 8vh, 4.8rem);
+        width: min(100% - 2rem, 460px);
+        min-height: auto;
+        padding: 0;
+        z-index: 17;
+      }
+
+      body[data-book-mapping-state="IDLE"] .mapping-camera-field {
+        margin-bottom: 0.9rem;
+      }
+
       .mapping-panel .mapping-kicker,
       .mapping-panel h1,
       .mapping-panel p:not(.mapping-kicker) {
@@ -550,12 +1008,233 @@ export class BookMappingExperience {
       }
 
       body[data-book-mapping-state="ALICE_GAME"] .mapping-start-camera,
-      body[data-book-mapping-state="ALICE_RESULT"] .mapping-start-camera {
+      body[data-book-mapping-state="ALICE_RESULT"] .mapping-start-camera,
+      body[data-book-mapping-state="LITERARY_INTRO"] .mapping-start-camera,
+      body[data-book-mapping-state="LITERARY_TITLE"] .mapping-start-camera,
+      body[data-book-mapping-state="TRANSITION_TO_PRINCE"] .mapping-start-camera,
+      body[data-book-mapping-state="PRINCE_INTRO"] .mapping-start-camera,
+      body[data-book-mapping-state="PRINCE_GAME"] .mapping-start-camera,
+      body[data-book-mapping-state="PRINCE_RESULT"] .mapping-start-camera,
+      body[data-book-mapping-state="TRANSITION_TO_SUBMARINE"] .mapping-start-camera,
+      body[data-book-mapping-state="SUBMARINE_INTRO"] .mapping-start-camera,
+      body[data-book-mapping-state="SUBMARINE_GAME"] .mapping-start-camera,
+      body[data-book-mapping-state="SUBMARINE_RESULT"] .mapping-start-camera {
         position: fixed;
         left: clamp(1rem, 3vw, 2rem);
         top: clamp(5.6rem, 12vh, 7rem);
         z-index: 22;
         transform: none;
+      }
+
+      .literary-tutorial {
+        position: fixed;
+        left: 50%;
+        top: clamp(5.5rem, 13vh, 8rem);
+        z-index: 21;
+        padding: 0.52rem 0.72rem;
+        border: 1px solid rgba(248, 245, 255, 0.16);
+        background: rgba(8, 7, 18, 0.58);
+        color: #f3ead2;
+        font-size: clamp(0.82rem, 2vw, 1.12rem);
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        text-align: center;
+        text-transform: uppercase;
+        opacity: 1;
+        transform: translateX(-50%);
+        transition: opacity 240ms ease, transform 240ms ease;
+        pointer-events: none;
+      }
+
+      .literary-tutorial.is-hidden {
+        opacity: 0;
+        transform: translate(-50%, -8px);
+      }
+
+      .literary-tutorial.is-continue {
+        display: grid;
+        gap: 0.5rem;
+        min-width: min(84vw, 360px);
+        color: #ffffff;
+      }
+
+      .literary-tutorial.is-complete {
+        opacity: 0;
+        transform: translate(-50%, -14px);
+      }
+
+      .literary-hold {
+        display: none;
+        width: 100%;
+        height: 6px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(243, 234, 210, 0.18);
+      }
+
+      .literary-tutorial.is-continue .literary-hold {
+        display: block;
+      }
+
+      .literary-hold span {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        background: #d8bd74;
+        transform: scaleX(0);
+        transform-origin: left center;
+        transition: transform 120ms linear;
+      }
+
+      .literary-title {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        z-index: 22;
+        display: grid;
+        gap: 0.42rem;
+        width: min(100% - 2rem, 980px);
+        color: #f3ead2;
+        text-align: center;
+        text-transform: uppercase;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        text-shadow: 0 10px 44px rgba(0, 0, 0, 0.45);
+      }
+
+      .literary-title span,
+      .literary-title strong {
+        display: block;
+        line-height: 0.96;
+        letter-spacing: 0.04em;
+      }
+
+      .literary-title span {
+        font-size: clamp(1.2rem, 3.2vw, 2.6rem);
+        font-weight: 800;
+        color: rgba(243, 234, 210, 0.88);
+      }
+
+      .literary-title strong {
+        font-size: clamp(2.2rem, 6.5vw, 6rem);
+        font-weight: 900;
+        color: #ffffff;
+      }
+
+      .prince-transition-label,
+      .prince-result-label,
+      .prince-instruction {
+        position: fixed;
+        left: 50%;
+        z-index: 21;
+        transform: translateX(-50%);
+        text-align: center;
+        text-transform: uppercase;
+        pointer-events: none;
+      }
+
+      .prince-transition-label {
+        bottom: clamp(2rem, 9vh, 5rem);
+        transition: opacity 180ms ease;
+      }
+
+      .prince-transition-label h1,
+      .prince-result-label h1 {
+        margin: 0;
+        font-size: clamp(1.6rem, 4vw, 3.2rem);
+        line-height: 0.95;
+      }
+
+      .prince-instruction {
+        top: clamp(5.5rem, 13vh, 8rem);
+        padding: 0.52rem 0.72rem;
+        border: 1px solid rgba(248, 245, 255, 0.16);
+        background: rgba(8, 7, 18, 0.58);
+        color: #f3d66b;
+        font-size: clamp(0.82rem, 2vw, 1.12rem);
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        opacity: 1;
+        transition: opacity 240ms ease, transform 240ms ease;
+      }
+
+      .prince-instruction.is-hidden {
+        opacity: 0;
+        transform: translate(-50%, -8px);
+      }
+
+      .prince-result-label {
+        bottom: clamp(2rem, 9vh, 5rem);
+      }
+
+      .prince-result-label p {
+        margin: 0.55rem 0 0;
+        color: #f3d66b;
+        font-weight: 900;
+      }
+
+      .submarine-transition-label,
+      .submarine-instruction,
+      .submarine-result-label {
+        position: fixed;
+        left: 50%;
+        z-index: 21;
+        transform: translateX(-50%);
+        text-align: center;
+        text-transform: uppercase;
+        pointer-events: none;
+      }
+
+      .submarine-transition-label {
+        bottom: clamp(2rem, 9vh, 5rem);
+        color: #d8f3ff;
+        transition: opacity 180ms ease;
+      }
+
+      .submarine-transition-label h1,
+      .submarine-result-label h1 {
+        margin: 0;
+        font-size: clamp(1.5rem, 4vw, 3rem);
+        line-height: 0.95;
+      }
+
+      .submarine-instruction {
+        top: clamp(5.5rem, 13vh, 8rem);
+        padding: 0.52rem 0.72rem;
+        border: 1px solid rgba(216, 243, 255, 0.18);
+        background: rgba(3, 18, 37, 0.64);
+        color: #d8f3ff;
+        font-size: clamp(0.82rem, 2vw, 1.12rem);
+        font-weight: 900;
+        letter-spacing: 0.12em;
+      }
+
+      .submarine-hud {
+        position: fixed;
+        left: 50%;
+        top: clamp(1rem, 5vh, 2.2rem);
+        z-index: 22;
+        padding: 0.48rem 0.72rem;
+        border: 1px solid rgba(216, 243, 255, 0.2);
+        background: rgba(3, 18, 37, 0.58);
+        color: #d8f3ff;
+        font-size: clamp(0.95rem, 2vw, 1.22rem);
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        transform: translateX(-50%);
+        pointer-events: none;
+      }
+
+      .submarine-result-label {
+        bottom: clamp(2rem, 9vh, 5rem);
+        color: #d8f3ff;
+      }
+
+      .submarine-result-label p {
+        margin: 0.55rem 0 0;
+        color: #d8bd74;
+        font-weight: 900;
       }
     `;
     document.head.appendChild(this.styleNode);

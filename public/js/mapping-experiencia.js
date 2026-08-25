@@ -1,14 +1,18 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js";
 import {
   FilesetResolver,
-  HandLandmarker
+  HandLandmarker,
+  PoseLandmarker
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest";
 import { BookMappingExperience } from "./experiences/bookMapping/BookMappingExperience.js";
 import { createHandInput } from "./experiences/bookMapping/interaction/HandInput.js";
+import { createPoseInput } from "./experiences/bookMapping/interaction/PoseInput.js";
 
-const MODEL_URL = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task";
+const HAND_MODEL_URL = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task";
+const POSE_MODEL_URL = "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task";
 const WASM_URL = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm";
 const DETECT_INTERVAL = 1000 / 30;
+const POSE_DETECT_INTERVAL = 1000 / 24;
 const ENABLE_BOOK_MAPPING = true;
 
 const canvasMount = document.querySelector("#mapping-canvas");
@@ -26,9 +30,13 @@ let scene;
 let camera;
 let worldBounds = { left: -8, right: 8, top: 4.5, bottom: -4.5, width: 16, height: 9 };
 let handLandmarker;
+let poseLandmarker;
 let lastDetectAt = 0;
+let lastPoseDetectAt = 0;
 let lastVideoTime = -1;
+let lastPoseVideoTime = -1;
 let smoothedHands = [];
+let poseInput = createPoseInput();
 let pointerTarget = null;
 let cameraActive = false;
 let bookMappingExperience = null;
@@ -145,18 +153,28 @@ function resize() {
 }
 
 async function loadVisionModel() {
-  setStatus("Cargando MediaPipe y modelo de manos...");
+  setStatus("Cargando MediaPipe, manos y pose...");
 
   const vision = await FilesetResolver.forVisionTasks(WASM_URL);
   handLandmarker = await HandLandmarker.createFromOptions(vision, {
     baseOptions: {
-      modelAssetPath: MODEL_URL
+      modelAssetPath: HAND_MODEL_URL
     },
     runningMode: "VIDEO",
     numHands: 2,
     minHandDetectionConfidence: 0.28,
     minHandPresenceConfidence: 0.28,
     minTrackingConfidence: 0.28
+  });
+  poseLandmarker = await PoseLandmarker.createFromOptions(vision, {
+    baseOptions: {
+      modelAssetPath: POSE_MODEL_URL
+    },
+    runningMode: "VIDEO",
+    numPoses: 1,
+    minPoseDetectionConfidence: 0.35,
+    minPosePresenceConfidence: 0.35,
+    minTrackingConfidence: 0.35
   });
 
   visionModelReady = true;
@@ -299,6 +317,11 @@ function getPointerFallback() {
 }
 
 function detectHands(now) {
+  if (!bookMappingExperience?.needsHandTracking?.()) {
+    smoothedHands = [];
+    return;
+  }
+
   if (!handLandmarker || !video.srcObject || video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
     return;
   }
@@ -351,18 +374,63 @@ function detectHands(now) {
   }
 }
 
+function detectPose(now) {
+  const shouldDetectPose = bookMappingExperience?.needsPoseTracking?.() || false;
+  const pointer = getPointerFallback();
+
+  if (!shouldDetectPose) {
+    poseInput = createPoseInput({
+      previous: poseInput,
+      worldBounds
+    });
+    return;
+  }
+
+  if (!poseLandmarker || !video.srcObject || video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
+    poseInput = createPoseInput({
+      previous: poseInput,
+      worldBounds,
+      smoothing: 0.32,
+      minVisibility: 0.35,
+      pointer
+    });
+    return;
+  }
+
+  if (now - lastPoseDetectAt < POSE_DETECT_INTERVAL || video.currentTime === lastPoseVideoTime) {
+    return;
+  }
+
+  lastPoseDetectAt = now;
+  lastPoseVideoTime = video.currentTime;
+
+  const result = poseLandmarker.detectForVideo(video, now);
+  poseInput = createPoseInput({
+    landmarks: result.landmarks?.[0] ?? null,
+    previous: poseInput,
+    worldBounds,
+    smoothing: 0.32,
+    minVisibility: 0.35,
+    pointer
+  });
+}
+
 function animate(now = performance.now()) {
   requestAnimationFrame(animate);
 
   detectHands(now);
+  detectPose(now);
   if (ENABLE_BOOK_MAPPING) {
     bookMappingExperience?.update({
       input: createHandInput({
         hands: getInteractionHands(),
         pointer: smoothedHands.length ? null : getPointerFallback()
       }),
+      poseInput,
       cameraActive,
-      trackedHandsCount: smoothedHands.length
+      coverReady: cameraActive && visionModelReady,
+      trackedHandsCount: smoothedHands.length,
+      trackedPose: poseInput.stable
     });
   }
   renderer.render(scene, camera);
