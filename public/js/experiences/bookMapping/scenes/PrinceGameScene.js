@@ -1,17 +1,20 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js";
+import { PlayerSilhouette } from "../objects/PlayerSilhouette.js";
 import { PrinceAvatar } from "../objects/PrinceAvatar.js";
 import { Rose } from "../objects/Rose.js";
 import { SmallPlanet } from "../objects/SmallPlanet.js";
 import { StarField } from "../objects/StarField.js";
 
 export class PrinceGameScene {
-  constructor({ scene, root, config, onComplete }) {
+  constructor({ scene, camera, root, config, onComplete }) {
     this.scene = scene;
+    this.camera = camera;
     this.root = root;
     this.config = config.prince;
     this.onComplete = onComplete;
     this.group = new THREE.Group();
     this.planet = null;
+    this.silhouette = null;
     this.avatar = null;
     this.stars = null;
     this.rose = null;
@@ -26,7 +29,10 @@ export class PrinceGameScene {
       leftWrist: null,
       rightWrist: null,
       starsRecovered: 0,
-      gameTime: 0
+      gameTime: 0,
+      segmentationActive: false,
+      segmentationFps: 0,
+      maskAge: null
     };
   }
 
@@ -38,11 +44,12 @@ export class PrinceGameScene {
     this.previousBackground = this.scene.background;
     this.scene.background = new THREE.Color(this.config.colors.background);
     this.planet = new SmallPlanet({ config: this.config.planet });
+    this.silhouette = new PlayerSilhouette({ camera: this.camera, config: this.config.silhouette });
     this.avatar = new PrinceAvatar({ config: this.config.avatar, colors: this.config.colors });
     this.stars = new StarField({ config: this.config.stars, colors: this.config.colors });
     this.rose = new Rose({ config: this.config.rose, colors: this.config.colors });
     this.rose.group.position.set(0, this.planet.getSurfaceY() - 0.1, -0.62);
-    this.group.add(this.planet.group, this.avatar.group, this.stars.group, this.rose.group);
+    this.group.add(this.silhouette.group, this.planet.group, this.avatar.group, this.stars.group, this.rose.group);
     this.scene.add(this.group);
     this.createInstruction();
   }
@@ -54,9 +61,11 @@ export class PrinceGameScene {
 
     const now = performance.now();
     const pose = context.poseInput;
+    const segmentationInput = context.segmentationInput;
     const poseStable = Boolean(pose?.stable);
 
     this.absenceElapsed = poseStable ? 0 : this.absenceElapsed + deltaTime;
+    this.silhouette.update(segmentationInput);
     this.avatar.update(poseStable ? pose : null);
 
     const torsoTilt = this.getTorsoTilt(pose);
@@ -76,7 +85,10 @@ export class PrinceGameScene {
       leftWrist: pose?.world?.leftWrist ?? null,
       rightWrist: pose?.world?.rightWrist ?? null,
       starsRecovered: this.stars.getRecoveredCount(),
-      gameTime: progress * this.config.gameDuration
+      gameTime: progress * this.config.gameDuration,
+      segmentationActive: Boolean(segmentationInput?.active),
+      segmentationFps: segmentationInput?.fps ?? 0,
+      maskAge: Number.isFinite(segmentationInput?.age) ? segmentationInput.age : null
     };
 
     if (!this.completed && (this.stars.isComplete() || progress >= 0.995 || this.absenceElapsed >= this.config.absenceTimeout)) {
@@ -95,11 +107,13 @@ export class PrinceGameScene {
     }
 
     this.planet?.dispose();
+    this.silhouette?.dispose();
     this.avatar?.dispose();
     this.stars?.dispose();
     this.rose?.dispose();
     this.group.clear();
     this.planet = null;
+    this.silhouette = null;
     this.avatar = null;
     this.stars = null;
     this.rose = null;

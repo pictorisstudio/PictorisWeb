@@ -1,4 +1,5 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js";
+import { createClockGeometry, createClockMaterial, getClockTexture } from "./ClockVisual.js";
 
 export class CollectiblePool {
   constructor({ config, colors }) {
@@ -8,7 +9,6 @@ export class CollectiblePool {
     this.items = [];
     this.geometries = [];
     this.materials = [];
-    this.textures = [];
     this.spawnElapsed = 0;
     this.hasFirstSpawned = false;
     this.hasFirstCollected = false;
@@ -159,7 +159,6 @@ export class CollectiblePool {
   dispose() {
     this.geometries.forEach((geometry) => geometry.dispose());
     this.materials.forEach((material) => material.dispose());
-    this.textures.forEach((texture) => texture.dispose());
     this.group.clear();
   }
 
@@ -216,24 +215,11 @@ export class CollectiblePool {
   }
 
   createSharedVisuals() {
-    const circle = new THREE.CircleGeometry(0.22, 28);
-    const line = new THREE.PlaneGeometry(0.34, 0.035);
-    this.geometries.push(circle, line);
+    const clock = createClockGeometry(this.config);
+    const texture = getClockTexture(this.config.clockAssetPath);
+    this.geometries.push(clock);
 
-    return { circle, line };
-  }
-
-  createMaterial(color, opacity = 1) {
-    const material = new THREE.MeshBasicMaterial({
-      color,
-      transparent: true,
-      opacity,
-      depthWrite: false,
-      side: THREE.DoubleSide
-    });
-    material.userData.baseOpacity = opacity;
-    this.materials.push(material);
-    return material;
+    return { clock, texture };
   }
 
   setItemOpacity(item, opacity) {
@@ -246,16 +232,12 @@ export class CollectiblePool {
   }
 
   createClock(shared) {
+    const material = createClockMaterial(shared.texture, 1);
+    this.materials.push(material);
+
     const group = new THREE.Group();
-    const face = new THREE.Mesh(shared.circle, this.createMaterial(this.colors.gold, 1));
-    const handA = new THREE.Mesh(shared.line, this.createMaterial(this.colors.ink, 1));
-    const handB = new THREE.Mesh(shared.line, this.createMaterial(this.colors.ink, 1));
-    handA.scale.x = 0.46;
-    handA.position.z = 0.01;
-    handB.scale.x = 0.34;
-    handB.rotation.z = Math.PI / 2.5;
-    handB.position.z = 0.02;
-    group.add(face, handA, handB);
+    const clock = new THREE.Mesh(shared.clock, material);
+    group.add(clock);
     return group;
   }
 

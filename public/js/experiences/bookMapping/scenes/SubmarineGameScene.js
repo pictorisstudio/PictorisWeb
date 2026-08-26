@@ -1,5 +1,7 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js";
 import { DiscoverableObject } from "../objects/DiscoverableObject.js";
+import { SubmarineBackground } from "../objects/SubmarineBackground.js";
+import { SubmarineDarkness } from "../objects/SubmarineDarkness.js";
 import { SubmarineLight } from "../objects/SubmarineLight.js";
 
 export class SubmarineGameScene {
@@ -10,12 +12,15 @@ export class SubmarineGameScene {
     this.config = config.submarine;
     this.onComplete = onComplete;
     this.group = new THREE.Group();
+    this.background = null;
+    this.darkness = null;
     this.light = null;
     this.objects = [];
     this.hudNode = null;
     this.previousBackground = null;
     this.completed = false;
     this.isActive = false;
+    this.elapsed = 0;
     this.debugStats = {
       lightX: 0,
       lightY: 0,
@@ -30,9 +35,11 @@ export class SubmarineGameScene {
     this.exit();
     this.isActive = true;
     this.completed = false;
+    this.elapsed = 0;
     this.previousBackground = this.scene.background;
     this.scene.background = new THREE.Color(this.config.colors.background);
-    this.createBackdrop();
+    this.background = new SubmarineBackground({ config: this.config.background, camera: this.camera });
+    this.group.add(this.background.group);
     this.objects = this.config.objects.map((definition) => new DiscoverableObject({
       definition,
       config: this.config.discovery,
@@ -40,6 +47,8 @@ export class SubmarineGameScene {
     }));
     this.objects.forEach((object) => this.group.add(object.group));
     this.light = new SubmarineLight({ config: this.config.light, camera: this.camera });
+    this.darkness = new SubmarineDarkness({ config: this.config.darkness, camera: this.camera });
+    this.group.add(this.darkness.group);
     this.group.add(this.light.group);
     this.scene.add(this.group);
     this.createHud();
@@ -51,8 +60,11 @@ export class SubmarineGameScene {
     }
 
     const now = performance.now();
+    this.elapsed += deltaTime;
+    this.background?.update();
     this.light.update(input);
     const lightPosition = this.light.getPosition();
+    this.darkness?.update(lightPosition);
     this.objects.forEach((object) => object.update(deltaTime, lightPosition, this.light.getRadius(), now));
     const discoveredCount = this.getDiscoveredCount();
     const active = this.objects.find((object) => object.getDebugState().active);
@@ -63,10 +75,10 @@ export class SubmarineGameScene {
       discoveredCount,
       activeObject: active?.definition?.name ?? "--",
       activeRevealProgress: active?.progress ?? 0,
-      time: progress * this.config.game.duration
+      time: this.elapsed
     };
 
-    if (!this.completed && (discoveredCount >= this.config.discovery.objectCount || progress >= 0.995)) {
+    if (!this.completed && discoveredCount >= this.config.discovery.objectCount) {
       this.completed = true;
       this.onComplete?.(this.getResult());
     }
@@ -76,11 +88,14 @@ export class SubmarineGameScene {
     this.isActive = false;
     this.hudNode?.remove();
     this.hudNode = null;
+    this.elapsed = 0;
 
     if (this.group.parent) {
       this.scene.remove(this.group);
     }
 
+    this.background?.dispose();
+    this.darkness?.dispose();
     this.objects.forEach((object) => object.dispose());
     this.light?.dispose();
     this.group.children.forEach((child) => {
@@ -88,6 +103,8 @@ export class SubmarineGameScene {
       child.material?.dispose?.();
     });
     this.group.clear();
+    this.background = null;
+    this.darkness = null;
     this.objects = [];
     this.light = null;
 
@@ -114,22 +131,6 @@ export class SubmarineGameScene {
 
   getDebugStats() {
     return this.debugStats;
-  }
-
-  createBackdrop() {
-    [0, 1, 2].forEach((index) => {
-      const geometry = new THREE.PlaneGeometry(15, 1.1);
-      const material = new THREE.MeshBasicMaterial({
-        color: index % 2 ? this.config.colors.water : this.config.colors.deep,
-        transparent: true,
-        opacity: 0.14 + index * 0.04,
-        depthWrite: false
-      });
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.position.set(0, -2.7 + index * 0.5, -1);
-      mesh.rotation.z = index % 2 ? 0.04 : -0.035;
-      this.group.add(mesh);
-    });
   }
 
   createHud() {

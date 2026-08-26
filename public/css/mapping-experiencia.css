@@ -74,6 +74,20 @@ body {
   opacity: 1;
 }
 
+.mapping-camera.is-active,
+.mapping-debug,
+.mapping-status {
+  opacity: 0;
+  visibility: hidden;
+}
+
+body.is-debug-mode .mapping-camera.is-active,
+body.is-debug-mode .mapping-debug,
+body.is-debug-mode .mapping-status {
+  opacity: 1;
+  visibility: visible;
+}
+
 .mapping-debug {
   position: fixed;
   z-index: 9;

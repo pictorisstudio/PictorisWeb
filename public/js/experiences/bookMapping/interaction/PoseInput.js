@@ -1,3 +1,5 @@
+import { normalizedVideoPointToWorld } from "../utils/VideoDisplayTransform.js";
+
 const POSE_LANDMARKS = Object.freeze({
   head: 0,
   leftShoulder: 11,
@@ -49,10 +51,15 @@ function normalizedToWorld(point, worldBounds) {
   };
 }
 
+function pointToWorld(point, worldBounds, displayTransform) {
+  return normalizedVideoPointToWorld(point, displayTransform) ?? normalizedToWorld(point, worldBounds);
+}
+
 export function createPoseInput({
   landmarks = null,
   previous = null,
   worldBounds = null,
+  displayTransform = null,
   smoothing = 0.32,
   minVisibility = 0.35,
   pointer = null
@@ -123,7 +130,7 @@ export function createPoseInput({
   const world = {};
 
   REQUIRED_POINTS.forEach((name) => {
-    world[name] = normalizedToWorld(points[name], worldBounds);
+    world[name] = pointToWorld(points[name], worldBounds, displayTransform);
   });
 
   world.torsoCenter = {

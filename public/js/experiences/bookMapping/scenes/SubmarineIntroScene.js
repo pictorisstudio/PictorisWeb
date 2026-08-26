@@ -1,4 +1,6 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js";
+import { SubmarineBackground } from "../objects/SubmarineBackground.js";
+import { SubmarineDarkness } from "../objects/SubmarineDarkness.js";
 import { SubmarineLight } from "../objects/SubmarineLight.js";
 
 export class SubmarineIntroScene {
@@ -8,6 +10,8 @@ export class SubmarineIntroScene {
     this.root = root;
     this.config = config.submarine;
     this.group = new THREE.Group();
+    this.background = null;
+    this.darkness = null;
     this.light = null;
     this.node = null;
     this.previousBackground = null;
@@ -25,8 +29,11 @@ export class SubmarineIntroScene {
     this.lastLight = null;
     this.previousBackground = this.scene.background;
     this.scene.background = new THREE.Color(this.config.colors.background);
-    this.createBackdrop();
+    this.background = new SubmarineBackground({ config: this.config.background, camera: this.camera });
+    this.group.add(this.background.group);
     this.light = new SubmarineLight({ config: this.config.light, camera: this.camera });
+    this.darkness = new SubmarineDarkness({ config: this.config.darkness, camera: this.camera });
+    this.group.add(this.darkness.group);
     this.group.add(this.light.group);
     this.scene.add(this.group);
     this.createInstruction();
@@ -39,10 +46,12 @@ export class SubmarineIntroScene {
 
     this.elapsed += deltaTime;
     this.light.update(input);
+    this.background?.update();
+    this.darkness?.update(this.light.getPosition());
     this.trackMovement();
     this.updateInstruction();
     this.group.children.forEach((child, index) => {
-      if (child !== this.light.group) {
+      if (child !== this.light.group && child !== this.background?.group && child !== this.darkness?.group) {
         child.position.x += Math.sin(performance.now() * 0.0004 + index) * 0.0008;
       }
     });
@@ -57,12 +66,16 @@ export class SubmarineIntroScene {
       this.scene.remove(this.group);
     }
 
+    this.background?.dispose();
+    this.darkness?.dispose();
     this.light?.dispose();
     this.group.children.forEach((child) => {
       child.geometry?.dispose?.();
       child.material?.dispose?.();
     });
     this.group.clear();
+    this.background = null;
+    this.darkness = null;
     this.light = null;
 
     if (this.previousBackground !== null) {
@@ -73,22 +86,6 @@ export class SubmarineIntroScene {
 
   destroy() {
     this.exit();
-  }
-
-  createBackdrop() {
-    [0, 1].forEach((index) => {
-      const geometry = new THREE.PlaneGeometry(15, 1.2);
-      const material = new THREE.MeshBasicMaterial({
-        color: index ? this.config.colors.water : this.config.colors.deep,
-        transparent: true,
-        opacity: 0.18,
-        depthWrite: false
-      });
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.position.set(0, -2.5 + index * 0.58, -1);
-      mesh.rotation.z = index ? 0.035 : -0.025;
-      this.group.add(mesh);
-    });
   }
 
   createInstruction() {

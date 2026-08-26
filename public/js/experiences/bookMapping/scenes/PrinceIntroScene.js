@@ -1,15 +1,18 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js";
+import { PlayerSilhouette } from "../objects/PlayerSilhouette.js";
 import { PrinceAvatar } from "../objects/PrinceAvatar.js";
 import { Rose } from "../objects/Rose.js";
 import { SmallPlanet } from "../objects/SmallPlanet.js";
 
 export class PrinceIntroScene {
-  constructor({ scene, root, config }) {
+  constructor({ scene, camera, root, config }) {
     this.scene = scene;
+    this.camera = camera;
     this.root = root;
     this.config = config.prince;
     this.group = new THREE.Group();
     this.planet = null;
+    this.silhouette = null;
     this.avatar = null;
     this.rose = null;
     this.node = null;
@@ -25,10 +28,11 @@ export class PrinceIntroScene {
     this.previousBackground = this.scene.background;
     this.scene.background = new THREE.Color(this.config.colors.background);
     this.planet = new SmallPlanet({ config: this.config.planet });
+    this.silhouette = new PlayerSilhouette({ camera: this.camera, config: this.config.silhouette });
     this.avatar = new PrinceAvatar({ config: this.config.avatar, colors: this.config.colors });
     this.rose = new Rose({ config: this.config.rose, colors: this.config.colors });
     this.rose.group.position.set(0, this.planet.getSurfaceY() - 0.1, -0.62);
-    this.group.add(this.planet.group, this.avatar.group, this.rose.group);
+    this.group.add(this.silhouette.group, this.planet.group, this.avatar.group, this.rose.group);
     this.scene.add(this.group);
     this.createInstruction();
   }
@@ -39,6 +43,7 @@ export class PrinceIntroScene {
     }
 
     const pose = context.poseInput;
+    this.silhouette.update(context.segmentationInput);
     const stable = Boolean(pose?.stable);
     this.poseStableElapsed = stable ? this.poseStableElapsed + deltaTime : 0;
     this.avatar.update(stable ? pose : null);
@@ -57,10 +62,12 @@ export class PrinceIntroScene {
     }
 
     this.planet?.dispose();
+    this.silhouette?.dispose();
     this.avatar?.dispose();
     this.rose?.dispose();
     this.group.clear();
     this.planet = null;
+    this.silhouette = null;
     this.avatar = null;
     this.rose = null;
 

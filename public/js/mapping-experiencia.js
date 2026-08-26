@@ -2,18 +2,30 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.m
 import {
   FilesetResolver,
   HandLandmarker,
+  ImageSegmenter,
   PoseLandmarker
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest";
 import { BookMappingExperience } from "./experiences/bookMapping/BookMappingExperience.js";
+import { experienceConfig } from "./experiences/bookMapping/config/experienceConfig.js";
+import { ExperienceState } from "./experiences/bookMapping/core/ExperienceState.js";
 import { createHandInput } from "./experiences/bookMapping/interaction/HandInput.js";
+import { copyPersonMask, createPersonSegmentationInput } from "./experiences/bookMapping/interaction/PersonSegmentation.js";
 import { createPoseInput } from "./experiences/bookMapping/interaction/PoseInput.js";
+import { createCoverVideoDisplayTransform, normalizedVideoPointToWorld } from "./experiences/bookMapping/utils/VideoDisplayTransform.js";
 
 const HAND_MODEL_URL = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task";
 const POSE_MODEL_URL = "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task";
+const SEGMENTER_MODEL_URL = "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite";
 const WASM_URL = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm";
 const DETECT_INTERVAL = 1000 / 30;
 const POSE_DETECT_INTERVAL = 1000 / 24;
+const SEGMENTATION_INTERVAL = 1000 / 18;
 const ENABLE_BOOK_MAPPING = true;
+const URL_PARAMS = new URLSearchParams(window.location.search);
+const DEBUG_MODE = URL_PARAMS.get("debug") === "1";
+const DEBUG_SCENE_STATES = Object.freeze({
+  submarine: ExperienceState.SUBMARINE_GAME
+});
 
 const canvasMount = document.querySelector("#mapping-canvas");
 const video = document.querySelector("#mapping-camera");
@@ -31,25 +43,56 @@ let camera;
 let worldBounds = { left: -8, right: 8, top: 4.5, bottom: -4.5, width: 16, height: 9 };
 let handLandmarker;
 let poseLandmarker;
+let imageSegmenter;
 let lastDetectAt = 0;
 let lastPoseDetectAt = 0;
+let lastSegmentationAt = 0;
 let lastVideoTime = -1;
 let lastPoseVideoTime = -1;
+let lastSegmentationVideoTime = -1;
 let smoothedHands = [];
 let poseInput = createPoseInput();
+let segmentationInput = createPersonSegmentationInput();
 let pointerTarget = null;
 let cameraActive = false;
 let bookMappingExperience = null;
 let lastHandsCount = 0;
 let lastTrackingStatusAt = 0;
 let visionModelReady = false;
+let segmentationModelReady = false;
+let segmentationCanvas;
+let segmentationContext;
+
+function getDebugEntryState() {
+  return DEBUG_MODE ? DEBUG_SCENE_STATES[URL_PARAMS.get("scene")] ?? null : null;
+}
+
+function getVideoDisplayTransform() {
+  if (!video.videoWidth || !video.videoHeight || !worldBounds.width || !worldBounds.height) {
+    return null;
+  }
+
+  const config = bookMappingExperience?.config?.prince?.silhouette ?? { height: 180 };
+  const displayAspect = worldBounds.width / worldBounds.height;
+  const displayHeight = config.height;
+  const displayWidth = Math.max(Math.round(displayHeight * displayAspect), 1);
+
+  return createCoverVideoDisplayTransform({
+    videoWidth: video.videoWidth,
+    videoHeight: video.videoHeight,
+    displayWidth,
+    displayHeight,
+    worldBounds,
+    mirrorX: true
+  });
+}
 
 function setStatus(message) {
   statusLabel.textContent = message;
 }
 
 function setDebug(element, message) {
-  if (element) {
+  if (DEBUG_MODE && element) {
     element.textContent = message;
   }
 }
@@ -85,6 +128,32 @@ function normalizedToWorld(point) {
     y: worldBounds.top - point.y * worldBounds.height,
     z: 0
   };
+}
+
+function screenNormalizedToWorld(point) {
+  return {
+    x: worldBounds.left + point.x * worldBounds.width,
+    y: worldBounds.top - point.y * worldBounds.height,
+    z: 0
+  };
+}
+
+function normalizedVideoToWorld(point) {
+  return normalizedVideoPointToWorld(point, getVideoDisplayTransform()) ?? normalizedToWorld(point);
+}
+
+function usesVideoAlignedHandWorld() {
+  return bookMappingExperience?.isAliceGameState?.();
+}
+
+function usesScreenAlignedPointerWorld() {
+  return bookMappingExperience?.isSubmarineState?.() || bookMappingExperience?.isAliceGameState?.();
+}
+
+function handPointToWorld(point) {
+  return usesVideoAlignedHandWorld()
+    ? normalizedVideoToWorld(point)
+    : normalizedToWorld(point);
 }
 
 function createRenderer() {
@@ -176,6 +245,22 @@ async function loadVisionModel() {
     minPosePresenceConfidence: 0.35,
     minTrackingConfidence: 0.35
   });
+
+  try {
+    imageSegmenter = await ImageSegmenter.createFromOptions(vision, {
+      baseOptions: {
+        modelAssetPath: SEGMENTER_MODEL_URL,
+        delegate: "GPU"
+      },
+      runningMode: "VIDEO",
+      outputConfidenceMasks: true,
+      outputCategoryMask: false
+    });
+    segmentationModelReady = true;
+  } catch (error) {
+    segmentationModelReady = false;
+    console.warn("No se pudo cargar Image Segmenter. La silueta se ocultará, pero Pose seguirá activo.", error);
+  }
 
   visionModelReady = true;
   startButton.disabled = false;
@@ -300,8 +385,8 @@ function getInteractionHands() {
   return smoothedHands.map((hand) => ({
     indexTip: hand.indexTip,
     palmCenter: hand.palmCenter,
-    indexWorld: normalizedToWorld(hand.indexTip),
-    palmWorld: hand.palmWorld
+    indexWorld: handPointToWorld(hand.indexTip),
+    palmWorld: handPointToWorld(hand.palmCenter)
   }));
 }
 
@@ -312,7 +397,9 @@ function getPointerFallback() {
 
   return {
     ...pointerTarget,
-    world: normalizedToWorld(pointerTarget)
+    world: usesScreenAlignedPointerWorld()
+      ? screenNormalizedToWorld(pointerTarget)
+      : normalizedToWorld(pointerTarget)
   };
 }
 
@@ -349,7 +436,7 @@ function detectHands(now) {
       indexTip,
       palmCenter,
       lastPalmWorld: previous?.palmWorld || null,
-      palmWorld: normalizedToWorld(palmCenter)
+      palmWorld: handPointToWorld(palmCenter)
     };
   });
 
@@ -381,7 +468,8 @@ function detectPose(now) {
   if (!shouldDetectPose) {
     poseInput = createPoseInput({
       previous: poseInput,
-      worldBounds
+      worldBounds,
+      displayTransform: getVideoDisplayTransform()
     });
     return;
   }
@@ -390,6 +478,7 @@ function detectPose(now) {
     poseInput = createPoseInput({
       previous: poseInput,
       worldBounds,
+      displayTransform: getVideoDisplayTransform(),
       smoothing: 0.32,
       minVisibility: 0.35,
       pointer
@@ -409,10 +498,111 @@ function detectPose(now) {
     landmarks: result.landmarks?.[0] ?? null,
     previous: poseInput,
     worldBounds,
+    displayTransform: getVideoDisplayTransform(),
     smoothing: 0.32,
     minVisibility: 0.35,
     pointer
   });
+}
+
+function ensureSegmentationCanvas(transform = null) {
+  const config = bookMappingExperience?.config?.prince?.silhouette ?? { width: 320, height: 180 };
+  const width = transform?.displayWidth ?? config.width;
+  const height = transform?.displayHeight ?? config.height;
+
+  if (segmentationCanvas) {
+    if (segmentationCanvas.width !== width || segmentationCanvas.height !== height) {
+      segmentationCanvas.width = width;
+      segmentationCanvas.height = height;
+    }
+    return;
+  }
+
+  segmentationCanvas = document.createElement("canvas");
+  segmentationCanvas.width = width;
+  segmentationCanvas.height = height;
+  segmentationContext = segmentationCanvas.getContext("2d", { willReadFrequently: true });
+}
+
+function drawMirroredVideoToSegmentationCanvas() {
+  const transform = getVideoDisplayTransform();
+  ensureSegmentationCanvas(transform);
+  const { width, height } = segmentationCanvas;
+  const scale = transform?.scale ?? 1;
+  const sourceWidth = width / scale;
+  const sourceHeight = height / scale;
+  const sourceX = Math.max(-(transform?.offsetX ?? 0) / scale, 0);
+  const sourceY = Math.max(-(transform?.offsetY ?? 0) / scale, 0);
+
+  segmentationContext.save();
+  segmentationContext.clearRect(0, 0, width, height);
+  segmentationContext.translate(width, 0);
+  segmentationContext.scale(-1, 1);
+  segmentationContext.drawImage(video, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, width, height);
+  segmentationContext.restore();
+}
+
+function detectPersonSegmentation(now) {
+  const shouldSegment = bookMappingExperience?.needsPersonSegmentation?.() || false;
+
+  if (!shouldSegment) {
+    segmentationInput = createPersonSegmentationInput({
+      ...segmentationInput,
+      modelReady: segmentationModelReady,
+      active: false
+    });
+    return;
+  }
+
+  if (!imageSegmenter || !video.srcObject || video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
+    segmentationInput = createPersonSegmentationInput({
+      ...segmentationInput,
+      modelReady: segmentationModelReady,
+      active: false,
+      error: imageSegmenter ? null : "segmenter-unavailable"
+    });
+    return;
+  }
+
+  if (now - lastSegmentationAt < SEGMENTATION_INTERVAL || video.currentTime === lastSegmentationVideoTime) {
+    segmentationInput = createPersonSegmentationInput({
+      ...segmentationInput,
+      modelReady: segmentationModelReady,
+      active: segmentationInput.active
+    });
+    return;
+  }
+
+  lastSegmentationAt = now;
+  lastSegmentationVideoTime = video.currentTime;
+  drawMirroredVideoToSegmentationCanvas();
+
+  try {
+    let maskCopy = null;
+    imageSegmenter.segmentForVideo(segmentationCanvas, now, (result) => {
+      maskCopy = copyPersonMask(result);
+      result?.confidenceMasks?.forEach((mask) => mask.close?.());
+      result?.categoryMask?.close?.();
+    });
+
+    const elapsed = Math.max(performance.now() - now, 1);
+    segmentationInput = createPersonSegmentationInput({
+      mask: maskCopy?.data ?? segmentationInput.mask,
+      width: maskCopy?.width ?? segmentationInput.width,
+      height: maskCopy?.height ?? segmentationInput.height,
+      timestamp: maskCopy ? performance.now() : segmentationInput.timestamp,
+      fps: 1000 / Math.max(SEGMENTATION_INTERVAL, elapsed),
+      modelReady: segmentationModelReady,
+      active: Boolean(maskCopy)
+    });
+  } catch (error) {
+    segmentationInput = createPersonSegmentationInput({
+      ...segmentationInput,
+      modelReady: segmentationModelReady,
+      active: false,
+      error: error?.message ?? "segmentation-error"
+    });
+  }
 }
 
 function animate(now = performance.now()) {
@@ -420,6 +610,7 @@ function animate(now = performance.now()) {
 
   detectHands(now);
   detectPose(now);
+  detectPersonSegmentation(now);
   if (ENABLE_BOOK_MAPPING) {
     bookMappingExperience?.update({
       input: createHandInput({
@@ -427,6 +618,7 @@ function animate(now = performance.now()) {
         pointer: smoothedHands.length ? null : getPointerFallback()
       }),
       poseInput,
+      segmentationInput,
       cameraActive,
       coverReady: cameraActive && visionModelReady,
       trackedHandsCount: smoothedHands.length,
@@ -437,9 +629,19 @@ function animate(now = performance.now()) {
 }
 
 async function init() {
+  document.body.classList.toggle("is-debug-mode", DEBUG_MODE);
   createRenderer();
   if (ENABLE_BOOK_MAPPING) {
-    bookMappingExperience = new BookMappingExperience({ renderer, scene, camera });
+    bookMappingExperience = new BookMappingExperience({
+      renderer,
+      scene,
+      camera,
+      config: {
+        ...experienceConfig,
+        debug: DEBUG_MODE
+      },
+      debugEntryState: getDebugEntryState()
+    });
     bookMappingExperience.init();
   }
   animate();

@@ -4,11 +4,12 @@ import { GiantBook } from "../objects/GiantBook.js";
 import { PlayerPage } from "../objects/PlayerPage.js";
 
 export class AliceGameScene {
-  constructor({ scene, camera, root, config }) {
+  constructor({ scene, camera, root, config, onComplete }) {
     this.scene = scene;
     this.camera = camera;
     this.root = root;
     this.config = config.aliceGame;
+    this.onComplete = onComplete;
     this.debugEnabled = config.debug;
     this.group = new THREE.Group();
     this.book = null;
@@ -25,6 +26,7 @@ export class AliceGameScene {
     this.tutorialElapsed = 0;
     this.hasAdvancedMoveTutorial = false;
     this.lastPlayerPosition = new THREE.Vector3();
+    this.completed = false;
     this.isActive = false;
     this.debugStats = {
       playerX: 0,
@@ -43,6 +45,7 @@ export class AliceGameScene {
   enter() {
     this.exit();
     this.isActive = true;
+    this.completed = false;
     this.previousBackground = this.scene.background;
     this.scene.background = new THREE.Color(this.config.colors.background);
     this.book = new GiantBook({
@@ -78,7 +81,7 @@ export class AliceGameScene {
       deltaTime,
       this.player.getPosition(),
       this.config.player.collectRadius,
-      progress < 0.98
+      !this.completed
     );
 
     const stats = this.collectibles.getStats();
@@ -103,6 +106,11 @@ export class AliceGameScene {
     this.updateHud(stats);
     this.updateTutorial(stats);
     this.updateDebugTarget(playerDebug);
+
+    if (!this.completed && stats.collected >= this.config.collectibles.targetCount) {
+      this.completed = true;
+      this.onComplete?.(this.getResult());
+    }
   }
 
   exit() {
@@ -115,6 +123,7 @@ export class AliceGameScene {
     this.movementDistance = 0;
     this.tutorialElapsed = 0;
     this.hasAdvancedMoveTutorial = false;
+    this.completed = false;
     this.lastPlayerPosition.set(0, 0, 0);
 
     if (this.group.parent) {
@@ -170,18 +179,19 @@ export class AliceGameScene {
 
     const target = this.config.collectibles.targetCount;
     const collected = Math.min(stats.collected, target);
-    const markers = Array.from({ length: target }, (_, index) => (
-      `<span class="${index < collected ? "is-found" : ""}"></span>`
-    )).join("");
-    this.hudNode.innerHTML = `<div class="alice-progress">${markers}</div>`;
+    this.hudNode.innerHTML = `
+      <div class="alice-progress">
+        <span>RELOJES RECUPERADOS</span>
+        <strong>${collected} / ${target}</strong>
+      </div>
+    `;
   }
 
   createTutorial() {
     this.tutorialNode = document.createElement("div");
     this.tutorialNode.className = "alice-game-tutorial";
     this.tutorialNode.innerHTML = `
-      <p data-role="move">MUEVE TU MANO</p>
-      <p class="is-hidden" data-role="catch">ATRAPA LOS RELOJES</p>
+      <p data-role="catch">RECOGE LOS RELOJES</p>
     `;
     this.root.appendChild(this.tutorialNode);
   }
@@ -191,19 +201,11 @@ export class AliceGameScene {
       return;
     }
 
-    const moveNode = this.tutorialNode.querySelector('[data-role="move"]');
     const catchNode = this.tutorialNode.querySelector('[data-role="catch"]');
     const tutorial = this.config.tutorial;
-    const movementReady = this.movementDistance >= tutorial.moveDistanceToAdvance;
-    const minimumReadTimePassed = this.tutorialElapsed >= tutorial.moveMinVisible;
     const maxReadTimePassed = this.tutorialElapsed >= tutorial.moveMaxVisible;
 
-    this.hasAdvancedMoveTutorial = this.hasAdvancedMoveTutorial
-      || (minimumReadTimePassed && movementReady)
-      || maxReadTimePassed;
-
-    moveNode.classList.toggle("is-hidden", this.hasAdvancedMoveTutorial);
-    catchNode.classList.toggle("is-hidden", !this.hasAdvancedMoveTutorial || stats.hasFirstCollected);
+    catchNode.classList.toggle("is-hidden", maxReadTimePassed);
   }
 
   createDebugTarget() {

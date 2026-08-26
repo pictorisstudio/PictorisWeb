@@ -1,5 +1,41 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js";
 
+const textureCache = new Map();
+const materialCache = new Map();
+
+function getTexture(assetPath) {
+  if (textureCache.has(assetPath)) {
+    return textureCache.get(assetPath);
+  }
+
+  const texture = new THREE.TextureLoader().load(assetPath, (loadedTexture) => {
+    loadedTexture.colorSpace = THREE.SRGBColorSpace;
+    loadedTexture.needsUpdate = true;
+  });
+  texture.colorSpace = THREE.SRGBColorSpace;
+  textureCache.set(assetPath, texture);
+  return texture;
+}
+
+function getImageMaterial(definition, color, opacity = 1) {
+  const key = definition.assetPath;
+
+  if (materialCache.has(key)) {
+    return materialCache.get(key);
+  }
+
+  const material = new THREE.MeshBasicMaterial({
+    map: getTexture(definition.assetPath),
+    color,
+    transparent: true,
+    opacity,
+    depthWrite: false,
+    side: THREE.DoubleSide
+  });
+  materialCache.set(key, material);
+  return material;
+}
+
 function makeMaterial(color, opacity = 1) {
   return new THREE.MeshBasicMaterial({
     color,
@@ -20,6 +56,14 @@ function addTentacle(group, x, y, length, color) {
   return { geometry, material };
 }
 
+function getImageSize(definition, fallbackWidth) {
+  const width = definition.width ?? fallbackWidth;
+  return {
+    width,
+    height: width / (definition.aspectRatio ?? 1)
+  };
+}
+
 export class DiscoverableObject {
   constructor({ definition, config, colors }) {
     this.definition = definition;
@@ -28,6 +72,8 @@ export class DiscoverableObject {
     this.group = new THREE.Group();
     this.visual = new THREE.Group();
     this.materials = [];
+    this.sharedMaterials = [];
+    this.imageMeshes = [];
     this.geometries = [];
     this.progress = 0;
     this.discovered = false;
@@ -63,8 +109,18 @@ export class DiscoverableObject {
       material.opacity += (visibility - material.opacity) * 0.12;
       material.color.lerp(new THREE.Color(color), 0.08);
     });
-    this.visual.position.y = Math.sin(elapsed * 0.0014 + this.definition.x) * 0.055;
-    this.visual.rotation.z = Math.sin(elapsed * 0.001 + this.definition.y) * 0.035;
+    this.sharedMaterials.forEach((material) => {
+      const imageColor = this.discovered ? 0xffffff : this.active ? this.colors.light : this.colors.hidden;
+      material.opacity += (visibility - material.opacity) * 0.12;
+      material.color.lerp(new THREE.Color(imageColor), 0.08);
+    });
+    this.imageMeshes.forEach((mesh) => {
+      mesh.renderOrder = this.discovered ? 7 : (this.definition.renderOrder ?? -3);
+    });
+    if (this.definition.ambientMotion !== false) {
+      this.visual.position.y = Math.sin(elapsed * 0.0014 + this.definition.x) * 0.055;
+      this.visual.rotation.z = Math.sin(elapsed * 0.001 + this.definition.y) * 0.035;
+    }
   }
 
   createShape() {
@@ -80,24 +136,35 @@ export class DiscoverableObject {
   }
 
   createNautilus() {
-    const bodyGeometry = new THREE.CapsuleGeometry(0.38, 1.18, 8, 18);
-    const bodyMaterial = makeMaterial(this.colors.hidden, 0.2);
-    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-    body.rotation.z = Math.PI / 2;
-    const windowGeometry = new THREE.CircleGeometry(0.16, 24);
-    const windowMaterial = makeMaterial(this.colors.accent, 0.24);
-    const windowMesh = new THREE.Mesh(windowGeometry, windowMaterial);
-    windowMesh.position.set(0.16, 0.08, 0.03);
-    const finGeometry = new THREE.CircleGeometry(0.24, 18);
-    const finMaterial = makeMaterial(this.colors.hidden, 0.2);
-    const fin = new THREE.Mesh(finGeometry, finMaterial);
-    fin.scale.set(1.4, 0.45, 1);
-    fin.position.set(-0.58, -0.28, 0.02);
-    this.visual.add(body, windowMesh, fin);
-    this.track(bodyGeometry, bodyMaterial, windowGeometry, windowMaterial, finGeometry, finMaterial);
+    const { width, height } = getImageSize(this.definition, 2.65);
+    const geometry = new THREE.PlaneGeometry(width, height);
+    const material = getImageMaterial(this.definition, this.colors.hidden, 0.18);
+    material.color.set(this.colors.hidden);
+    material.opacity = 0.18;
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.renderOrder = this.definition.renderOrder ?? -4;
+    this.visual.add(mesh);
+    this.track(geometry);
+    this.sharedMaterials.push(material);
+    this.imageMeshes.push(mesh);
   }
 
   createJellyfish() {
+    if (this.definition.assetPath) {
+      const { width, height } = getImageSize(this.definition, 1.85);
+      const geometry = new THREE.PlaneGeometry(width, height);
+      const material = getImageMaterial(this.definition, this.colors.hidden, 0.18);
+      material.color.set(this.colors.hidden);
+      material.opacity = 0.18;
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.renderOrder = this.definition.renderOrder ?? -3;
+      this.visual.add(mesh);
+      this.track(geometry);
+      this.sharedMaterials.push(material);
+      this.imageMeshes.push(mesh);
+      return;
+    }
+
     const bellGeometry = new THREE.CircleGeometry(0.45, 32);
     const bellMaterial = makeMaterial(this.colors.hidden, 0.24);
     const bell = new THREE.Mesh(bellGeometry, bellMaterial);
@@ -113,6 +180,21 @@ export class DiscoverableObject {
   }
 
   createSquid() {
+    if (this.definition.assetPath) {
+      const { width, height } = getImageSize(this.definition, 2.55);
+      const geometry = new THREE.PlaneGeometry(width, height);
+      const material = getImageMaterial(this.definition, this.colors.hidden, 0.18);
+      material.color.set(this.colors.hidden);
+      material.opacity = 0.18;
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.renderOrder = this.definition.renderOrder ?? -3;
+      this.visual.add(mesh);
+      this.track(geometry);
+      this.sharedMaterials.push(material);
+      this.imageMeshes.push(mesh);
+      return;
+    }
+
     const bodyGeometry = new THREE.CircleGeometry(0.44, 32);
     const bodyMaterial = makeMaterial(this.colors.hidden, 0.22);
     const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
@@ -128,6 +210,21 @@ export class DiscoverableObject {
   }
 
   createTreasure() {
+    if (this.definition.assetPath) {
+      const { width, height } = getImageSize(this.definition, 1.75);
+      const geometry = new THREE.PlaneGeometry(width, height);
+      const material = getImageMaterial(this.definition, this.colors.hidden, 0.18);
+      material.color.set(this.colors.hidden);
+      material.opacity = 0.18;
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.renderOrder = this.definition.renderOrder ?? -3;
+      this.visual.add(mesh);
+      this.track(geometry);
+      this.sharedMaterials.push(material);
+      this.imageMeshes.push(mesh);
+      return;
+    }
+
     const baseGeometry = new THREE.BoxGeometry(0.92, 0.46, 0.02);
     const lidGeometry = new THREE.BoxGeometry(0.98, 0.24, 0.02);
     const lockGeometry = new THREE.BoxGeometry(0.14, 0.18, 0.02);

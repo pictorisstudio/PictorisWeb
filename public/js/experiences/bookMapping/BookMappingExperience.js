@@ -5,6 +5,7 @@ import { ExperienceState } from "./core/ExperienceState.js";
 import { HandCursor } from "./interaction/HandCursor.js";
 import { AliceGameScene } from "./scenes/AliceGameScene.js";
 import { AliceIntroScene } from "./scenes/AliceIntroScene.js";
+import { AliceBookRecoveredScene } from "./scenes/AliceBookRecoveredScene.js";
 import { AliceResultScene } from "./scenes/AliceResultScene.js";
 import { IdleScene } from "./scenes/IdleScene.js";
 import { LiteraryIntroScene } from "./scenes/LiteraryIntroScene.js";
@@ -15,18 +16,20 @@ import { PrinceResultScene } from "./scenes/PrinceResultScene.js";
 import { PrinceTransitionScene } from "./scenes/PrinceTransitionScene.js";
 import { SubmarineGameScene } from "./scenes/SubmarineGameScene.js";
 import { SubmarineIntroScene } from "./scenes/SubmarineIntroScene.js";
+import { SubmarineBookRecoveredScene } from "./scenes/SubmarineBookRecoveredScene.js";
 import { SubmarineResultScene } from "./scenes/SubmarineResultScene.js";
 import { SubmarineTransitionScene } from "./scenes/SubmarineTransitionScene.js";
 
 export class BookMappingExperience {
-  constructor({ renderer, scene, camera, config = experienceConfig } = {}) {
+  constructor({ renderer, scene, camera, config = experienceConfig, debugEntryState = null } = {}) {
     this.renderer = renderer;
     this.scene = scene;
     this.camera = camera;
     this.config = config;
+    this.debugEntryState = debugEntryState;
     this.manager = new ExperienceManager({
       timeline: this.config.timeline,
-      initialState: ExperienceState.IDLE
+      initialState: this.debugEntryState ?? ExperienceState.IDLE
     });
     this.audioManager = new AudioManager({ config: this.config.audio });
     this.cursor = new HandCursor({ config: this.config.cursor });
@@ -40,6 +43,7 @@ export class BookMappingExperience {
     this.aliceIntroScene = null;
     this.aliceGameScene = null;
     this.aliceResultScene = null;
+    this.aliceBookRecoveredScene = null;
     this.princeTransitionScene = null;
     this.princeIntroScene = null;
     this.princeGameScene = null;
@@ -47,6 +51,7 @@ export class BookMappingExperience {
     this.submarineTransitionScene = null;
     this.submarineIntroScene = null;
     this.submarineGameScene = null;
+    this.submarineBookRecoveredScene = null;
     this.submarineResultScene = null;
     this.unsubscribeState = null;
     this.lastResult = null;
@@ -55,6 +60,7 @@ export class BookMappingExperience {
     this.lastFrameAt = performance.now();
     this.deltaTime = 0;
     this.fps = 0;
+    this.coverPresenceElapsed = 0;
     this.handActivationElapsed = 0;
     this.coverLostTrackingElapsed = 0;
     this.coverHandRaised = false;
@@ -88,11 +94,19 @@ export class BookMappingExperience {
       scene: this.scene,
       camera: this.camera,
       root: this.root,
-      config: this.config
+      config: this.config,
+      onComplete: (result) => {
+        this.lastResult = result;
+        this.manager.setState(ExperienceState.ALICE_RESULT);
+      }
     });
     this.aliceResultScene = new AliceResultScene({
       scene: this.scene,
       camera: this.camera,
+      root: this.root,
+      config: this.config
+    });
+    this.aliceBookRecoveredScene = new AliceBookRecoveredScene({
       root: this.root,
       config: this.config
     });
@@ -103,11 +117,13 @@ export class BookMappingExperience {
     });
     this.princeIntroScene = new PrinceIntroScene({
       scene: this.scene,
+      camera: this.camera,
       root: this.root,
       config: this.config
     });
     this.princeGameScene = new PrinceGameScene({
       scene: this.scene,
+      camera: this.camera,
       root: this.root,
       config: this.config,
       onComplete: (result) => {
@@ -138,8 +154,12 @@ export class BookMappingExperience {
       config: this.config,
       onComplete: (result) => {
         this.lastSubmarineResult = result;
-        this.manager.setState(ExperienceState.SUBMARINE_RESULT);
+        this.manager.setState(ExperienceState.SUBMARINE_BOOK_RECOVERED);
       }
+    });
+    this.submarineBookRecoveredScene = new SubmarineBookRecoveredScene({
+      root: this.root,
+      config: this.config
     });
     this.submarineResultScene = new SubmarineResultScene({
       scene: this.scene,
@@ -156,7 +176,7 @@ export class BookMappingExperience {
     this.enterState(this.manager.getState());
   }
 
-  update({ input, poseInput = null, cameraActive = false, coverReady = cameraActive, trackedHandsCount = 0, trackedPose = false, fps = null } = {}) {
+  update({ input, poseInput = null, segmentationInput = null, cameraActive = false, coverReady = cameraActive, trackedHandsCount = 0, trackedPose = false, fps = null } = {}) {
     if (this.isDestroyed) {
       return;
     }
@@ -169,7 +189,7 @@ export class BookMappingExperience {
     this.updateCoverAudio(state);
     this.updateLiteraryAudio(state);
 
-    if (this.config.debug && state !== ExperienceState.ALICE_GAME) {
+    if (this.config.debug && state !== ExperienceState.ALICE_GAME && !this.isSubmarineState(state)) {
       this.cursorState = this.cursor.update(input);
     } else {
       this.cursor.hide();
@@ -179,11 +199,15 @@ export class BookMappingExperience {
     if (state === ExperienceState.IDLE) {
       this.updateIdleActivation(input, coverReady);
     } else {
+      const shouldIgnoreAbsence = state === ExperienceState.ALICE_BOOK_RECOVERED
+        || state === ExperienceState.SUBMARINE_BOOK_RECOVERED;
       this.updateAbsence(
-        this.isPrinceState(state) ? poseDetected : handDetected,
+        shouldIgnoreAbsence || (this.isPrinceState(state) ? poseDetected : handDetected),
         this.isPrinceState(state) ? this.config.prince.absenceTimeout : this.config.idle.absenceResetDelay
       );
-      this.manager.update(this.deltaTime);
+      if (state !== ExperienceState.ALICE_GAME && state !== ExperienceState.SUBMARINE_GAME) {
+        this.manager.update(this.deltaTime);
+      }
     }
 
     const currentState = this.manager.getState();
@@ -192,6 +216,7 @@ export class BookMappingExperience {
     if (currentState === ExperienceState.IDLE) {
       this.idleScene.update(this.deltaTime, input, snapshot.progress, {
         cameraReady: coverReady,
+        instructionReady: this.isCoverInstructionReady(),
         holdProgress: this.getCoverHoldProgress()
       });
     } else if (currentState === ExperienceState.LITERARY_INTRO) {
@@ -204,12 +229,14 @@ export class BookMappingExperience {
       this.aliceGameScene.update(this.deltaTime, input, snapshot.progress);
     } else if (currentState === ExperienceState.ALICE_RESULT) {
       this.aliceResultScene.update(this.deltaTime, input, snapshot.progress);
+    } else if (currentState === ExperienceState.ALICE_BOOK_RECOVERED) {
+      this.aliceBookRecoveredScene.update(this.deltaTime);
     } else if (currentState === ExperienceState.TRANSITION_TO_PRINCE) {
       this.princeTransitionScene.update(this.deltaTime, input, snapshot.progress, { poseInput });
     } else if (currentState === ExperienceState.PRINCE_INTRO) {
-      this.princeIntroScene.update(this.deltaTime, input, snapshot.progress, { poseInput });
+      this.princeIntroScene.update(this.deltaTime, input, snapshot.progress, { poseInput, segmentationInput });
     } else if (currentState === ExperienceState.PRINCE_GAME) {
-      this.princeGameScene.update(this.deltaTime, input, snapshot.progress, { poseInput });
+      this.princeGameScene.update(this.deltaTime, input, snapshot.progress, { poseInput, segmentationInput });
     } else if (currentState === ExperienceState.PRINCE_RESULT) {
       this.princeResultScene.update(this.deltaTime, input, snapshot.progress, { poseInput });
     } else if (currentState === ExperienceState.TRANSITION_TO_SUBMARINE) {
@@ -218,6 +245,8 @@ export class BookMappingExperience {
       this.submarineIntroScene.update(this.deltaTime, input, snapshot.progress);
     } else if (currentState === ExperienceState.SUBMARINE_GAME) {
       this.submarineGameScene.update(this.deltaTime, input, snapshot.progress);
+    } else if (currentState === ExperienceState.SUBMARINE_BOOK_RECOVERED) {
+      this.submarineBookRecoveredScene.update(this.deltaTime);
     } else if (currentState === ExperienceState.SUBMARINE_RESULT) {
       this.submarineResultScene.update(this.deltaTime, input, snapshot.progress);
     }
@@ -227,11 +256,13 @@ export class BookMappingExperience {
       handDetected,
       poseDetected,
       poseInput,
+      segmentationInput,
       input
     });
   }
 
   reset() {
+    this.coverPresenceElapsed = 0;
     this.handActivationElapsed = 0;
     this.coverLostTrackingElapsed = 0;
     this.coverHandRaised = false;
@@ -240,6 +271,13 @@ export class BookMappingExperience {
     this.lastPrinceResult = null;
     this.lastSubmarineResult = null;
     this.exitAllScenes();
+
+    if (this.debugEntryState) {
+      this.manager.loopCount += 1;
+      this.manager.setState(this.debugEntryState, { force: true });
+      return;
+    }
+
     const wasIdle = this.manager.getState() === ExperienceState.IDLE;
     this.manager.reset();
 
@@ -271,6 +309,7 @@ export class BookMappingExperience {
     this.aliceIntroScene?.destroy();
     this.aliceGameScene?.destroy();
     this.aliceResultScene?.destroy();
+    this.aliceBookRecoveredScene?.destroy();
     this.princeTransitionScene?.destroy();
     this.princeIntroScene?.destroy();
     this.princeGameScene?.destroy();
@@ -278,6 +317,7 @@ export class BookMappingExperience {
     this.submarineTransitionScene?.destroy();
     this.submarineIntroScene?.destroy();
     this.submarineGameScene?.destroy();
+    this.submarineBookRecoveredScene?.destroy();
     this.submarineResultScene?.destroy();
     this.cursor.destroy();
     this.audioManager.destroy();
@@ -298,6 +338,7 @@ export class BookMappingExperience {
     this.aliceIntroScene = null;
     this.aliceGameScene = null;
     this.aliceResultScene = null;
+    this.aliceBookRecoveredScene = null;
     this.princeTransitionScene = null;
     this.princeIntroScene = null;
     this.princeGameScene = null;
@@ -305,6 +346,7 @@ export class BookMappingExperience {
     this.submarineTransitionScene = null;
     this.submarineIntroScene = null;
     this.submarineGameScene = null;
+    this.submarineBookRecoveredScene = null;
     this.submarineResultScene = null;
   }
 
@@ -327,6 +369,7 @@ export class BookMappingExperience {
     this.debugControls.innerHTML = `
       <button type="button" data-action="next">Next state</button>
       <button type="button" data-action="reset">Reset</button>
+      ${this.debugEntryState ? '<span>DEBUG: SUBMARINE</span>' : ""}
     `;
     this.debugControls.querySelector('[data-action="next"]').addEventListener("click", () => this.nextState());
     this.debugControls.querySelector('[data-action="reset"]').addEventListener("click", () => this.reset());
@@ -336,6 +379,7 @@ export class BookMappingExperience {
   enterState(state) {
     this.root.dataset.state = state;
     document.body.dataset.bookMappingState = state;
+    this.coverPresenceElapsed = state === ExperienceState.IDLE ? 0 : this.coverPresenceElapsed;
     this.handActivationElapsed = state === ExperienceState.IDLE ? 0 : this.handActivationElapsed;
     this.coverLostTrackingElapsed = state === ExperienceState.IDLE ? 0 : this.coverLostTrackingElapsed;
     this.coverHandRaised = state === ExperienceState.IDLE ? false : this.coverHandRaised;
@@ -386,6 +430,11 @@ export class BookMappingExperience {
       return;
     }
 
+    if (state === ExperienceState.ALICE_BOOK_RECOVERED) {
+      this.aliceBookRecoveredScene?.enter();
+      return;
+    }
+
     if (state === ExperienceState.TRANSITION_TO_PRINCE) {
       this.princeTransitionScene?.enter();
       return;
@@ -420,6 +469,11 @@ export class BookMappingExperience {
     if (state === ExperienceState.SUBMARINE_GAME) {
       this.lastSubmarineResult = null;
       this.submarineGameScene?.enter();
+      return;
+    }
+
+    if (state === ExperienceState.SUBMARINE_BOOK_RECOVERED) {
+      this.submarineBookRecoveredScene?.enter();
       return;
     }
 
@@ -469,6 +523,7 @@ export class BookMappingExperience {
     this.aliceIntroScene?.exit();
     this.aliceGameScene?.exit();
     this.aliceResultScene?.exit();
+    this.aliceBookRecoveredScene?.exit();
     this.princeTransitionScene?.exit();
     this.princeIntroScene?.exit();
     this.princeGameScene?.exit();
@@ -476,6 +531,7 @@ export class BookMappingExperience {
     this.submarineTransitionScene?.exit();
     this.submarineIntroScene?.exit();
     this.submarineGameScene?.exit();
+    this.submarineBookRecoveredScene?.exit();
     this.submarineResultScene?.exit();
   }
 
@@ -537,7 +593,12 @@ export class BookMappingExperience {
     return state === ExperienceState.TRANSITION_TO_SUBMARINE
       || state === ExperienceState.SUBMARINE_INTRO
       || state === ExperienceState.SUBMARINE_GAME
+      || state === ExperienceState.SUBMARINE_BOOK_RECOVERED
       || state === ExperienceState.SUBMARINE_RESULT;
+  }
+
+  isAliceGameState(state = this.manager.getState()) {
+    return state === ExperienceState.ALICE_GAME;
   }
 
   needsHandTracking() {
@@ -551,6 +612,7 @@ export class BookMappingExperience {
       || state === ExperienceState.TRANSITION_TO_SUBMARINE
       || state === ExperienceState.SUBMARINE_INTRO
       || state === ExperienceState.SUBMARINE_GAME
+      || state === ExperienceState.SUBMARINE_BOOK_RECOVERED
       || state === ExperienceState.SUBMARINE_RESULT;
   }
 
@@ -560,6 +622,12 @@ export class BookMappingExperience {
       || state === ExperienceState.PRINCE_INTRO
       || state === ExperienceState.PRINCE_GAME
       || state === ExperienceState.PRINCE_RESULT;
+  }
+
+  needsPersonSegmentation() {
+    const state = this.manager.getState();
+    return this.config.prince.segmentation.enabled
+      && (state === ExperienceState.PRINCE_INTRO || state === ExperienceState.PRINCE_GAME);
   }
 
   updateTime(fps) {
@@ -578,6 +646,7 @@ export class BookMappingExperience {
 
   updateIdleActivation(input, cameraReady) {
     if (!cameraReady) {
+      this.coverPresenceElapsed = 0;
       this.handActivationElapsed = 0;
       this.coverLostTrackingElapsed = 0;
       this.coverHandRaised = false;
@@ -588,6 +657,26 @@ export class BookMappingExperience {
     const gesture = this.config.idle.gesture;
     const hasPalm = Boolean(palm);
     const y = palm?.y ?? 1;
+
+    if (hasPalm) {
+      this.coverPresenceElapsed = Math.min(
+        this.coverPresenceElapsed + this.deltaTime,
+        this.config.idle.handActivationDelay
+      );
+      this.coverLostTrackingElapsed = 0;
+    } else if (this.coverPresenceElapsed > 0 && this.coverLostTrackingElapsed < gesture.lostTrackingGrace) {
+      this.coverLostTrackingElapsed += this.deltaTime;
+    } else {
+      this.coverPresenceElapsed = 0;
+      this.coverLostTrackingElapsed = 0;
+    }
+
+    if (!this.isCoverInstructionReady()) {
+      this.handActivationElapsed = 0;
+      this.coverHandRaised = false;
+      return;
+    }
+
     const raised = this.coverHandRaised
       ? hasPalm && y < gesture.exitThreshold
       : hasPalm && y < gesture.enterThreshold;
@@ -617,6 +706,10 @@ export class BookMappingExperience {
     return Math.min(this.handActivationElapsed / duration, 1);
   }
 
+  isCoverInstructionReady() {
+    return this.coverPresenceElapsed >= this.config.idle.handActivationDelay;
+  }
+
   playCoverConfirmSfx() {
     const coverConfirm = this.config.audio?.coverConfirm;
 
@@ -640,7 +733,7 @@ export class BookMappingExperience {
     }
   }
 
-  updateDebug({ cameraActive, handDetected, poseDetected, poseInput, input }) {
+  updateDebug({ cameraActive, handDetected, poseDetected, poseInput, segmentationInput, input }) {
     if (!this.debugPanel) {
       return;
     }
@@ -664,8 +757,17 @@ export class BookMappingExperience {
       <span>HAND: ${handDetected ? "DETECTED" : "NONE"}</span>
       <span>POSE DETECTED: ${poseDetected ? "YES" : "NO"}</span>
       <span>POSE CONF: ${Number(poseInput?.confidence ?? 0).toFixed(2)}</span>
+      <span>SEGMENTATION: ${segmentationInput?.active ? "ON" : "OFF"}</span>
+      <span>SEGMENTATION FPS: ${Number(segmentationInput?.fps ?? 0).toFixed(1)}</span>
+      <span>MASK AGE: ${Number.isFinite(segmentationInput?.age) ? Math.round(segmentationInput.age) : "--"}ms</span>
       <span>INPUT: ${input?.source ?? "none"}</span>
+      <span>COVER CROSSFADE: ${literaryStats?.coverTransitionPhase ?? "--"}</span>
+      <span>COVER CROSSFADE PROGRESS: ${Number(literaryStats?.coverTransitionProgress ?? 0).toFixed(2)}</span>
       <span>LITERARY PHASE: ${literaryStats?.phase ?? "--"}</span>
+      <span>LETTER COUNT: ${literaryStats?.letterCount ?? 0}</span>
+      <span>INTERACTION RADIUS: ${Number(literaryStats?.interactionRadius ?? 0).toFixed(2)}</span>
+      <span>HAND SPEED: ${Number(literaryStats?.handSpeed ?? 0).toFixed(3)}</span>
+      <span>ACTIVE INTERACTIONS: ${literaryStats?.activeInteractions ?? 0}</span>
       <span>MOVEMENT: ${Number(literaryStats?.movement ?? 0).toFixed(2)}</span>
       <span>CAN CONTINUE: ${literaryStats?.canContinue ? "YES" : "NO"}</span>
       <span>HAND RAISED: ${literaryStats?.handRaised ? "YES" : "NO"}</span>
@@ -751,11 +853,28 @@ export class BookMappingExperience {
 
       .book-idle-content h1,
       .alice-intro-content h1 {
-        margin: 0 auto 0.75rem;
+        margin: 0 auto 0.85rem;
         font-size: clamp(2.5rem, 8vw, 7rem);
         line-height: 0.9;
         letter-spacing: 0;
         text-transform: uppercase;
+      }
+
+      .book-idle-support {
+        width: fit-content;
+        max-width: min(100%, 720px);
+        margin: 0 auto clamp(1.15rem, 3vh, 1.8rem);
+        padding: clamp(0.55rem, 1.7vw, 0.8rem) clamp(0.85rem, 2.4vw, 1.35rem);
+        border: 1px solid rgba(216, 189, 116, 0.62);
+        background: rgba(9, 7, 16, 0.62);
+        color: #f8f5ff;
+        font-size: clamp(0.82rem, 1.9vw, 1.12rem);
+        font-weight: 900;
+        line-height: 1.2;
+        letter-spacing: 0.08em;
+        text-align: center;
+        text-transform: uppercase;
+        box-shadow: 0 16px 42px rgba(0, 0, 0, 0.28);
       }
 
       .book-idle-content p,
@@ -777,7 +896,7 @@ export class BookMappingExperience {
         transition: opacity 260ms ease, transform 260ms ease;
       }
 
-      .book-idle-scene.is-camera-ready .book-idle-gesture {
+      .book-idle-scene.is-instruction-ready .book-idle-gesture {
         opacity: 1;
         transform: translateY(0);
       }
@@ -818,10 +937,57 @@ export class BookMappingExperience {
         transition: stroke-dashoffset 120ms linear;
       }
 
+      .literary-cover-title {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        z-index: 22;
+        display: grid;
+        gap: clamp(1.2rem, 4vw, 2.6rem);
+        justify-items: center;
+        width: min(100% - 2rem, 980px);
+        color: #ffffff;
+        text-align: center;
+        text-transform: uppercase;
+        transform: translate(-50%, -50%) scale(1);
+        pointer-events: none;
+        text-shadow: 0 10px 44px rgba(0, 0, 0, 0.45);
+        will-change: opacity, transform, letter-spacing;
+      }
+
+      .literary-cover-title h1 {
+        margin: 0;
+        font-size: clamp(2.5rem, 8vw, 7rem);
+        font-weight: 900;
+        line-height: 0.9;
+        letter-spacing: inherit;
+      }
+
+      .literary-cover-gesture {
+        display: grid;
+        gap: 0.65rem;
+        justify-items: center;
+        color: #ea45be;
+        font-size: clamp(0.82rem, 2vw, 1.05rem);
+        font-weight: 900;
+        letter-spacing: 0.12em;
+      }
+
+      .literary-cover-gesture p {
+        margin: 0;
+      }
+
+      .literary-cover-gesture div {
+        width: clamp(3.4rem, 7vw, 5.2rem);
+        aspect-ratio: 1;
+        border: 6px solid #d8bd74;
+        border-radius: 999px;
+      }
+
       .alice-game-hud {
         position: fixed;
         left: 50%;
-        top: clamp(1rem, 5vh, 2.2rem);
+        top: clamp(5.8rem, 12vh, 7.2rem);
         z-index: 20;
         transform: translateX(-50%);
       }
@@ -863,48 +1029,95 @@ export class BookMappingExperience {
       }
 
       .alice-progress {
-        display: flex;
-        gap: 0.42rem;
-        padding: 0.48rem 0.62rem;
+        display: grid;
+        gap: 0.18rem;
+        min-width: min(76vw, 320px);
+        padding: 0.62rem 0.9rem;
         border: 1px solid rgba(248, 245, 255, 0.16);
         background: rgba(8, 7, 18, 0.54);
+        color: #f8f5ff;
+        text-align: center;
         backdrop-filter: blur(12px);
       }
 
       .alice-progress span {
-        width: 0.72rem;
-        height: 0.72rem;
-        border-radius: 999px;
-        border: 1px solid rgba(248, 245, 255, 0.42);
-        background: rgba(248, 245, 255, 0.1);
+        color: rgba(248, 245, 255, 0.74);
+        font-size: clamp(0.7rem, 1.6vw, 0.82rem);
+        font-weight: 900;
+        letter-spacing: 0.12em;
       }
 
-      .alice-progress span.is-found {
-        border-color: #ea45be;
-        background: #ea45be;
-        box-shadow: 0 0 16px rgba(234, 69, 190, 0.55);
+      .alice-progress strong {
+        color: #d7a947;
+        font-size: clamp(1.55rem, 4vw, 2.45rem);
+        font-weight: 900;
+        line-height: 1;
       }
 
       .alice-result-label {
         position: fixed;
         left: 50%;
-        bottom: clamp(2rem, 9vh, 5rem);
+        top: 50%;
         z-index: 20;
+        width: min(100% - 2rem, 860px);
         text-align: center;
-        transform: translateX(-50%);
+        text-shadow: 0 16px 48px rgba(0, 0, 0, 0.58);
+        transform: translate(-50%, -50%);
       }
 
       .alice-result-label h1 {
         margin: 0;
-        font-size: clamp(1.5rem, 4vw, 3rem);
+        font-size: clamp(2.4rem, 7vw, 6.5rem);
         line-height: 0.95;
         text-transform: uppercase;
       }
 
       .alice-result-label p {
-        margin: 0.5rem 0 0;
+        margin: clamp(0.75rem, 2vw, 1.2rem) 0 0;
         color: #ea45be;
+        font-size: clamp(1rem, 2.6vw, 1.8rem);
         font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .alice-book-recovered-scene,
+      .submarine-book-recovered-scene {
+        position: fixed;
+        inset: 0;
+        z-index: 21;
+        display: grid;
+        place-items: center;
+        padding:
+          clamp(5.8rem, 12vh, 7.2rem)
+          clamp(1rem, 4vw, 2.5rem)
+          clamp(1rem, 3vh, 2rem);
+        background: #080712;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .submarine-book-recovered-scene {
+        background: #031225;
+      }
+
+      .alice-book-recovered-scene img,
+      .submarine-book-recovered-scene img {
+        display: block;
+        width: auto;
+        height: auto;
+        max-height: calc(100vh - clamp(5.8rem, 12vh, 7.2rem) - clamp(1rem, 3vh, 2rem));
+        object-fit: contain;
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+        transform: translateY(clamp(0.4rem, 1.2vh, 0.8rem));
+      }
+
+      .alice-book-recovered-scene img {
+        max-width: min(72vw, 68vh);
+      }
+
+      .submarine-book-recovered-scene img {
+        max-width: min(76vw, 70vh);
       }
 
       .book-mapping-debug,
@@ -997,6 +1210,10 @@ export class BookMappingExperience {
         margin-bottom: 0.9rem;
       }
 
+      body:not([data-book-mapping-state="IDLE"]) .mapping-camera-field {
+        display: none;
+      }
+
       .mapping-panel .mapping-kicker,
       .mapping-panel h1,
       .mapping-panel p:not(.mapping-kicker) {
@@ -1009,6 +1226,7 @@ export class BookMappingExperience {
 
       body[data-book-mapping-state="ALICE_GAME"] .mapping-start-camera,
       body[data-book-mapping-state="ALICE_RESULT"] .mapping-start-camera,
+      body[data-book-mapping-state="ALICE_BOOK_RECOVERED"] .mapping-start-camera,
       body[data-book-mapping-state="LITERARY_INTRO"] .mapping-start-camera,
       body[data-book-mapping-state="LITERARY_TITLE"] .mapping-start-camera,
       body[data-book-mapping-state="TRANSITION_TO_PRINCE"] .mapping-start-camera,
@@ -1018,12 +1236,18 @@ export class BookMappingExperience {
       body[data-book-mapping-state="TRANSITION_TO_SUBMARINE"] .mapping-start-camera,
       body[data-book-mapping-state="SUBMARINE_INTRO"] .mapping-start-camera,
       body[data-book-mapping-state="SUBMARINE_GAME"] .mapping-start-camera,
+      body[data-book-mapping-state="SUBMARINE_BOOK_RECOVERED"] .mapping-start-camera,
       body[data-book-mapping-state="SUBMARINE_RESULT"] .mapping-start-camera {
         position: fixed;
         left: clamp(1rem, 3vw, 2rem);
         top: clamp(5.6rem, 12vh, 7rem);
         z-index: 22;
         transform: none;
+      }
+
+      body[data-book-mapping-state="PRINCE_INTRO"] .mapping-camera,
+      body[data-book-mapping-state="PRINCE_GAME"] .mapping-camera {
+        opacity: 0 !important;
       }
 
       .literary-tutorial {
@@ -1047,6 +1271,11 @@ export class BookMappingExperience {
       }
 
       .literary-tutorial.is-hidden {
+        opacity: 0;
+        transform: translate(-50%, -8px);
+      }
+
+      .literary-tutorial.is-transitioning {
         opacity: 0;
         transform: translate(-50%, -8px);
       }
