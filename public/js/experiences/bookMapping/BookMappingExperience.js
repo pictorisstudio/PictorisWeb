@@ -66,7 +66,7 @@ export class BookMappingExperience {
     this.coverHandRaised = false;
     this.absenceElapsed = 0;
     this.cursorState = null;
-    this.isCoverAudioPlaying = false;
+    this.isGlobalAudioPlaying = false;
     this.isLiteraryAudioPlaying = false;
     this.isDestroyed = false;
   }
@@ -186,8 +186,7 @@ export class BookMappingExperience {
     const handDetected = trackedHandsCount > 0;
     const poseDetected = Boolean(trackedPose || poseInput?.stable);
     const state = this.manager.getState();
-    this.updateCoverAudio(state);
-    this.updateLiteraryAudio(state);
+    this.updateGlobalAudio(cameraActive);
 
     if (this.config.debug && state !== ExperienceState.ALICE_GAME && !this.isSubmarineState(state)) {
       this.cursorState = this.cursor.update(input);
@@ -485,7 +484,6 @@ export class BookMappingExperience {
   registerAudio() {
     const coverAudio = this.config.audio?.cover;
     const coverConfirm = this.config.audio?.coverConfirm;
-    const literaryAudio = this.config.literaryIntro?.audio;
 
     if (coverAudio) {
       this.audioManager.registerLoop(coverAudio.id, {
@@ -503,17 +501,6 @@ export class BookMappingExperience {
         volume: coverConfirm.volume
       });
     }
-
-    if (!literaryAudio) {
-      return;
-    }
-
-    this.audioManager.registerLoop(literaryAudio.id, {
-      src: literaryAudio.src,
-      volume: literaryAudio.volume,
-      fadeIn: literaryAudio.fadeIn,
-      fadeOut: literaryAudio.fadeOut
-    });
   }
 
   exitAllScenes() {
@@ -539,24 +526,16 @@ export class BookMappingExperience {
     return this.manager.getState();
   }
 
-  updateCoverAudio(state = this.manager.getState()) {
+  updateGlobalAudio(shouldPlay = false) {
     const coverAudio = this.config.audio?.cover;
 
     if (!coverAudio || !this.audioManager) {
       return;
     }
 
-    const shouldPlay = state === ExperienceState.IDLE;
-
-    if (shouldPlay && !this.isCoverAudioPlaying) {
+    if (shouldPlay && !this.isGlobalAudioPlaying) {
       this.audioManager.play(coverAudio.id);
-      this.isCoverAudioPlaying = true;
-      return;
-    }
-
-    if (!shouldPlay && this.isCoverAudioPlaying) {
-      this.audioManager.stop(coverAudio.id);
-      this.isCoverAudioPlaying = false;
+      this.isGlobalAudioPlaying = true;
     }
   }
 

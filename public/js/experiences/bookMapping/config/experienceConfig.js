@@ -28,10 +28,10 @@ export const experienceConfig = {
     cover: {
       id: "coverAmbience",
       src: "audio/cover/cover-ambience.mp3",
-      volume: 0.32,
+      volume: 0.18,
       fadeIn: 1300,
-      fadeOut: 900,
-      resetOnStop: true
+      fadeOut: 0,
+      resetOnStop: false
     },
     coverConfirm: {
       id: "coverConfirm",
