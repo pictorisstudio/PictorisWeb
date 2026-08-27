@@ -196,7 +196,7 @@ body.is-debug-mode .mapping-status {
 .mapping-camera-field {
   align-self: center;
   width: min(100%, 420px);
-  display: grid;
+  display: none;
   gap: 0.5rem;
   margin: 0 auto;
   color: var(--map-muted);
@@ -205,6 +205,10 @@ body.is-debug-mode .mapping-status {
   letter-spacing: 0.1em;
   text-align: left;
   text-transform: uppercase;
+}
+
+body.is-debug-mode .mapping-camera-field {
+  display: grid;
 }
 
 .mapping-camera-select {

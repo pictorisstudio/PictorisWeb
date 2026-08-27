@@ -10,6 +10,7 @@ import { AliceResultScene } from "./scenes/AliceResultScene.js";
 import { IdleScene } from "./scenes/IdleScene.js";
 import { LiteraryIntroScene } from "./scenes/LiteraryIntroScene.js";
 import { LiteraryTitleScene } from "./scenes/LiteraryTitleScene.js";
+import { ParticleMirrorScene } from "./scenes/ParticleMirrorScene.js";
 import { PrinceGameScene } from "./scenes/PrinceGameScene.js";
 import { PrinceIntroScene } from "./scenes/PrinceIntroScene.js";
 import { PrinceResultScene } from "./scenes/PrinceResultScene.js";
@@ -53,6 +54,7 @@ export class BookMappingExperience {
     this.submarineGameScene = null;
     this.submarineBookRecoveredScene = null;
     this.submarineResultScene = null;
+    this.particleMirrorScene = null;
     this.unsubscribeState = null;
     this.lastResult = null;
     this.lastPrinceResult = null;
@@ -67,6 +69,7 @@ export class BookMappingExperience {
     this.absenceElapsed = 0;
     this.cursorState = null;
     this.isGlobalAudioPlaying = false;
+    this.isParticleAudioPlaying = false;
     this.isLiteraryAudioPlaying = false;
     this.isDestroyed = false;
   }
@@ -166,10 +169,20 @@ export class BookMappingExperience {
       root: this.root,
       config: this.config
     });
+    this.particleMirrorScene = new ParticleMirrorScene({
+      scene: this.scene,
+      camera: this.camera,
+      root: this.root,
+      config: this.config,
+      onComplete: () => this.reset()
+    });
     this.unsubscribeState = this.manager.onChange((state, previousState) => this.enterState(state, previousState));
 
-    if (this.config.debug) {
+    if (this.config.cursor?.enabled) {
       this.cursor.init();
+    }
+
+    if (this.config.debug) {
       this.createDebugControls();
     }
 
@@ -186,9 +199,9 @@ export class BookMappingExperience {
     const handDetected = trackedHandsCount > 0;
     const poseDetected = Boolean(trackedPose || poseInput?.stable);
     const state = this.manager.getState();
-    this.updateGlobalAudio(cameraActive);
+    this.updateExperienceAudio(state, cameraActive);
 
-    if (this.config.debug && state !== ExperienceState.ALICE_GAME && !this.isSubmarineState(state)) {
+    if (this.config.cursor?.enabled && state !== ExperienceState.ALICE_GAME && !this.isSubmarineState(state)) {
       this.cursorState = this.cursor.update(input);
     } else {
       this.cursor.hide();
@@ -200,8 +213,10 @@ export class BookMappingExperience {
     } else {
       const shouldIgnoreAbsence = state === ExperienceState.ALICE_BOOK_RECOVERED
         || state === ExperienceState.SUBMARINE_BOOK_RECOVERED;
+      const particleMirrorUserDetected = state === ExperienceState.PARTICLE_MIRROR
+        && Boolean(segmentationInput?.active || handDetected);
       this.updateAbsence(
-        shouldIgnoreAbsence || (this.isPrinceState(state) ? poseDetected : handDetected),
+        shouldIgnoreAbsence || particleMirrorUserDetected || (this.isPrinceState(state) ? poseDetected : handDetected),
         this.isPrinceState(state) ? this.config.prince.absenceTimeout : this.config.idle.absenceResetDelay
       );
       if (state !== ExperienceState.ALICE_GAME && state !== ExperienceState.SUBMARINE_GAME) {
@@ -246,6 +261,8 @@ export class BookMappingExperience {
       this.submarineGameScene.update(this.deltaTime, input, snapshot.progress);
     } else if (currentState === ExperienceState.SUBMARINE_BOOK_RECOVERED) {
       this.submarineBookRecoveredScene.update(this.deltaTime);
+    } else if (currentState === ExperienceState.PARTICLE_MIRROR) {
+      this.particleMirrorScene.update(this.deltaTime, input, segmentationInput);
     } else if (currentState === ExperienceState.SUBMARINE_RESULT) {
       this.submarineResultScene.update(this.deltaTime, input, snapshot.progress);
     }
@@ -318,6 +335,7 @@ export class BookMappingExperience {
     this.submarineGameScene?.destroy();
     this.submarineBookRecoveredScene?.destroy();
     this.submarineResultScene?.destroy();
+    this.particleMirrorScene?.destroy();
     this.cursor.destroy();
     this.audioManager.destroy();
     this.manager.destroy();
@@ -347,6 +365,7 @@ export class BookMappingExperience {
     this.submarineGameScene = null;
     this.submarineBookRecoveredScene = null;
     this.submarineResultScene = null;
+    this.particleMirrorScene = null;
   }
 
   createUi() {
@@ -421,6 +440,7 @@ export class BookMappingExperience {
     if (state === ExperienceState.ALICE_GAME) {
       this.lastResult = null;
       this.aliceGameScene?.enter();
+      this.playAliceInstructions();
       return;
     }
 
@@ -468,11 +488,17 @@ export class BookMappingExperience {
     if (state === ExperienceState.SUBMARINE_GAME) {
       this.lastSubmarineResult = null;
       this.submarineGameScene?.enter();
+      this.playSubmarineInstructions();
       return;
     }
 
     if (state === ExperienceState.SUBMARINE_BOOK_RECOVERED) {
       this.submarineBookRecoveredScene?.enter();
+      return;
+    }
+
+    if (state === ExperienceState.PARTICLE_MIRROR) {
+      this.particleMirrorScene?.enter();
       return;
     }
 
@@ -484,6 +510,9 @@ export class BookMappingExperience {
   registerAudio() {
     const coverAudio = this.config.audio?.cover;
     const coverConfirm = this.config.audio?.coverConfirm;
+    const aliceInstructions = this.config.audio?.aliceInstructions;
+    const submarineInstructions = this.config.audio?.submarineInstructions;
+    const particleMirrorAudio = this.config.audio?.particleMirror;
 
     if (coverAudio) {
       this.audioManager.registerLoop(coverAudio.id, {
@@ -499,6 +528,30 @@ export class BookMappingExperience {
       this.audioManager.registerSfx(coverConfirm.id, {
         src: coverConfirm.src,
         volume: coverConfirm.volume
+      });
+    }
+
+    if (aliceInstructions) {
+      this.audioManager.registerSfx(aliceInstructions.id, {
+        src: aliceInstructions.src,
+        volume: aliceInstructions.volume
+      });
+    }
+
+    if (submarineInstructions) {
+      this.audioManager.registerSfx(submarineInstructions.id, {
+        src: submarineInstructions.src,
+        volume: submarineInstructions.volume
+      });
+    }
+
+    if (particleMirrorAudio) {
+      this.audioManager.registerLoop(particleMirrorAudio.id, {
+        src: particleMirrorAudio.src,
+        volume: particleMirrorAudio.volume,
+        fadeIn: particleMirrorAudio.fadeIn,
+        fadeOut: particleMirrorAudio.fadeOut,
+        resetOnStop: particleMirrorAudio.resetOnStop
       });
     }
   }
@@ -520,10 +573,21 @@ export class BookMappingExperience {
     this.submarineGameScene?.exit();
     this.submarineBookRecoveredScene?.exit();
     this.submarineResultScene?.exit();
+    this.particleMirrorScene?.exit();
   }
 
   getState() {
     return this.manager.getState();
+  }
+
+  updateExperienceAudio(state = this.manager.getState(), cameraActive = false) {
+    if (state === ExperienceState.PARTICLE_MIRROR) {
+      this.enterParticleAudio();
+      return;
+    }
+
+    this.exitParticleAudio();
+    this.updateGlobalAudio(cameraActive);
   }
 
   updateGlobalAudio(shouldPlay = false) {
@@ -535,6 +599,46 @@ export class BookMappingExperience {
 
     if (shouldPlay && !this.isGlobalAudioPlaying) {
       this.audioManager.play(coverAudio.id);
+      this.isGlobalAudioPlaying = true;
+    }
+  }
+
+  enterParticleAudio() {
+    const coverAudio = this.config.audio?.cover;
+    const particleAudio = this.config.audio?.particleMirror;
+
+    if (!particleAudio || !this.audioManager || this.isParticleAudioPlaying) {
+      return;
+    }
+
+    if (coverAudio) {
+      this.audioManager.fadeTo(coverAudio.id, 0, particleAudio.globalFadeOut ?? 500, false);
+      this.isGlobalAudioPlaying = false;
+    }
+
+    this.audioManager.play(particleAudio.id);
+    this.isParticleAudioPlaying = true;
+  }
+
+  exitParticleAudio() {
+    const coverAudio = this.config.audio?.cover;
+    const particleAudio = this.config.audio?.particleMirror;
+
+    if (!particleAudio || !this.audioManager || !this.isParticleAudioPlaying) {
+      return;
+    }
+
+    this.audioManager.stop(particleAudio.id);
+    this.isParticleAudioPlaying = false;
+
+    if (coverAudio) {
+      this.audioManager.play(coverAudio.id);
+      this.audioManager.fadeTo(
+        coverAudio.id,
+        coverAudio.volume,
+        particleAudio.globalFadeIn ?? coverAudio.fadeIn,
+        false
+      );
       this.isGlobalAudioPlaying = true;
     }
   }
@@ -573,6 +677,7 @@ export class BookMappingExperience {
       || state === ExperienceState.SUBMARINE_INTRO
       || state === ExperienceState.SUBMARINE_GAME
       || state === ExperienceState.SUBMARINE_BOOK_RECOVERED
+      || state === ExperienceState.PARTICLE_MIRROR
       || state === ExperienceState.SUBMARINE_RESULT;
   }
 
@@ -592,6 +697,7 @@ export class BookMappingExperience {
       || state === ExperienceState.SUBMARINE_INTRO
       || state === ExperienceState.SUBMARINE_GAME
       || state === ExperienceState.SUBMARINE_BOOK_RECOVERED
+      || state === ExperienceState.PARTICLE_MIRROR
       || state === ExperienceState.SUBMARINE_RESULT;
   }
 
@@ -606,7 +712,9 @@ export class BookMappingExperience {
   needsPersonSegmentation() {
     const state = this.manager.getState();
     return this.config.prince.segmentation.enabled
-      && (state === ExperienceState.PRINCE_INTRO || state === ExperienceState.PRINCE_GAME);
+      && (state === ExperienceState.PRINCE_INTRO
+        || state === ExperienceState.PRINCE_GAME
+        || state === ExperienceState.PARTICLE_MIRROR);
   }
 
   updateTime(fps) {
@@ -697,6 +805,26 @@ export class BookMappingExperience {
     }
 
     this.audioManager.playSfx(coverConfirm.id);
+  }
+
+  playAliceInstructions() {
+    const aliceInstructions = this.config.audio?.aliceInstructions;
+
+    if (!aliceInstructions || !this.audioManager) {
+      return;
+    }
+
+    this.audioManager.playSfx(aliceInstructions.id);
+  }
+
+  playSubmarineInstructions() {
+    const submarineInstructions = this.config.audio?.submarineInstructions;
+
+    if (!submarineInstructions || !this.audioManager) {
+      return;
+    }
+
+    this.audioManager.playSfx(submarineInstructions.id);
   }
 
   updateAbsence(userDetected, absenceResetDelay = this.config.idle.absenceResetDelay) {
@@ -1099,6 +1227,81 @@ export class BookMappingExperience {
         max-width: min(76vw, 70vh);
       }
 
+      .particle-mirror-ui {
+        position: fixed;
+        inset: 0;
+        z-index: 21;
+        color: #f8f5ff;
+        pointer-events: none;
+      }
+
+      .particle-mirror-intro,
+      .particle-mirror-continue {
+        position: fixed;
+        left: 50%;
+        top: clamp(5.8rem, 13vh, 8rem);
+        transform: translateX(-50%);
+        text-align: center;
+        text-transform: uppercase;
+        text-shadow: 0 12px 44px rgba(0, 0, 0, 0.62);
+      }
+
+      .particle-mirror-intro {
+        margin: 0;
+        color: #62e7ff;
+        font-size: clamp(1.2rem, 3vw, 2.4rem);
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        opacity: 1;
+        transition: opacity 700ms ease, transform 700ms ease;
+      }
+
+      .particle-mirror-intro.is-hidden {
+        opacity: 0;
+        transform: translate(-50%, -8px);
+      }
+
+      .particle-mirror-continue {
+        display: grid;
+        gap: 0.6rem;
+        min-width: min(84vw, 380px);
+        opacity: 0;
+        transform: translate(-50%, 10px);
+        transition: opacity 320ms ease, transform 320ms ease;
+      }
+
+      .particle-mirror-continue.is-visible {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+
+      .particle-mirror-continue p {
+        margin: 0;
+        color: #ffffff;
+        font-size: clamp(0.82rem, 2vw, 1.12rem);
+        font-weight: 900;
+        letter-spacing: 0.12em;
+      }
+
+      .particle-mirror-hold {
+        width: 100%;
+        height: 6px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(248, 245, 255, 0.18);
+      }
+
+      .particle-mirror-hold span {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        background: #ea45be;
+        transform: scaleX(0);
+        transform-origin: left center;
+        transition: transform 120ms linear;
+      }
+
       .book-mapping-debug,
       .book-mapping-debug-controls {
         position: fixed;
@@ -1216,6 +1419,7 @@ export class BookMappingExperience {
       body[data-book-mapping-state="SUBMARINE_INTRO"] .mapping-start-camera,
       body[data-book-mapping-state="SUBMARINE_GAME"] .mapping-start-camera,
       body[data-book-mapping-state="SUBMARINE_BOOK_RECOVERED"] .mapping-start-camera,
+      body[data-book-mapping-state="PARTICLE_MIRROR"] .mapping-start-camera,
       body[data-book-mapping-state="SUBMARINE_RESULT"] .mapping-start-camera {
         position: fixed;
         left: clamp(1rem, 3vw, 2rem);

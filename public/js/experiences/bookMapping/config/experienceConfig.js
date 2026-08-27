@@ -37,6 +37,26 @@ export const experienceConfig = {
       id: "coverConfirm",
       src: "audio/cover/cover-confirm.mp3",
       volume: 0.45
+    },
+    aliceInstructions: {
+      id: "aliceInstructions",
+      src: "audio/alice/alice-instructions.mp3",
+      volume: 0.72
+    },
+    submarineInstructions: {
+      id: "submarineInstructions",
+      src: "audio/submarine/submarine-instructions.mp3",
+      volume: 0.72
+    },
+    particleMirror: {
+      id: "particleMirrorMusic",
+      src: "audio/particles/particle-mirror-music.mp3",
+      volume: 0.24,
+      fadeIn: 700,
+      fadeOut: 600,
+      globalFadeOut: 500,
+      globalFadeIn: 700,
+      resetOnStop: true
     }
   },
 
@@ -210,8 +230,13 @@ export const experienceConfig = {
     },
     [ExperienceState.SUBMARINE_BOOK_RECOVERED]: {
       duration: 9600,
+      next: ExperienceState.PARTICLE_MIRROR,
       title: "20.000 LEGUAS - LIBRO RECUPERADO",
       color: "#031225"
+    },
+    [ExperienceState.PARTICLE_MIRROR]: {
+      title: "MUÉVETE Y DESCUBRE",
+      color: "#05040a"
     }
   },
 
@@ -469,7 +494,71 @@ export const experienceConfig = {
   },
 
   submarineBookRecovered: {
-    assetPath: "assets/bookMapping/submarine/submarine-book-recovered.png",
+    assetPath: "assets/bookMapping/submarine/submarine-book-recovered-v2.png",
     fadeDuration: 800
+  },
+
+  particleMirror: {
+    duration: 60000,
+    instructionDuration: 4800,
+    fadeOutDuration: 900,
+    maskThreshold: 34,
+    maskSampleStep: 3,
+    z: -0.34,
+    mode: "enhanced",
+    modes: {
+      base: {
+        backgroundParticleCount: 380,
+        bodyParticleCount: 900,
+        followStrength: 0.14,
+        backgroundFollowStrength: 0.025,
+        backgroundOpacity: 0.42,
+        bodyOpacity: 1,
+        backgroundDrift: 0.002,
+        handRepulsionRadius: 1.15,
+        handRepulsionForce: 0.34,
+        handTurbulence: 0,
+        bodyJitter: 0.045,
+        edgeScatter: 0.16,
+        bodyBreath: 0.028,
+        edgeBreath: 0.018,
+        bodyPulse: 0,
+        torsoDensityBoost: false,
+        edgeDensityBoost: false,
+        motionColorIntensity: 0.72,
+        particleSizeBackground: 1.8,
+        particleSizeBody: 3.4,
+        backgroundAdditive: false,
+        bodyAdditive: true,
+        backgroundColors: ["#08244a", "#0d6f8d", "#3650cf", "#4f2d82"],
+        bodyColors: ["#62e7ff", "#3650cf", "#ea45be", "#f8f5ff"]
+      },
+      enhanced: {
+        backgroundParticleCount: 540,
+        bodyParticleCount: 1250,
+        followStrength: 0.17,
+        backgroundFollowStrength: 0.04,
+        backgroundOpacity: 0.58,
+        bodyOpacity: 1,
+        backgroundDrift: 0.0048,
+        handRepulsionRadius: 1.35,
+        handRepulsionForce: 0.52,
+        handTurbulence: 0.07,
+        bodyJitter: 0.06,
+        edgeScatter: 0.28,
+        bodyBreath: 0.052,
+        edgeBreath: 0.045,
+        bodyPulse: 0.35,
+        torsoDensityBoost: true,
+        edgeDensityBoost: true,
+        motionColorIntensity: 1.05,
+        particleSizeBackground: 2.4,
+        particleSizeBody: 4.8,
+        backgroundAdditive: true,
+        bodyAdditive: true,
+        backgroundColors: ["#08244a", "#0d6f8d", "#3650cf", "#4f2d82"],
+        bodyColors: ["#62e7ff", "#3650cf", "#ea45be", "#f8f5ff"]
+      }
+    }
   }
 };

@@ -22,10 +22,17 @@ const POSE_DETECT_INTERVAL = 1000 / 24;
 const SEGMENTATION_INTERVAL = 1000 / 18;
 const ENABLE_BOOK_MAPPING = true;
 const URL_PARAMS = new URLSearchParams(window.location.search);
-const DEBUG_MODE = URL_PARAMS.get("debug") === "1";
+const DEBUG_PARAM = URL_PARAMS.get("debug");
+const DEBUG_SCENE_PARAM = URL_PARAMS.get("scene");
 const DEBUG_SCENE_STATES = Object.freeze({
-  submarine: ExperienceState.SUBMARINE_GAME
+  submarine: ExperienceState.SUBMARINE_GAME,
+  particle: ExperienceState.PARTICLE_MIRROR,
+  particles: ExperienceState.PARTICLE_MIRROR,
+  particleMirror: ExperienceState.PARTICLE_MIRROR
 });
+const DEBUG_MODE = DEBUG_PARAM === "1"
+  || DEBUG_SCENE_STATES[DEBUG_PARAM] !== undefined
+  || DEBUG_SCENE_STATES[DEBUG_SCENE_PARAM] !== undefined;
 
 const canvasMount = document.querySelector("#mapping-canvas");
 const video = document.querySelector("#mapping-camera");
@@ -64,7 +71,7 @@ let segmentationCanvas;
 let segmentationContext;
 
 function getDebugEntryState() {
-  return DEBUG_MODE ? DEBUG_SCENE_STATES[URL_PARAMS.get("scene")] ?? null : null;
+  return DEBUG_MODE ? DEBUG_SCENE_STATES[DEBUG_SCENE_PARAM] ?? DEBUG_SCENE_STATES[DEBUG_PARAM] ?? null : null;
 }
 
 function getVideoDisplayTransform() {
