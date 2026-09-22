@@ -77,46 +77,15 @@
         <h2 id="map-title">Ubicación de los murales</h2>
       </div>
 
-      <div class="tamsa-map-shell" aria-label="Mapa del recorrido TAMSA desde archivo KML">
+      <div class="tamsa-map-shell" aria-label="Mapa del recorrido TAMSA">
         <div class="tamsa-map-canvas">
           <div id="tamsa-map" class="tamsa-leaflet-map" role="img" aria-label="Mapa con calles, ruta y puntos del recorrido TAMSA"></div>
-          <p>Recorrido georreferenciado desde el archivo KML · 30 puntos registrados</p>
+          <p id="tamsa-map-summary">Ruta principal del mural 1 al último mural registrado · Humedal Cuchivira señalado</p>
         </div>
 
         <aside class="tamsa-map-list" aria-label="Puntos del recorrido">
-          <h3>Puntos del recorrido</h3>
-          <ol>
-            <li><span>1</span>CASA QUINCHA CHICHIMUT</li>
-            <li><span>2</span>1 MASPAZ</li>
-            <li><span>3</span>2</li>
-            <li><span>4</span>3 CAUCHO Y TIEMPO</li>
-            <li><span>5</span>4</li>
-            <li><span>6</span>5 MARGO</li>
-            <li><span>7</span>6 GAREK</li>
-            <li><span>8</span>7 NEGRA</li>
-            <li><span>9</span>8 Wosnan</li>
-            <li><span>10</span>10 NEGRO JOSE / CHUCHO</li>
-            <li><span>11</span>11 YELA</li>
-            <li><span>12</span>12 AXA</li>
-            <li><span>13</span>13 TIERRARA</li>
-            <li><span>14</span>14</li>
-            <li><span>15</span>15 TRIANA</li>
-            <li><span>16</span>16 GODIE</li>
-            <li><span>17</span>17 GUACHE</li>
-            <li><span>18</span>19 HOWIE / KYNSHA</li>
-            <li><span>19</span>20 RITO</li>
-            <li><span>20</span>21</li>
-            <li><span>21</span>22</li>
-            <li><span>22</span>23</li>
-            <li><span>23</span>24</li>
-            <li><span>24</span>29 LEO</li>
-            <li><span>25</span>30</li>
-            <li><span>26</span>LA PILITA</li>
-            <li><span>27</span>31 Jaime Sierra</li>
-            <li><span>28</span>32 PAVEL</li>
-            <li><span>29</span>GRONE / JUANCHO</li>
-            <li><span>30</span>Marcador sin titulo</li>
-          </ol>
+          <h3>Ruta principal</h3>
+          <ol id="tamsa-map-points"></ol>
         </aside>
       </div>
     </section>
@@ -127,49 +96,7 @@
         <h2 id="murals-title">Murales del recorrido</h2>
       </div>
 
-      <div class="mural-timeline">
-        <article class="mural-item">
-          <div class="mural-image-slot">
-            <img src="assets/ProyectosTrasmedia/Tamsa/Chichimut.jpg" alt="Mural CASA QUINCHA CHICHIMUT" loading="lazy" />
-          </div>
-          <div class="mural-copy">
-            <span class="mural-number">01</span>
-            <h3>Mural uno</h3>
-            <p>
-              Espacio para describir el primer mural: su ubicación, motivo visual,
-              relación con Cuchavira y lectura simbólica dentro del recorrido TAMSA.
-            </p>
-          </div>
-        </article>
-
-        <article class="mural-item">
-          <div class="mural-image-slot">
-            <span>Imagen mural 02</span>
-          </div>
-          <div class="mural-copy">
-            <span class="mural-number">02</span>
-            <h3>Mural dos</h3>
-            <p>
-              Espacio para presentar el segundo mural, sus elementos gráficos principales
-              y el diálogo que establece con la memoria colectiva del territorio.
-            </p>
-          </div>
-        </article>
-
-        <article class="mural-item">
-          <div class="mural-image-slot">
-            <span>Imagen mural 03</span>
-          </div>
-          <div class="mural-copy">
-            <span class="mural-number">03</span>
-            <h3>Mural tres</h3>
-            <p>
-              Espacio para la información del tercer mural: contexto, composición,
-              autores o comunidad vinculada, y su papel dentro de la experiencia virtual.
-            </p>
-          </div>
-        </article>
-      </div>
+      <div id="tamsa-mural-grid" class="mural-grid" aria-live="polite"></div>
     </section>
   </main>
 
