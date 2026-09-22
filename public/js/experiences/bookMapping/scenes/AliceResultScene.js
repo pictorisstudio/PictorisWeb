@@ -1,4 +1,5 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js";
+import { createClockGeometry, createClockMaterial, getClockTexture } from "../objects/ClockVisual.js";
 import { PlayerPage } from "../objects/PlayerPage.js";
 
 export class AliceResultScene {
@@ -15,12 +16,14 @@ export class AliceResultScene {
     this.materials = [];
     this.node = null;
     this.previousBackground = null;
+    this.elapsed = 0;
     this.isActive = false;
   }
 
   enter(result = null) {
     this.exit();
     this.isActive = true;
+    this.elapsed = 0;
     this.previousBackground = this.scene.background;
     this.scene.background = new THREE.Color(this.config.colors.background);
     this.page = new PlayerPage({
@@ -34,17 +37,31 @@ export class AliceResultScene {
     this.createTitle(result);
   }
 
-  update(deltaTime, input, progress) {
+  update(deltaTime) {
     if (!this.isActive) {
       return;
     }
 
+    this.elapsed += deltaTime;
+    const duration = this.timeline.ALICE_RESULT.duration;
+    const fadeDuration = Math.min(700, duration * 0.25);
+    const fadeIn = Math.min(this.elapsed / fadeDuration, 1);
+    const fadeOutStart = duration - fadeDuration;
+    const fadeOut = this.elapsed > fadeOutStart
+      ? Math.max(1 - (this.elapsed - fadeOutStart) / fadeDuration, 0)
+      : 1;
+    const visibility = Math.min(fadeIn, fadeOut);
+
     this.page.group.rotation.z = Math.sin(performance.now() * 0.0014) * 0.08;
     this.resultClocks.forEach((clock, index) => {
-      clock.mesh.position.lerp(clock.target, 0.055 + progress * 0.04);
+      clock.mesh.position.lerp(clock.target, 0.055 + visibility * 0.04);
       clock.mesh.rotation.z += 0.01 + index * 0.0008;
-      clock.material.opacity = Math.min(clock.material.opacity + 0.025, 0.88);
+      clock.material.opacity = Math.min(clock.material.opacity + 0.025, 1);
     });
+
+    if (this.node) {
+      this.node.style.opacity = String(visibility);
+    }
   }
 
   exit() {
@@ -77,33 +94,16 @@ export class AliceResultScene {
 
   buildResultClocks(result) {
     const count = Math.max(result?.collectedCount ?? 0, 1);
-    const clockGeometry = new THREE.CircleGeometry(0.13, 24);
-    const handGeometry = new THREE.PlaneGeometry(0.16, 0.018);
-    this.geometries.push(clockGeometry, handGeometry);
+    const clockGeometry = createClockGeometry(this.config.collectibles, 0.78);
+    const clockTexture = getClockTexture(this.config.collectibles.clockAssetPath);
+    const material = createClockMaterial(clockTexture, 0);
+    this.geometries.push(clockGeometry);
+    this.materials.push(material);
 
     for (let index = 0; index < count; index += 1) {
-      const material = new THREE.MeshBasicMaterial({
-        color: index % 2 ? this.config.colors.pink : this.config.colors.gold,
-        transparent: true,
-        opacity: 0,
-        depthWrite: false,
-        side: THREE.DoubleSide
-      });
-      const mesh = new THREE.Group();
-      const face = new THREE.Mesh(clockGeometry, material);
-      const hand = new THREE.Mesh(handGeometry, new THREE.MeshBasicMaterial({
-        color: this.config.colors.ink,
-        transparent: true,
-        opacity: 0.82,
-        depthWrite: false,
-        side: THREE.DoubleSide
-      }));
+      const mesh = new THREE.Mesh(clockGeometry, material);
       const angle = (index / count) * Math.PI * 2;
-      hand.position.z = 0.01;
-      hand.rotation.z = angle;
-      mesh.add(face, hand);
       mesh.position.set((Math.random() - 0.5) * 5, (Math.random() - 0.5) * 3.4, -1.2);
-      this.materials.push(material, hand.material);
       this.group.add(mesh);
       this.resultClocks.push({
         mesh,
@@ -114,13 +114,12 @@ export class AliceResultScene {
   }
 
   createTitle(result) {
-    const collected = result?.collectedCount ?? 0;
     const target = result?.targetCount ?? this.config.collectibles.targetCount;
     this.node = document.createElement("div");
     this.node.className = "alice-result-label";
     this.node.innerHTML = `
       <h1>${this.timeline.ALICE_RESULT.title}</h1>
-      <p>${collected} / ${target}</p>
+      <p>RECUPERASTE LOS ${target} RELOJES</p>
     `;
     this.root.appendChild(this.node);
   }

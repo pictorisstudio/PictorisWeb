@@ -13,6 +13,7 @@ export class IdleScene {
       <div class="book-idle-bg"></div>
       <div class="book-idle-content">
         <h1>${this.config.idle.title}</h1>
+        <div class="book-idle-support">EXPERIENCIA INTERACTIVA CON TUS MANOS</div>
         <div class="book-idle-gesture" aria-hidden="true">
           <p>LEVANTA TU MANO<br>PARA COMENZAR</p>
           <div class="book-idle-hold-circle" aria-hidden="true">
@@ -27,7 +28,7 @@ export class IdleScene {
     this.root.appendChild(this.node);
   }
 
-  update(deltaTime, input, progress, { cameraReady = false, holdProgress = 0 } = {}) {
+  update(deltaTime, input, progress, { cameraReady = false, instructionReady = false, holdProgress = 0 } = {}) {
     if (!this.node) {
       return;
     }
@@ -35,6 +36,7 @@ export class IdleScene {
     const hold = this.node.querySelector(".book-idle-hold-progress");
     const circleLength = 2 * Math.PI * 26;
     this.node.classList.toggle("is-camera-ready", cameraReady);
+    this.node.classList.toggle("is-instruction-ready", instructionReady);
     this.node.classList.toggle("is-hold-complete", holdProgress >= 1);
 
     if (hold) {

@@ -1,6 +1,41 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js";
 import { clamp, handPointToWorld } from "../utils/math.js";
 
+const pageTextureCache = new Map();
+const pageMaterialCache = new Map();
+
+function getPageTexture(assetPath) {
+  if (pageTextureCache.has(assetPath)) {
+    return pageTextureCache.get(assetPath);
+  }
+
+  const texture = new THREE.TextureLoader().load(assetPath, (loadedTexture) => {
+    loadedTexture.colorSpace = THREE.SRGBColorSpace;
+    loadedTexture.needsUpdate = true;
+  });
+  texture.colorSpace = THREE.SRGBColorSpace;
+  pageTextureCache.set(assetPath, texture);
+  return texture;
+}
+
+function getPageMaterial(config) {
+  const key = `${config.assetPath}-${config.opacity}`;
+
+  if (pageMaterialCache.has(key)) {
+    return pageMaterialCache.get(key);
+  }
+
+  const material = new THREE.MeshBasicMaterial({
+    map: getPageTexture(config.assetPath),
+    transparent: true,
+    opacity: config.opacity,
+    depthWrite: false,
+    side: THREE.DoubleSide
+  });
+  pageMaterialCache.set(key, material);
+  return material;
+}
+
 export class PlayerPage {
   constructor({ camera, config }) {
     this.camera = camera;
@@ -21,12 +56,12 @@ export class PlayerPage {
   update(deltaTime, input) {
     const delta = deltaTime / 1000;
     const palm = input?.primaryHand?.palm;
-    const targetWorld = handPointToWorld(palm, input?.source, this.camera, this.config);
+    const targetWorld = palm?.world ?? handPointToWorld(palm, input?.source, this.camera, this.config);
 
     if (targetWorld) {
       this.rawPalm.x = palm.x;
       this.rawPalm.y = palm.y;
-      this.target.copy(targetWorld);
+      this.target.set(targetWorld.x, targetWorld.y, -1.1);
 
       if (!this.hasInputLock) {
         this.group.position.copy(this.target);
@@ -97,47 +132,11 @@ export class PlayerPage {
   }
 
   build() {
-    const pageGeometry = new THREE.PlaneGeometry(this.config.width, this.config.height);
-    const borderGeometry = new THREE.PlaneGeometry(this.config.width * 1.08, this.config.height * 1.06);
-    const shadowGeometry = new THREE.PlaneGeometry(this.config.width * 1.1, this.config.height * 1.08);
-    const lineGeometry = new THREE.PlaneGeometry(this.config.width * 0.58, 0.018);
-    const ornamentGeometry = new THREE.CircleGeometry(0.045, 18);
-    const glowGeometry = new THREE.PlaneGeometry(this.config.width * 1.24, this.config.height * 1.18);
-    const shadowMaterial = new THREE.MeshBasicMaterial({
-      color: this.config.shadowColor,
-      transparent: true,
-      opacity: this.config.shadowOpacity,
-      depthWrite: false,
-      side: THREE.DoubleSide
-    });
-    const borderMaterial = new THREE.MeshBasicMaterial({
-      color: this.config.borderColor,
-      transparent: true,
-      opacity: this.config.borderOpacity,
-      depthWrite: true,
-      side: THREE.DoubleSide
-    });
-    const pageMaterial = new THREE.MeshBasicMaterial({
-      color: "#F6EBD2",
-      transparent: false,
-      opacity: this.config.opacity,
-      depthWrite: true,
-      side: THREE.DoubleSide
-    });
-    const lineMaterial = new THREE.MeshBasicMaterial({
-      color: "#7A5C47",
-      transparent: true,
-      opacity: this.config.lineOpacity,
-      depthWrite: false,
-      side: THREE.DoubleSide
-    });
-    const ornamentMaterial = new THREE.MeshBasicMaterial({
-      color: "#8E6F57",
-      transparent: true,
-      opacity: this.config.ornamentOpacity,
-      depthWrite: false,
-      side: THREE.DoubleSide
-    });
+    const pageWidth = this.config.width;
+    const pageHeight = pageWidth / this.config.aspectRatio;
+    const pageGeometry = new THREE.PlaneGeometry(pageWidth, pageHeight);
+    const glowGeometry = new THREE.PlaneGeometry(pageWidth * 1.2, pageHeight * 1.12);
+    const pageMaterial = getPageMaterial(this.config);
     const glowMaterial = new THREE.MeshBasicMaterial({
       color: "#3650CF",
       transparent: true,
@@ -146,40 +145,17 @@ export class PlayerPage {
       side: THREE.DoubleSide
     });
 
-    this.geometries.push(pageGeometry, borderGeometry, shadowGeometry, lineGeometry, ornamentGeometry, glowGeometry);
-    this.materials.push(pageMaterial, borderMaterial, shadowMaterial, lineMaterial, ornamentMaterial, glowMaterial);
+    this.geometries.push(pageGeometry, glowGeometry);
+    this.materials.push(glowMaterial);
 
     this.glow = new THREE.Mesh(glowGeometry, glowMaterial);
     this.glow.position.z = -0.02;
     this.glow.renderOrder = 30;
     this.group.add(this.glow);
 
-    const shadow = new THREE.Mesh(shadowGeometry, shadowMaterial);
-    shadow.position.set(this.config.shadowOffsetX, this.config.shadowOffsetY, -0.03);
-    shadow.renderOrder = 31;
-    this.group.add(shadow);
-
-    const border = new THREE.Mesh(borderGeometry, borderMaterial);
-    border.position.z = -0.01;
-    border.renderOrder = 32;
-    this.group.add(border);
-
     const page = new THREE.Mesh(pageGeometry, pageMaterial);
     page.renderOrder = 33;
     this.group.add(page);
-
-    for (let index = 0; index < 5; index += 1) {
-      const line = new THREE.Mesh(lineGeometry, lineMaterial);
-      line.position.set(index % 2 ? 0.02 : -0.03, 0.25 - index * 0.12, 0.01);
-      line.scale.x = index === 4 ? 0.65 : 1;
-      line.renderOrder = 34;
-      this.group.add(line);
-    }
-
-    const ornament = new THREE.Mesh(ornamentGeometry, ornamentMaterial);
-    ornament.position.set(0, -0.32, 0.02);
-    ornament.renderOrder = 35;
-    this.group.add(ornament);
     this.reset();
   }
 }

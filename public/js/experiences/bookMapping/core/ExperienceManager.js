@@ -13,8 +13,8 @@ export class ExperienceManager {
     return this.state;
   }
 
-  setState(nextState) {
-    if (!Object.values(ExperienceState).includes(nextState) || this.state === nextState) {
+  setState(nextState, { force = false } = {}) {
+    if (!Object.values(ExperienceState).includes(nextState) || (!force && this.state === nextState)) {
       return;
     }
 

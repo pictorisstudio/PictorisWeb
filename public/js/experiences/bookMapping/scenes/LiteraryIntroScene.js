@@ -11,8 +11,11 @@ export class LiteraryIntroScene {
     this.group = new THREE.Group();
     this.letterField = null;
     this.node = null;
+    this.coverTitleNode = null;
     this.previousBackground = null;
     this.elapsed = 0;
+    this.coverTransitionElapsed = 0;
+    this.coverTransitionComplete = false;
     this.phaseElapsed = 0;
     this.holdElapsed = 0;
     this.lostTrackingElapsed = 0;
@@ -28,7 +31,14 @@ export class LiteraryIntroScene {
       canContinue: false,
       handRaised: false,
       holdProgress: 0,
-      letterCount: this.config.letters.count
+      letterCount: this.config.letters.count,
+      coverTransitionPhase: "--",
+      coverTransitionProgress: 0,
+      interactionRadius: this.config.letters.interactionRadius,
+      pushStrength: this.config.letters.pushStrength,
+      maxPush: this.config.letters.maxPush,
+      handSpeed: 0,
+      activeInteractions: 0
     };
   }
 
@@ -36,6 +46,8 @@ export class LiteraryIntroScene {
     this.exit();
     this.isActive = true;
     this.elapsed = 0;
+    this.coverTransitionElapsed = 0;
+    this.coverTransitionComplete = false;
     this.phaseElapsed = 0;
     this.holdElapsed = 0;
     this.lostTrackingElapsed = 0;
@@ -50,13 +62,22 @@ export class LiteraryIntroScene {
       camera: this.camera,
       config: this.config.letters
     });
+    this.letterField.setOpacity(0);
+    this.letterField.setInteractionEnabled(false);
     this.group.add(this.letterField.group);
     this.scene.add(this.group);
     this.createTutorial();
+    this.createCoverTitle();
   }
 
   update(deltaTime, input, progress) {
     if (!this.isActive) {
+      return;
+    }
+
+    if (!this.coverTransitionComplete) {
+      this.updateCoverTransition(deltaTime, progress);
+      this.updateDebugStats(input);
       return;
     }
 
@@ -76,6 +97,8 @@ export class LiteraryIntroScene {
     }
     this.node?.remove();
     this.node = null;
+    this.coverTitleNode?.remove();
+    this.coverTitleNode = null;
 
     if (this.group.parent) {
       this.scene.remove(this.group);
@@ -85,6 +108,8 @@ export class LiteraryIntroScene {
     this.group.clear();
     this.letterField = null;
     this.phase = "EXPLORE";
+    this.coverTransitionComplete = false;
+    this.coverTransitionElapsed = 0;
 
     if (this.previousBackground !== null) {
       this.scene.background = this.previousBackground;
@@ -106,6 +131,56 @@ export class LiteraryIntroScene {
       </span>
     `;
     this.root.appendChild(this.node);
+  }
+
+  createCoverTitle() {
+    this.coverTitleNode = document.createElement("div");
+    this.coverTitleNode.className = "literary-cover-title";
+    this.coverTitleNode.innerHTML = `
+      <h1>DEL LIBRO A LA<br>PANTALLA</h1>
+      <div class="literary-cover-gesture" aria-hidden="true">
+        <p>LEVANTA TU MANO<br>PARA COMENZAR</p>
+        <div></div>
+      </div>
+    `;
+    this.root.appendChild(this.coverTitleNode);
+    this.node?.classList.add("is-transitioning");
+  }
+
+  updateCoverTransition(deltaTime, progress) {
+    const transition = this.config.coverTransition;
+    this.coverTransitionElapsed += deltaTime;
+
+    const transitionProgress = Math.min(this.coverTransitionElapsed / transition.duration, 1);
+    const reactProgress = Math.min(this.coverTransitionElapsed / transition.titleReactDuration, 1);
+    const crossfadeStart = transition.titleReactDuration;
+    const crossfadeProgress = Math.min(
+      Math.max((this.coverTransitionElapsed - crossfadeStart) / transition.crossfadeDuration, 0),
+      1
+    );
+    const easedCrossfade = crossfadeProgress * crossfadeProgress * (3 - 2 * crossfadeProgress);
+    const scale = 1 + (transition.titleScale - 1) * reactProgress;
+
+    this.letterField.setOpacity(easedCrossfade);
+    this.letterField.update(deltaTime, null, progress);
+
+    if (this.coverTitleNode) {
+      this.coverTitleNode.style.opacity = String(1 - easedCrossfade);
+      this.coverTitleNode.style.transform = `translate(-50%, -50%) scale(${scale})`;
+      this.coverTitleNode.style.letterSpacing = transition.titleLetterSpacing;
+    }
+
+    if (transitionProgress >= 1) {
+      this.coverTransitionComplete = true;
+      this.coverTransitionElapsed = transition.duration;
+      this.elapsed = 0;
+      this.phaseElapsed = 0;
+      this.letterField.setOpacity(1);
+      this.letterField.setInteractionEnabled(true);
+      this.coverTitleNode?.remove();
+      this.coverTitleNode = null;
+      this.node?.classList.remove("is-transitioning");
+    }
   }
 
   updatePhase(deltaTime, input) {
@@ -213,14 +288,24 @@ export class LiteraryIntroScene {
   }
 
   updateDebugStats(input) {
+    const interactionStats = this.letterField?.getInteractionStats();
     this.debugStats = {
       phase: this.phase,
       movement: this.letterField?.getMovementAmount() ?? 0,
       canContinue: this.phase === "WAIT_RAISE",
       handRaised: this.wasHandRaised,
       holdProgress: Math.min(this.holdElapsed / this.config.continueGesture.holdDuration, 1),
-      letterCount: this.config.letters.count,
-      palmY: input?.primaryHand?.palm?.y ?? null
+      letterCount: interactionStats?.count ?? this.config.letters.count,
+      palmY: input?.primaryHand?.palm?.y ?? null,
+      coverTransitionPhase: this.coverTransitionComplete ? "COMPLETE" : "CROSSFADE",
+      coverTransitionProgress: this.coverTransitionComplete
+        ? 1
+        : Math.min(this.coverTransitionElapsed / this.config.coverTransition.duration, 1),
+      interactionRadius: interactionStats?.interactionRadius ?? this.config.letters.interactionRadius,
+      pushStrength: interactionStats?.pushStrength ?? this.config.letters.pushStrength,
+      maxPush: interactionStats?.maxPush ?? this.config.letters.maxPush,
+      handSpeed: interactionStats?.handSpeed ?? 0,
+      activeInteractions: interactionStats?.activeInteractions ?? 0
     };
   }
 
