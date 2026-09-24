@@ -26,7 +26,8 @@ function getPageMaterial(config) {
   }
 
   const material = new THREE.MeshBasicMaterial({
-    map: getPageTexture(config.assetPath),
+    map: config.assetPath ? getPageTexture(config.assetPath) : null,
+    color: config.assetPath ? "#ffffff" : config.paperColor || "#F6EBD2",
     transparent: true,
     opacity: config.opacity,
     depthWrite: false,

@@ -3,6 +3,10 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.m
 const clockTextureCache = new Map();
 
 export function getClockTexture(assetPath) {
+  if (!assetPath) {
+    return null;
+  }
+
   if (clockTextureCache.has(assetPath)) {
     return clockTextureCache.get(assetPath);
   }
@@ -25,6 +29,7 @@ export function createClockGeometry(config, scale = 1) {
 export function createClockMaterial(texture, opacity = 1) {
   const material = new THREE.MeshBasicMaterial({
     map: texture,
+    color: texture ? "#ffffff" : "#D7A947",
     transparent: true,
     opacity,
     depthWrite: false,

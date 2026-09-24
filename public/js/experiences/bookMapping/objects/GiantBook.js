@@ -31,6 +31,22 @@ export class GiantBook {
 
   build() {
     this.geometry = new THREE.PlaneGeometry(1, 1);
+
+    if (!this.config.assetPath) {
+      this.material = new THREE.MeshBasicMaterial({
+        transparent: true,
+        opacity: 0,
+        depthTest: false,
+        depthWrite: false,
+        side: THREE.DoubleSide
+      });
+      this.mesh = new THREE.Mesh(this.geometry, this.material);
+      this.mesh.renderOrder = this.config.renderOrder;
+      this.group.add(this.mesh);
+      this.updateLayout(true);
+      return;
+    }
+
     this.texture = new THREE.TextureLoader().load(this.config.assetPath, (texture) => {
       const imageWidth = texture.image?.naturalWidth || texture.image?.width;
       const imageHeight = texture.image?.naturalHeight || texture.image?.height;

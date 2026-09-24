@@ -14,9 +14,9 @@ export class AliceBookRecoveredScene {
     this.elapsed = 0;
     this.node = document.createElement("div");
     this.node.className = "alice-book-recovered-scene";
-    this.node.innerHTML = `
-      <img src="${this.config.assetPath}" alt="Alicia - libro recuperado">
-    `;
+    this.node.innerHTML = this.config.assetPath
+      ? `<img src="${this.config.assetPath}" alt="Alicia - libro recuperado">`
+      : "";
     this.root.appendChild(this.node);
   }
 

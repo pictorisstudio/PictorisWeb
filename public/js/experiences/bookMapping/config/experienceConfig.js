@@ -259,7 +259,7 @@ export const experienceConfig = {
       minY: -2.0,
       maxY: 2.05,
       collectRadius: 0.95,
-      assetPath: "assets/bookMapping/alice/alice-page.png",
+      assetPath: null,
       aspectRatio: 1122 / 1402,
       width: 0.88,
       height: 1.2,
@@ -287,7 +287,7 @@ export const experienceConfig = {
       collectZMax: -0.55,
       zDespawn: 1.35,
       types: ["CLOCK"],
-      clockAssetPath: "assets/bookMapping/alice/alice-clock.png",
+      clockAssetPath: null,
       clockAspectRatio: 1117 / 1408,
       clockHeight: 0.74,
       farOpacity: 0.42,
@@ -296,7 +296,7 @@ export const experienceConfig = {
       nearScale: 1.55
     },
     book: {
-      assetPath: "assets/bookMapping/alice/Libro.png",
+      assetPath: null,
       aspectRatio: 1496 / 501,
       position: {
         x: 0,
@@ -323,7 +323,7 @@ export const experienceConfig = {
   },
 
   aliceBookRecovered: {
-    assetPath: "assets/bookMapping/alice/alice-book-recovered.png",
+    assetPath: null,
     fadeDuration: 800
   },
 
