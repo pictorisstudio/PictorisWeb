@@ -232,14 +232,21 @@ if (featured) {
      SPOTLIGHT EN CARDS (mouse tracking)
   ============================================ */
   function registerCardSpotlight(card) {
+    let rect = null;
+
+    card.addEventListener("mouseenter", () => {
+      rect = card.getBoundingClientRect();
+    });
+
     card.addEventListener("mousemove", (e) => {
-      const rect = card.getBoundingClientRect();
+      if (!rect) return;
       const x = ((e.clientX - rect.left) / rect.width) * 100;
       const y = ((e.clientY - rect.top) / rect.height) * 100;
       card.style.setProperty("--mouse-x", `${x}%`);
       card.style.setProperty("--mouse-y", `${y}%`);
     });
     card.addEventListener("mouseleave", () => {
+      rect = null;
       card.style.setProperty("--mouse-x", "50%");
       card.style.setProperty("--mouse-y", "50%");
     });
@@ -276,7 +283,9 @@ if (featured) {
      FILTERS BAR: sticky indicator
   ============================================ */
   if (filtersBar) {
-    const headerH = document.querySelector(".site-header")?.offsetHeight || 78;
+    // Coincide con el min-height del header en CSS y evita forzar un calculo
+    // de layout despues de haber actualizado la visibilidad de las tarjetas.
+    const headerH = 78;
 
     const stickyObs = new IntersectionObserver(
       ([entry]) => {

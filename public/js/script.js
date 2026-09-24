@@ -281,8 +281,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const cards = document.querySelectorAll(".project-card, .service-card, .immersive-card");
 
   cards.forEach((card) => {
+    let rect = null;
+
+    card.addEventListener("mouseenter", () => {
+      rect = card.getBoundingClientRect();
+    });
+
     card.addEventListener("mousemove", (e) => {
-      const rect = card.getBoundingClientRect();
+      // La geometria se calcula una sola vez al entrar. Leerla despues de cada
+      // escritura de estilos provocaba un reflow forzado en cada mousemove.
+      if (!rect) return;
       const x = ((e.clientX - rect.left) / rect.width) * 100;
       const y = ((e.clientY - rect.top) / rect.height) * 100;
       card.style.setProperty("--mouse-x", `${x}%`);
@@ -290,6 +298,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     card.addEventListener("mouseleave", () => {
+      rect = null;
       card.style.setProperty("--mouse-x", "50%");
       card.style.setProperty("--mouse-y", "50%");
     });
@@ -302,8 +311,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const heroPanel = document.querySelector(".hero-panel-inner");
 
   if (heroPanel && !isTouchDevice) {
+    let heroRect = null;
+
+    heroPanel.addEventListener("mouseenter", () => {
+      heroRect = heroPanel.getBoundingClientRect();
+    });
+
     heroPanel.addEventListener("mousemove", (e) => {
-      const rect = heroPanel.getBoundingClientRect();
+      if (!heroRect) return;
+      const rect = heroRect;
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
       const dx = (e.clientX - cx) / (rect.width / 2);
@@ -312,6 +328,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     heroPanel.addEventListener("mouseleave", () => {
+      heroRect = null;
       heroPanel.style.transform = "perspective(900px) rotateY(0deg) rotateX(0deg)";
     });
   }

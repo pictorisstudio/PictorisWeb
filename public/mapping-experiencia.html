@@ -20,7 +20,8 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" /></noscript>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/mapping-experiencia.css" />
 </head>
@@ -41,7 +42,6 @@
       </nav>
 
       <div class="header-actions">
-        <a href="https://wa.me/573143155217" class="btn btn-primary header-cta" target="_blank" rel="noopener noreferrer">WhatsApp</a>
         <button class="menu-toggle" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="main-navigation">☰</button>
       </div>
     </div>
