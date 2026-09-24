@@ -173,7 +173,7 @@ img {
 .anxiety-video {
   width: min(100% - 2rem, var(--container));
   margin: 0 auto;
-  padding: 0 0 5.5rem;
+  padding: 0 0 2.5rem;
 }
 
 .anxiety-section-head {
@@ -231,6 +231,45 @@ img {
   border: 0;
 }
 
+.anxiety-laurels {
+  width: min(100% - 2rem, var(--container));
+  margin: 0 auto;
+  overflow: hidden;
+  padding: 0 0 5.5rem;
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+.anxiety-laurels-track {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  gap: clamp(1.25rem, 4vw, 3.5rem);
+  animation: anxietyLaurelScroll 28s linear infinite;
+}
+
+.anxiety-laurels img {
+  width: clamp(130px, 18vw, 210px);
+  max-height: 110px;
+  object-fit: contain;
+  opacity: 0.9;
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.34));
+}
+
+.anxiety-laurels img:first-child,
+.anxiety-laurels img:nth-child(4) {
+  width: clamp(150px, 22vw, 250px);
+}
+
+@keyframes anxietyLaurelScroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-50% - clamp(0.625rem, 2vw, 1.75rem)));
+  }
+}
+
 @media (max-width: 900px) {
   .anxiety-hero,
   .anxiety-statement,
@@ -266,5 +305,15 @@ img {
 
   .anxiety-grid {
     grid-template-columns: 1fr;
+  }
+
+  .anxiety-laurels img {
+    width: 132px;
+    max-height: 86px;
+  }
+
+  .anxiety-laurels img:first-child,
+  .anxiety-laurels img:nth-child(4) {
+    width: 160px;
   }
 }

@@ -186,6 +186,20 @@ a {
   display: block;
 }
 
+.inf-laurel {
+  width: min(190px, 42vw);
+  margin: 1.15rem auto 0;
+  padding: 0.55rem;
+  border: 1px solid rgba(98, 231, 255, 0.16);
+  background: rgba(248, 245, 255, 0.92);
+}
+
+.inf-laurel img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 @media (max-width: 780px) {
   .inf-hero {
     min-height: 82vh;
@@ -206,5 +220,9 @@ a {
   .inf-grid figure,
   .inf-grid img {
     min-height: 260px;
+  }
+
+  .inf-laurel {
+    width: min(160px, 48vw);
   }
 }
