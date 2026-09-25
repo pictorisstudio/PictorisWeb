@@ -133,19 +133,29 @@ body {
   align-items: center;
 }
 
+.marketing-hero-copy {
+  min-width: 0;
+}
+
 .marketing-hero-copy h1 {
   max-width: 12ch;
-  margin: 0.8rem 0 1rem;
-  font-size: clamp(3.2rem, 8vw, 7rem);
-  line-height: 0.9;
+  margin: 1.1rem 0 1.4rem;
+  font-size: clamp(3rem, 6.6vw, 6.4rem);
+  line-height: 0.96;
   letter-spacing: -0.05em;
 }
 
 .marketing-hero-copy p:not(.eyebrow) {
-  max-width: 680px;
+  max-width: 60ch;
+  margin: 0;
   color: var(--color-text-soft);
   font-size: clamp(1.05rem, 2vw, 1.26rem);
-  line-height: 1.68;
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+
+.marketing-hero-copy .hero-actions {
+  margin-top: 1.8rem;
 }
 
 .marketing-preview {
@@ -210,6 +220,7 @@ body {
   min-height: 310px;
   padding: 1rem;
   border-radius: 32px;
+  z-index: 2;
 }
 
 .mockup-phone span {
@@ -234,16 +245,18 @@ body {
   color: var(--color-text-soft);
   font-size: 0.82rem;
   text-align: center;
+  white-space: nowrap;
 }
 
 .mockup-stats {
   position: absolute;
   left: 2rem;
   bottom: 0;
-  width: min(78%, 360px);
+  width: min(58%, 320px);
   display: grid;
   gap: 0.5rem;
   padding: 1.2rem;
+  z-index: 1;
 }
 
 .mockup-stats strong {
@@ -389,10 +402,18 @@ body {
   line-height: 1.58;
 }
 
-@media (max-width: 980px) {
+@media (max-width: 1120px) {
   .marketing-hero-layout,
   .marketing-strip-grid {
     grid-template-columns: 1fr;
+  }
+
+  .marketing-hero-copy {
+    max-width: 760px;
+  }
+
+  .marketing-preview {
+    width: min(100%, 720px);
   }
 
   .marketing-package-grid,
@@ -409,6 +430,17 @@ body {
 
   .marketing-hero-copy h1 {
     max-width: 10ch;
+    margin-bottom: 1.2rem;
+    font-size: clamp(2.7rem, 14vw, 4.2rem);
+    line-height: 0.98;
+  }
+
+  .marketing-hero-copy p:not(.eyebrow) {
+    line-height: 1.7;
+  }
+
+  .marketing-hero-copy .hero-actions {
+    margin-top: 1.5rem;
   }
 
   .marketing-preview {
@@ -425,6 +457,12 @@ body {
     bottom: 4rem;
   }
 
+  .mockup-stats {
+    left: 0;
+    width: calc(100% - 165px);
+    padding: 1rem;
+  }
+
   .mockup-phone div {
     height: 176px;
   }
@@ -438,6 +476,17 @@ body {
   .marketing-card,
   .marketing-process article {
     min-height: auto;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .mockup-window,
+  .mockup-phone,
+  .mockup-stats,
+  .marketing-card,
+  .marketing-process article {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 }
 

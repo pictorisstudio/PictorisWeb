@@ -210,24 +210,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const orb1 = document.querySelector(".hero-orb-1");
   const orb2 = document.querySelector(".hero-orb-2");
   const heroVideoEl = document.querySelector(".hero-video");
+  const allowParallax = window.matchMedia(
+    "(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)"
+  ).matches;
 
   let rafParallax = null;
 
-  window.addEventListener("scroll", () => {
-    if (rafParallax) return;
-    rafParallax = requestAnimationFrame(() => {
-      const scrollY = window.scrollY;
+  if (allowParallax) {
+    window.addEventListener("scroll", () => {
+      if (rafParallax) return;
+      rafParallax = requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
 
-      if (orb1) orb1.style.transform = `translateY(${scrollY * 0.18}px)`;
-      if (orb2) orb2.style.transform = `translateY(${-scrollY * 0.12}px)`;
+        if (orb1) orb1.style.transform = `translateY(${scrollY * 0.18}px)`;
+        if (orb2) orb2.style.transform = `translateY(${-scrollY * 0.12}px)`;
 
-      if (heroVideoEl && scrollY < window.innerHeight * 1.2) {
-        heroVideoEl.style.transform = `translateY(${scrollY * 0.26}px) scale(1.08)`;
-      }
+        if (heroVideoEl && scrollY < window.innerHeight * 1.2) {
+          heroVideoEl.style.transform = `translateY(${scrollY * 0.26}px) scale(1.08)`;
+        }
 
-      rafParallax = null;
-    });
-  }, { passive: true });
+        rafParallax = null;
+      });
+    }, { passive: true });
+  }
 
 
   /* ============================================

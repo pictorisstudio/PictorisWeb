@@ -1537,6 +1537,35 @@ body {
   color: var(--color-text-soft);
 }
 
+.footer-contact a {
+  color: var(--color-text-soft);
+  transition: color var(--transition);
+}
+
+.footer-contact a:hover {
+  color: #ffffff;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .site-header,
+  .project-card,
+  .service-card,
+  .immersive-card,
+  .media-badge {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .hero-video {
+    transform: none !important;
+    will-change: auto !important;
+  }
+
+  .visuales-page .project-video {
+    filter: none;
+  }
+}
+
 .footer-bottom {
   margin-top: 2.2rem;
   padding-top: 1.2rem;
