@@ -688,4 +688,8 @@ async function initTamsaMap() {
   });
 }
 
-window.addEventListener("DOMContentLoaded", initTamsaMap);
+if (document.readyState === "loading") {
+  window.addEventListener("DOMContentLoaded", initTamsaMap, { once: true });
+} else {
+  initTamsaMap();
+}

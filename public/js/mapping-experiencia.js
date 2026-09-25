@@ -635,7 +635,7 @@ function animate(now = performance.now()) {
   renderer.render(scene, camera);
 }
 
-async function init() {
+export async function init({ startImmediately = false } = {}) {
   document.body.classList.toggle("is-debug-mode", DEBUG_MODE);
   createRenderer();
   if (ENABLE_BOOK_MAPPING) {
@@ -667,6 +667,8 @@ async function init() {
     setStatus("No se pudo cargar el tracking, pero puedes probar la cámara/webcam.");
     console.error(error);
   });
-}
 
-init();
+  if (startImmediately) {
+    await startCamera();
+  }
+}
