@@ -247,19 +247,32 @@ document.addEventListener("DOMContentLoaded", () => {
     let cursorX = -100, cursorY = -100;
     let dotX = -100, dotY = -100;
 
+    let dotAnimationFrame = null;
+
     document.addEventListener("mousemove", (e) => {
       cursorX = e.clientX;
       cursorY = e.clientY;
       cursor.style.transform = `translate(${cursorX - 20}px, ${cursorY - 20}px)`;
+
+      if (dotAnimationFrame === null) {
+        dotAnimationFrame = requestAnimationFrame(animateDot);
+      }
     });
 
     function animateDot() {
       dotX += (cursorX - dotX) * 0.14;
       dotY += (cursorY - dotY) * 0.14;
       cursorDot.style.transform = `translate(${dotX - 4}px, ${dotY - 4}px)`;
-      requestAnimationFrame(animateDot);
+
+      const isMoving = Math.abs(cursorX - dotX) > 0.1 || Math.abs(cursorY - dotY) > 0.1;
+      if (isMoving) {
+        dotAnimationFrame = requestAnimationFrame(animateDot);
+      } else {
+        dotX = cursorX;
+        dotY = cursorY;
+        dotAnimationFrame = null;
+      }
     }
-    animateDot();
 
     const interactiveEls = document.querySelectorAll(
       "a, button, .project-card, .service-card, .immersive-card, .btn"
@@ -337,7 +350,9 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ============================================
      LAZY LOAD DE VIDEOS
   ============================================ */
-  const lazyVideos = document.querySelectorAll("video[preload='metadata']");
+  const lazyVideos = document.querySelectorAll(
+    "video[preload='metadata']:not(.hero-video-element), video[preload='none']"
+  );
 
   if ("IntersectionObserver" in window && lazyVideos.length > 0) {
     const videoObserver = new IntersectionObserver(

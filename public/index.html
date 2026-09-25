@@ -10,7 +10,7 @@
   <link rel="icon" href="favicon.png" type="image/png" sizes="512x512" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <link rel="manifest" href="site.webmanifest" />
-  <link rel="preload" as="image" href="assets/logos/favicon-pictoris.png" fetchpriority="high" />
+  <link rel="preload" as="image" href="assets/logos/favicon-pictoris.png" fetchpriority="low" />
 
 <meta property="og:site_name" content="Pictoris Studio" />
   <meta property="og:image" content="https://pictoris.co/assets/logos/favicon-pictoris.png" />
@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" fetchpriority="low" onload="this.media='all'" />
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" /></noscript>
 
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css?v=20260925" />
 </head>
 <body class="visuales-page">
 
@@ -118,11 +118,10 @@
           <div class="project-media">
             <video
                   class="project-video"
-                  autoplay
                   muted
                   loop
                   playsinline
-                  preload="metadata"
+                  preload="none"
                 >
                   <source src="https://media.pictoris.co/assets/video/VideoPrueba01.mp4" type="video/mp4" />
                   Tu navegador no soporta video HTML5.
@@ -235,11 +234,10 @@
           <div class="project-media">
             <video
               class="project-video"
-              autoplay
               muted
               loop
               playsinline
-              preload="metadata"
+              preload="none"
             >
               <source src="https://media.pictoris.co/assets/Portafolio/VFX/Reel01_1.mp4" type="video/mp4" />
               Tu navegador no soporta video HTML5.
@@ -470,6 +468,6 @@
   </div>
 </footer>
 
-  <script src="js/script.js"></script>
+  <script src="js/script.js?v=20260925"></script>
 </body>
 </html>
