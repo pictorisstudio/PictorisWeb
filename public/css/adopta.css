@@ -179,11 +179,20 @@ img {
 }
 
 .adopta-laurels img {
-  width: clamp(170px, 22vw, 300px);
-  max-height: 120px;
+  flex: 0 0 clamp(210px, 20vw, 260px);
+  width: clamp(210px, 20vw, 260px);
+  height: 120px;
   object-fit: contain;
   opacity: 0.86;
   filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.28));
+}
+
+@media (max-width: 640px) {
+  .adopta-laurels img {
+    flex-basis: 180px;
+    width: 180px;
+    height: 90px;
+  }
 }
 
 @keyframes adoptaLaurelScroll {
@@ -192,7 +201,7 @@ img {
   }
 
   to {
-    transform: translateX(calc(-50% - 2rem));
+    transform: translateX(calc(-50% - clamp(1rem, 2.5vw, 2.25rem)));
   }
 }
 

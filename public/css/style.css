@@ -1518,14 +1518,21 @@ body {
   margin-bottom: 1rem;
 }
 
-.footer-links-group ul,
-.footer-contact {
+.footer-links-group ul {
   display: grid;
   gap: 0.75rem;
 }
 
-.footer-links-group a {
+.footer-contact p + p {
+  margin-top: 0.75rem;
+}
+
+.footer-links-group a,
+.footer-contact p,
+.footer-contact a {
   color: var(--color-text-soft);
+  font-size: 0.96rem;
+  line-height: 1.5;
   transition: color var(--transition);
 }
 

@@ -238,15 +238,12 @@ img {
 }
 
 .sailor-laurels img {
-  width: clamp(140px, 18vw, 230px);
-  max-height: 120px;
+  flex: 0 0 clamp(210px, 20vw, 260px);
+  width: clamp(210px, 20vw, 260px);
+  height: 120px;
   object-fit: contain;
   opacity: 0.9;
   filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.36));
-}
-
-.sailor-laurels img:nth-child(2n) {
-  width: clamp(135px, 17vw, 220px);
 }
 
 @keyframes sailorLaurelScroll {
@@ -291,9 +288,9 @@ img {
     min-height: 260px;
   }
 
-  .sailor-laurels img,
-  .sailor-laurels img:nth-child(2n) {
-    width: 140px;
-    max-height: 88px;
+  .sailor-laurels img {
+    flex-basis: 180px;
+    width: 180px;
+    height: 90px;
   }
 }
