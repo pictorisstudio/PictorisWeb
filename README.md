@@ -49,6 +49,10 @@ Configuracion recomendada:
 
 La carpeta `public/` es la version publicable del sitio. No subas `r2-assets/` a Pages como parte del sitio, porque esa carpeta esta pensada para Cloudflare R2.
 
+### Cache de recursos estaticos
+
+Los archivos de `public/assets/` se publican con cache de un ano e `immutable`. Si se reemplaza una imagen conservando el mismo nombre, tambien se debe cambiar su URL en el HTML (por ejemplo, agregando o incrementando `?v=20260926-2`) o renombrar el archivo. De lo contrario, produccion puede seguir mostrando la version anterior aunque el despliegue ya contenga la nueva.
+
 ## Cloudflare R2
 
 Los archivos pesados fueron separados en `r2-assets/` y las rutas del sitio ya apuntan a:

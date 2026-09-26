@@ -186,15 +186,6 @@ img {
   object-fit: contain;
   opacity: 0.92;
   filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.34));
-  transform-origin: center;
-}
-
-.adopta-laurels img:nth-child(odd) {
-  transform: scale(0.82);
-}
-
-.adopta-laurels img:nth-child(even) {
-  transform: scale(1.12);
 }
 
 @media (max-width: 640px) {

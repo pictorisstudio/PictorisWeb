@@ -255,19 +255,6 @@ img {
   object-fit: contain;
   opacity: 0.92;
   filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.34));
-  transform-origin: center;
-}
-
-.anxiety-laurels img:nth-child(3n + 1) {
-  transform: scale(1.08);
-}
-
-.anxiety-laurels img:nth-child(3n + 2) {
-  transform: scale(0.8);
-}
-
-.anxiety-laurels img:nth-child(3n) {
-  transform: scale(1.15);
 }
 
 @keyframes anxietyLaurelScroll {
