@@ -233,17 +233,18 @@ img {
   display: flex;
   width: max-content;
   align-items: center;
-  gap: clamp(1.5rem, 4vw, 3.5rem);
+  gap: clamp(1.5rem, 3vw, 2.75rem);
   animation: sailorLaurelScroll 30s linear infinite;
 }
 
 .sailor-laurels img {
-  flex: 0 0 clamp(210px, 20vw, 260px);
-  width: clamp(210px, 20vw, 260px);
-  height: 120px;
+  flex: 0 0 clamp(220px, 22vw, 280px);
+  width: clamp(220px, 22vw, 280px);
+  height: auto;
+  aspect-ratio: 2 / 1;
   object-fit: contain;
-  opacity: 0.9;
-  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.36));
+  opacity: 0.92;
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.34));
 }
 
 @keyframes sailorLaurelScroll {
@@ -252,7 +253,7 @@ img {
   }
 
   to {
-    transform: translateX(calc(-50% - clamp(0.75rem, 2vw, 1.75rem)));
+    transform: translateX(calc(-50% - clamp(0.75rem, 1.5vw, 1.375rem)));
   }
 }
 
@@ -289,8 +290,7 @@ img {
   }
 
   .sailor-laurels img {
-    flex-basis: 180px;
-    width: 180px;
-    height: 90px;
+    flex-basis: 190px;
+    width: 190px;
   }
 }

@@ -1,10 +1,10 @@
 .marketing-hero {
   position: relative;
-  min-height: 88vh;
+  min-height: 78vh;
   display: grid;
   align-items: center;
   overflow: hidden;
-  padding: 9rem 0 5rem;
+  padding: 5.5rem 0 4.5rem;
 }
 
 /* =========================
@@ -425,7 +425,7 @@ body {
 @media (max-width: 640px) {
   .marketing-hero {
     min-height: auto;
-    padding: 7rem 0 3.5rem;
+    padding: 4rem 0 3.5rem;
   }
 
   .marketing-hero-copy h1 {

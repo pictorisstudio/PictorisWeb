@@ -165,7 +165,7 @@ img {
 
 .adopta-laurels {
   overflow: hidden;
-  padding: 0.5rem 0 4.5rem;
+  padding: 0 0 5.5rem;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
 }
@@ -174,24 +174,24 @@ img {
   display: flex;
   width: max-content;
   align-items: center;
-  gap: clamp(2rem, 5vw, 4.5rem);
+  gap: clamp(1.5rem, 3vw, 2.75rem);
   animation: adoptaLaurelScroll 28s linear infinite;
 }
 
 .adopta-laurels img {
-  flex: 0 0 clamp(210px, 20vw, 260px);
-  width: clamp(210px, 20vw, 260px);
-  height: 120px;
+  flex: 0 0 clamp(220px, 22vw, 280px);
+  width: clamp(220px, 22vw, 280px);
+  height: auto;
+  aspect-ratio: 2 / 1;
   object-fit: contain;
-  opacity: 0.86;
-  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.28));
+  opacity: 0.92;
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.34));
 }
 
 @media (max-width: 640px) {
   .adopta-laurels img {
-    flex-basis: 180px;
-    width: 180px;
-    height: 90px;
+    flex-basis: 190px;
+    width: 190px;
   }
 }
 
@@ -201,7 +201,7 @@ img {
   }
 
   to {
-    transform: translateX(calc(-50% - clamp(1rem, 2.5vw, 2.25rem)));
+    transform: translateX(calc(-50% - clamp(0.75rem, 1.5vw, 1.375rem)));
   }
 }
 
