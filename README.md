@@ -75,7 +75,7 @@ Configuracion recomendada:
 - Verificar que un archivo del bucket abra con una URL como:
 
 ```text
-https://media.pictoris.co/assets/Portafolio/SailorPunk/Ojo.gif
+https://media.pictoris.co/assets/Portafolio/SailorPunk/Gif-Ojo.mp4
 ```
 
 El archivo `r2-assets-manifest.txt` lista cada archivo movido y su URL final esperada.

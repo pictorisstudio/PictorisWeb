@@ -1,31 +1,29 @@
-# Assets para subir a Cloudflare R2
-# Bucket sugerido: pictoris-media
-# Dominio publico sugerido: https://media.pictoris.co
+# Assets alojados en Cloudflare R2
+# Dominio publico: https://media.pictoris.co
 
-assets/Portafolio/AdoptaUnFrailejon/00.gif -> https://media.pictoris.co/assets/Portafolio/AdoptaUnFrailejon/00.gif
-assets/Portafolio/AdoptaUnFrailejon/01.gif -> https://media.pictoris.co/assets/Portafolio/AdoptaUnFrailejon/01.gif
-assets/Portafolio/AdoptaUnFrailejon/02.gif -> https://media.pictoris.co/assets/Portafolio/AdoptaUnFrailejon/02.gif
-assets/Portafolio/AdoptaUnFrailejon/03.gif -> https://media.pictoris.co/assets/Portafolio/AdoptaUnFrailejon/03.gif
-assets/Portafolio/AdoptaUnFrailejon/04.gif -> https://media.pictoris.co/assets/Portafolio/AdoptaUnFrailejon/04.gif
-assets/Portafolio/SailorPunk/CalaveraHaciaLaCamara.gif -> https://media.pictoris.co/assets/Portafolio/SailorPunk/CalaveraHaciaLaCamara.gif
-assets/Portafolio/SailorPunk/CalaveraInicio.gif -> https://media.pictoris.co/assets/Portafolio/SailorPunk/CalaveraInicio.gif
-assets/Portafolio/SailorPunk/Grito.gif -> https://media.pictoris.co/assets/Portafolio/SailorPunk/Grito.gif
-assets/Portafolio/SailorPunk/Ojo.gif -> https://media.pictoris.co/assets/Portafolio/SailorPunk/Ojo.gif
-assets/Portafolio/SailorPunk/Rosa.gif -> https://media.pictoris.co/assets/Portafolio/SailorPunk/Rosa.gif
+assets/Portafolio/AdoptaUnFrailejon/Gif-00.mp4 -> https://media.pictoris.co/assets/Portafolio/AdoptaUnFrailejon/Gif-00.mp4
+assets/Portafolio/AdoptaUnFrailejon/Gif-01.mp4 -> https://media.pictoris.co/assets/Portafolio/AdoptaUnFrailejon/Gif-01.mp4
+assets/Portafolio/AdoptaUnFrailejon/Gif-02.mp4 -> https://media.pictoris.co/assets/Portafolio/AdoptaUnFrailejon/Gif-02.mp4
+assets/Portafolio/AdoptaUnFrailejon/Gif-03.mp4 -> https://media.pictoris.co/assets/Portafolio/AdoptaUnFrailejon/Gif-03.mp4
+assets/Portafolio/AdoptaUnFrailejon/Gif-04.mp4 -> https://media.pictoris.co/assets/Portafolio/AdoptaUnFrailejon/Gif-04.mp4
+assets/Portafolio/SailorPunk/Gif-CalaveraHaciaLaCamara.mp4 -> https://media.pictoris.co/assets/Portafolio/SailorPunk/Gif-CalaveraHaciaLaCamara.mp4
+assets/Portafolio/SailorPunk/Gif-CalaveraInicio.mp4 -> https://media.pictoris.co/assets/Portafolio/SailorPunk/Gif-CalaveraInicio.mp4
+assets/Portafolio/SailorPunk/Gif-Grito.mp4 -> https://media.pictoris.co/assets/Portafolio/SailorPunk/Gif-Grito.mp4
+assets/Portafolio/SailorPunk/Gif-Ojo.mp4 -> https://media.pictoris.co/assets/Portafolio/SailorPunk/Gif-Ojo.mp4
+assets/Portafolio/SailorPunk/Gif-Rosa.mp4 -> https://media.pictoris.co/assets/Portafolio/SailorPunk/Gif-Rosa.mp4
 assets/Portafolio/VFX/making off.mp4 -> https://media.pictoris.co/assets/Portafolio/VFX/making%20off.mp4
 assets/Portafolio/VFX/Reel01_1.mp4 -> https://media.pictoris.co/assets/Portafolio/VFX/Reel01_1.mp4
 assets/Portafolio/VFX/Reel01Office_Insta.mp4 -> https://media.pictoris.co/assets/Portafolio/VFX/Reel01Office_Insta.mp4
 assets/Portafolio/VFX/Reel02.mp4 -> https://media.pictoris.co/assets/Portafolio/VFX/Reel02.mp4
 assets/Portafolio/VFX/Reel02sinSFX.mp4 -> https://media.pictoris.co/assets/Portafolio/VFX/Reel02sinSFX.mp4
-assets/ProyectosTrasmedia/Carnotaurus/01.gif -> https://media.pictoris.co/assets/ProyectosTrasmedia/Carnotaurus/01.gif
-assets/ProyectosTrasmedia/Carnotaurus/03.gif -> https://media.pictoris.co/assets/ProyectosTrasmedia/Carnotaurus/03.gif
-assets/ProyectosTrasmedia/Carnotaurus/04.gif -> https://media.pictoris.co/assets/ProyectosTrasmedia/Carnotaurus/04.gif
-assets/ProyectosTrasmedia/Carnotaurus/05.gif -> https://media.pictoris.co/assets/ProyectosTrasmedia/Carnotaurus/05.gif
-assets/ProyectosTrasmedia/Carnotaurus/06.gif -> https://media.pictoris.co/assets/ProyectosTrasmedia/Carnotaurus/06.gif
+assets/ProyectosTrasmedia/Carnotaurus/Gif_01.mp4 -> https://media.pictoris.co/assets/ProyectosTrasmedia/Carnotaurus/Gif_01.mp4
+assets/ProyectosTrasmedia/Carnotaurus/Gif_03.mp4 -> https://media.pictoris.co/assets/ProyectosTrasmedia/Carnotaurus/Gif_03.mp4
+assets/ProyectosTrasmedia/Carnotaurus/Gif_04.mp4 -> https://media.pictoris.co/assets/ProyectosTrasmedia/Carnotaurus/Gif_04.mp4
+assets/ProyectosTrasmedia/Carnotaurus/Gif_05.mp4 -> https://media.pictoris.co/assets/ProyectosTrasmedia/Carnotaurus/Gif_05.mp4
+assets/ProyectosTrasmedia/Carnotaurus/Gif_06.mp4 -> https://media.pictoris.co/assets/ProyectosTrasmedia/Carnotaurus/Gif_06.mp4
 assets/video/VideoPrueba01.mp4 -> https://media.pictoris.co/assets/video/VideoPrueba01.mp4
 assets/video/VideoPrueba02.mp4 -> https://media.pictoris.co/assets/video/VideoPrueba02.mp4
-assets/Portafolio/Robot3D/GIF01.gif -> https://media.pictoris.co/assets/Portafolio/Robot3D/GIF01.gif
-assets/Portafolio/Robot3D/GIF02.gif -> https://media.pictoris.co/assets/Portafolio/Robot3D/GIF02.gif
-assets/Portafolio/Robot3D/GIF03.gif -> https://media.pictoris.co/assets/Portafolio/Robot3D/GIF03.gif
-assets/Portafolio/Robot3D/GIF04.gif -> https://media.pictoris.co/assets/Portafolio/Robot3D/GIF04.gif
-assets/Portafolio/Domesticado/DomesticadoPortada.gif -> https://media.pictoris.co/assets/Portafolio/Domesticado/DomesticadoPortada.gif
+assets/Portafolio/Robot3D/Gif-01.mp4 -> https://media.pictoris.co/assets/Portafolio/Robot3D/Gif-01.mp4
+assets/Portafolio/Robot3D/Gif-02.mp4 -> https://media.pictoris.co/assets/Portafolio/Robot3D/Gif-02.mp4
+assets/Portafolio/Robot3D/Gif-03.mp4 -> https://media.pictoris.co/assets/Portafolio/Robot3D/Gif-03.mp4
+assets/Portafolio/Robot3D/Gif-04.mp4 -> https://media.pictoris.co/assets/Portafolio/Robot3D/Gif-04.mp4

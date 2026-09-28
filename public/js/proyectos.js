@@ -256,30 +256,6 @@ if (featured) {
 
 
   /* ============================================
-     LAZY LOAD DE VIDEOS EN CARDS
-  ============================================ */
-  const cardVideos = grid.querySelectorAll(".pf-video");
-
-  if ("IntersectionObserver" in window) {
-    const videoObs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          const video = entry.target;
-          if (entry.isIntersecting) {
-            video.play().catch(() => {});
-          } else {
-            video.pause();
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-
-    cardVideos.forEach(v => videoObs.observe(v));
-  }
-
-
-  /* ============================================
      FILTERS BAR: sticky indicator
   ============================================ */
   if (filtersBar) {

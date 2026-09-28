@@ -359,21 +359,57 @@ document.addEventListener("DOMContentLoaded", () => {
     "video[preload='metadata']:not(.hero-video-element), video[preload='none']"
   );
 
-  if ("IntersectionObserver" in window && lazyVideos.length > 0) {
-    const videoObserver = new IntersectionObserver(
+  if (lazyVideos.length > 0) {
+    const prepareVideo = (video) => {
+      if (video.dataset.videoPrepared === "true") return;
+      video.dataset.videoPrepared = "true";
+      video.preload = "metadata";
+      video.load();
+    };
+
+    if (!("IntersectionObserver" in window)) {
+      lazyVideos.forEach((video) => {
+        prepareVideo(video);
+        video.play().catch(() => {});
+      });
+    } else {
+      // Descarga metadatos y el primer fotograma antes de que el video sea visible.
+      // En conexiones con ahorro de datos se reduce el margen para no cargar de más.
+      const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      const reducedPreload = connection?.saveData || /(^|-)2g$/.test(connection?.effectiveType || "");
+      const preloadMargin = reducedPreload ? "160px 0px" : "800px 0px";
+
+      const preloadObserver = new IntersectionObserver(
+        (entries, observer) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            prepareVideo(entry.target);
+            observer.unobserve(entry.target);
+          });
+        },
+        { rootMargin: preloadMargin, threshold: 0 }
+      );
+
+      const videoObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            prepareVideo(entry.target);
             entry.target.play().catch(() => {});
           } else {
             entry.target.pause();
           }
         });
       },
-      { threshold: 0.25 }
-    );
+        // Empieza a reproducir un poco antes de entrar para evitar el salto visual.
+        { rootMargin: "180px 0px", threshold: 0.01 }
+      );
 
-    lazyVideos.forEach((video) => videoObserver.observe(video));
+      lazyVideos.forEach((video) => {
+        preloadObserver.observe(video);
+        videoObserver.observe(video);
+      });
+    }
   }
 
   // Hero video: pausa fuera de viewport
