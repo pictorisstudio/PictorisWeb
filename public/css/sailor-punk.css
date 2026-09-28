@@ -110,9 +110,11 @@ img {
 }
 
 .sailor-visual img {
+  display: block;
   width: 100%;
-  min-height: 420px;
-  object-fit: cover;
+  height: auto;
+  aspect-ratio: 12 / 5;
+  object-fit: contain;
 }
 
 .sailor-kicker {
@@ -285,10 +287,6 @@ img {
   .sailor-hero {
     min-height: auto;
     padding: 3rem 0;
-  }
-
-  .sailor-visual img {
-    min-height: 260px;
   }
 
   .sailor-laurels img {
