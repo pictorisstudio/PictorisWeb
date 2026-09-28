@@ -151,7 +151,9 @@ a {
   box-shadow: 0 24px 62px rgba(0, 0, 0, 0.32);
 }
 
-.short-grid img {
+.short-grid img,
+.short-grid video {
+  display: block;
   width: 100%;
   height: 100%;
   min-height: 320px;
@@ -160,7 +162,8 @@ a {
   transition: transform 260ms ease, filter 260ms ease;
 }
 
-.short-grid figure:hover img {
+.short-grid figure:hover img,
+.short-grid figure:hover video {
   transform: scale(1.035);
   filter: saturate(1.16) contrast(1.08) brightness(1.04);
 }

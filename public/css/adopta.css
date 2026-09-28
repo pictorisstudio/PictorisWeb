@@ -108,7 +108,9 @@ img {
   box-shadow: 0 28px 80px rgba(0, 0, 0, 0.38);
 }
 
-.adopta-hero-media img {
+.adopta-hero-media img,
+.adopta-hero-media video {
+  display: block;
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
@@ -225,7 +227,9 @@ img {
 }
 
 .gif-grid img,
+.gif-grid video,
 .process-grid img {
+  display: block;
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;

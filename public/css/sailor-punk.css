@@ -179,7 +179,9 @@ img {
 }
 
 .sailor-gif-grid img,
+.sailor-gif-grid video,
 .sailor-frame-grid img {
+  display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
