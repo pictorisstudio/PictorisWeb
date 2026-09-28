@@ -101,6 +101,11 @@ img {
 .sailor-visual {
   position: relative;
   overflow: hidden;
+  isolation: isolate;
+  min-height: clamp(340px, 30vw, 440px);
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 2vw, 1.5rem);
   border: 1px solid var(--sailor-line);
   background:
     linear-gradient(135deg, rgba(255, 45, 149, 0.2), transparent 38%),
@@ -109,12 +114,32 @@ img {
   box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
 }
 
+.sailor-visual::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  inset: -8%;
+  background:
+    linear-gradient(rgba(8, 6, 12, 0.35), rgba(8, 6, 12, 0.52)),
+    url("../assets/Portafolio/SailorPunk/sailor-punk-portada.webp") center / cover no-repeat;
+  filter: blur(16px) saturate(0.9);
+  transform: scale(1.08);
+}
+
+.sailor-visual::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 45, 149, 0.12), rgba(7, 29, 34, 0.24));
+}
+
 .sailor-visual img {
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 12 / 5;
-  object-fit: contain;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.42);
 }
 
 .sailor-kicker {
@@ -287,6 +312,11 @@ img {
   .sailor-hero {
     min-height: auto;
     padding: 3rem 0;
+  }
+
+  .sailor-visual {
+    min-height: 280px;
+    padding: 0.75rem;
   }
 
   .sailor-laurels img {
