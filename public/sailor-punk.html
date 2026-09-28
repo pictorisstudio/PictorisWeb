@@ -23,7 +23,7 @@
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" /></noscript>
   <link rel="stylesheet" href="css/style.css?v=20260926" />
 
-  <link rel="stylesheet" href="css/sailor-punk.css?v=20260928-cover-card" />
+  <link rel="stylesheet" href="css/sailor-punk.css?v=20260928-cinematic-hero" />
 </head>
 <body>
   <!-- Header -->
@@ -60,8 +60,12 @@
   <main>
     <section class="sailor-hero">
       <div class="sailor-visual">
-      <img src="assets/Portafolio/SailorPunk/sailor-punk-portada.webp" alt="Portada del videoclip Sailor Punk" fetchpriority="high" />
+        <picture>
+          <source media="(max-width: 900px)" srcset="assets/Portafolio/SailorPunk/sailor-punk-portada.webp" />
+          <img src="assets/Portafolio/SailorPunk/sailor-punk-calavera-inicio.webp" alt="Calavera ilustrada del videoclip Sailor Punk" fetchpriority="high" />
+        </picture>
       </div>
+      <div class="sailor-hero-shade"></div>
 
       <div class="sailor-copy">
         <p class="sailor-kicker">Animación-Videoclip · 2D</p>
