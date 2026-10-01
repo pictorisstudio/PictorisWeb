@@ -5,6 +5,7 @@ import {
   ImageSegmenter,
   PoseLandmarker
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest";
+import { BodyLightExperience, bodyLightPerformanceProfiles } from "./experiences/bodyLight/BodyLightExperience.js";
 import { BookMappingExperience } from "./experiences/bookMapping/BookMappingExperience.js";
 import { experienceConfig } from "./experiences/bookMapping/config/experienceConfig.js";
 import { ExperienceState } from "./experiences/bookMapping/core/ExperienceState.js";
@@ -19,9 +20,16 @@ const SEGMENTER_MODEL_URL = "https://storage.googleapis.com/mediapipe-models/ima
 const WASM_URL = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm";
 const DETECT_INTERVAL = 1000 / 30;
 const POSE_DETECT_INTERVAL = 1000 / 24;
-const SEGMENTATION_INTERVAL = 1000 / 18;
-const ENABLE_BOOK_MAPPING = true;
 const URL_PARAMS = new URLSearchParams(window.location.search);
+const ACTIVE_EXPERIENCE = URL_PARAMS.get("experience") === "bookMapping" ? "bookMapping" : "bodyLight";
+const ENABLE_BODY_LIGHT = ACTIVE_EXPERIENCE === "bodyLight";
+const ENABLE_BOOK_MAPPING = ACTIVE_EXPERIENCE === "bookMapping";
+const QUALITY_PARAM = (URL_PARAMS.get("quality") || "office").toLowerCase();
+const BODY_LIGHT_PERFORMANCE_PROFILE = bodyLightPerformanceProfiles[QUALITY_PARAM] ?? bodyLightPerformanceProfiles.office;
+const RENDER_PIXEL_RATIO_LIMIT = ENABLE_BODY_LIGHT ? BODY_LIGHT_PERFORMANCE_PROFILE.pixelRatioMax : 2;
+const SEGMENTATION_INTERVAL = ENABLE_BODY_LIGHT
+  ? 1000 / BODY_LIGHT_PERFORMANCE_PROFILE.segmentationFps
+  : 1000 / 18;
 const DEBUG_PARAM = URL_PARAMS.get("debug");
 const DEBUG_SCENE_PARAM = URL_PARAMS.get("scene");
 const DEBUG_SCENE_STATES = Object.freeze({
@@ -63,6 +71,7 @@ let segmentationInput = createPersonSegmentationInput();
 let pointerTarget = null;
 let cameraActive = false;
 let bookMappingExperience = null;
+let bodyLightExperience = null;
 let lastHandsCount = 0;
 let lastTrackingStatusAt = 0;
 let visionModelReady = false;
@@ -171,7 +180,7 @@ function createRenderer() {
   camera.position.z = 5;
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, RENDER_PIXEL_RATIO_LIMIT));
   renderer.setSize(window.innerWidth, window.innerHeight);
   canvasMount.appendChild(renderer.domElement);
 
@@ -182,6 +191,10 @@ function createRenderer() {
 }
 
 function buildScene() {
+  if (!ENABLE_BOOK_MAPPING) {
+    return;
+  }
+
   const grid = new THREE.GridHelper(26, 32, 0x3650cf, 0x2b2340);
   grid.rotation.x = Math.PI / 2;
   grid.position.z = -0.04;
@@ -225,7 +238,9 @@ function resize() {
   camera.top = worldBounds.top;
   camera.bottom = worldBounds.bottom;
   camera.updateProjectionMatrix();
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, RENDER_PIXEL_RATIO_LIMIT));
   renderer.setSize(window.innerWidth, window.innerHeight);
+  bodyLightExperience?.resize(worldBounds);
 }
 
 async function loadVisionModel() {
@@ -364,13 +379,15 @@ async function startCamera() {
     setDebug(debugCamera, `Cámara: ${track?.label || "activa"}`);
     setDebug(debugVideo, `Video: ${video.videoWidth || settings.width || "-"}x${video.videoHeight || settings.height || "-"}`);
 
-    video.classList.add("is-active");
+    video.classList.toggle("is-active", DEBUG_MODE && ENABLE_BOOK_MAPPING);
     cameraActive = true;
     await populateCameraOptions();
     introPanel.classList.add("is-hidden");
     setStatus(
       visionModelReady
-        ? "Cámara activa. Muestra la palma completa con buena luz."
+        ? ENABLE_BODY_LIGHT
+          ? "Cámara activa. Entra al encuadre para formar la silueta de luz."
+          : "Cámara activa. Muestra la palma completa con buena luz."
         : "Cámara activa. El tracking sigue cargando o falló, pero la webcam ya funciona."
     );
   } catch (error) {
@@ -469,7 +486,9 @@ function detectHands(now) {
 }
 
 function detectPose(now) {
-  const shouldDetectPose = bookMappingExperience?.needsPoseTracking?.() || false;
+  const shouldDetectPose = bodyLightExperience?.needsPoseTracking?.()
+    || bookMappingExperience?.needsPoseTracking?.()
+    || false;
   const pointer = getPointerFallback();
 
   if (!shouldDetectPose) {
@@ -550,7 +569,9 @@ function drawMirroredVideoToSegmentationCanvas() {
 }
 
 function detectPersonSegmentation(now) {
-  const shouldSegment = bookMappingExperience?.needsPersonSegmentation?.() || false;
+  const shouldSegment = bodyLightExperience?.needsPersonSegmentation?.()
+    || bookMappingExperience?.needsPersonSegmentation?.()
+    || false;
 
   if (!shouldSegment) {
     segmentationInput = createPersonSegmentationInput({
@@ -618,6 +639,13 @@ function animate(now = performance.now()) {
   detectHands(now);
   detectPose(now);
   detectPersonSegmentation(now);
+  bodyLightExperience?.update({
+    now,
+    segmentationInput,
+    poseInput,
+    worldBounds,
+    cameraActive
+  });
   if (ENABLE_BOOK_MAPPING) {
     bookMappingExperience?.update({
       input: createHandInput({
@@ -632,12 +660,29 @@ function animate(now = performance.now()) {
       trackedPose: poseInput.stable
     });
   }
+  if (DEBUG_MODE && bodyLightExperience) {
+    const metrics = bodyLightExperience.getDebugMetrics();
+    setDebug(debugHands, `Persona: ${metrics.personDetected ? "detectada" : "sin detectar"} | ENERGY: ${metrics.energy.toFixed(2)} | Trails: ${metrics.trailsEnabled ? "on" : "off"} | Ghosts: ${metrics.ghostEchoesEnabled ? "on" : "off"} | SHOCKWAVE: ${metrics.shockwaveStatus}`);
+    setDebug(debugVideo, `AMBIENT: ${metrics.ambientCount} | BODY: ${metrics.bodyCount} | TRAIL: ${metrics.trailCount} | GHOSTS: ${metrics.ghostEchoCount}`);
+    setDebug(debugCamera, `PROFILE: ${metrics.profileLabel} | FPS: ${metrics.fps.toFixed(1)} | SEGMENTATION FPS: ${segmentationInput.active ? segmentationInput.fps.toFixed(1) : "sin señal"}`);
+  }
   renderer.render(scene, camera);
 }
 
 export async function init({ startImmediately = false } = {}) {
   document.body.classList.toggle("is-debug-mode", DEBUG_MODE);
+  document.body.dataset.mappingExperience = ACTIVE_EXPERIENCE;
   createRenderer();
+  if (ENABLE_BODY_LIGHT) {
+    bodyLightExperience = new BodyLightExperience({
+      THREE,
+      scene,
+      worldBounds,
+      debug: DEBUG_MODE,
+      performanceProfile: BODY_LIGHT_PERFORMANCE_PROFILE
+    });
+    bodyLightExperience.init();
+  }
   if (ENABLE_BOOK_MAPPING) {
     bookMappingExperience = new BookMappingExperience({
       renderer,
@@ -659,7 +704,10 @@ export async function init({ startImmediately = false } = {}) {
 
   startButton.disabled = false;
   await populateCameraOptions();
-  setStatus("Puedes activar la cámara. El tracking se cargará en paralelo.");
+  setStatus(ENABLE_BODY_LIGHT
+    ? "Puedes activar la cámara. El fondo y las partículas ya están corriendo."
+    : "Puedes activar la cámara. El tracking se cargará en paralelo."
+  );
 
   loadVisionModel().catch((error) => {
     startButton.disabled = false;
