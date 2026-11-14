@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" media="print" fetchpriority="low" onload="this.media='all'" />
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" /></noscript>
   <link rel="stylesheet" href="css/style.css?v=20260926" />
-  <link rel="stylesheet" href="css/cenizas-tierra-y-fuego.css?v=20261114-scene02-2" />
+  <link rel="stylesheet" href="css/cenizas-tierra-y-fuego.css?v=20261114-transitions" />
 </head>
 <body class="ctf-page">
   <header class="site-header">
@@ -48,6 +48,8 @@
       </div>
     </div>
   </header>
+
+  <canvas class="ctf-particle-canvas" aria-hidden="true"></canvas>
 
   <main>
     <section id="escena-01" class="ctf-scene ctf-scene-entry" aria-labelledby="ctf-title">
@@ -89,18 +91,6 @@
             </div>
           </dl>
 
-          <div class="ctf-actions">
-            <a href="#escena-02" class="btn btn-primary ctf-primary-action">ENTRAR AL PROYECTO</a>
-            <button
-              type="button"
-              class="btn btn-secondary ctf-dossier-action"
-              data-dossier-url=""
-              aria-describedby="ctf-dossier-status"
-            >
-              VER DOSSIER PDF
-            </button>
-            <p id="ctf-dossier-status" class="ctf-action-status" role="status" aria-live="polite"></p>
-          </div>
         </div>
 
         <p class="ctf-scene-number" aria-label="Escena 1 de 6"><span>01</span> / 06</p>
@@ -186,10 +176,293 @@
       </div>
     </section>
 
-    <div id="escena-03" class="ctf-scene-marker" tabindex="-1" aria-label="Escena 03 en desarrollo"></div>
+    <section id="escena-03" class="ctf-scene ctf-scene-language" tabindex="-1" aria-labelledby="ctf-language-title">
+      <div class="ctf-ambient ctf-ambient-language" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <div class="container ctf-language-layout">
+        <header class="ctf-language-intro">
+          <div>
+            <p class="ctf-language-number" aria-label="Escena 3 de 6"><span>03</span> / 06</p>
+            <h2 id="ctf-language-title">EL LENGUAJE<br />DE CENIZAS</h2>
+            <p class="ctf-language-kicker">CUERPO · MATERIA · MEMORIA</p>
+          </div>
+          <p class="ctf-language-text">
+            La película transforma el movimiento real mediante rotoscopia 2D, dibujo
+            expresivo y fondos pictóricos para construir una imagen física, imperfecta
+            y atravesada por la memoria.
+          </p>
+        </header>
+
+        <div class="ctf-process">
+          <div class="ctf-process-tabs" role="tablist" aria-label="Etapas del proceso visual">
+            <button type="button" id="ctf-tab-reference" class="ctf-process-tab is-active" role="tab" aria-selected="true" aria-controls="ctf-panel-reference" data-process-target="reference">REFERENCIA</button>
+            <button type="button" id="ctf-tab-drawing" class="ctf-process-tab" role="tab" aria-selected="false" aria-controls="ctf-panel-drawing" data-process-target="drawing" tabindex="-1">DIBUJO</button>
+            <button type="button" id="ctf-tab-texture" class="ctf-process-tab" role="tab" aria-selected="false" aria-controls="ctf-panel-texture" data-process-target="texture" tabindex="-1">TEXTURA</button>
+            <button type="button" id="ctf-tab-final" class="ctf-process-tab" role="tab" aria-selected="false" aria-controls="ctf-panel-final" data-process-target="final" tabindex="-1">FINAL</button>
+          </div>
+
+          <div class="ctf-process-stage">
+            <!-- Añadir data-image-src o data-video-src y poster cuando existan los materiales reales. -->
+            <div id="ctf-panel-reference" class="ctf-process-panel is-active" role="tabpanel" aria-labelledby="ctf-tab-reference" data-process-panel="reference">
+              <div class="ctf-process-media" role="img" aria-label="Material de referencia, pendiente de conectar" data-image-src="" data-video-src="" data-poster-src="">
+                <img alt="" loading="lazy" hidden />
+                <video muted loop playsinline preload="none" aria-hidden="true"></video>
+              </div>
+              <p>01 — REFERENCIA</p>
+            </div>
+
+            <div id="ctf-panel-drawing" class="ctf-process-panel" role="tabpanel" aria-labelledby="ctf-tab-drawing" data-process-panel="drawing" hidden>
+              <div class="ctf-process-media" role="img" aria-label="Dibujo y rotoscopia, pendientes de conectar" data-image-src="" data-video-src="" data-poster-src="">
+                <img alt="" loading="lazy" hidden />
+                <video muted loop playsinline preload="none" aria-hidden="true"></video>
+              </div>
+              <p>02 — DIBUJO / ROTOSCOPIA</p>
+            </div>
+
+            <div id="ctf-panel-texture" class="ctf-process-panel" role="tabpanel" aria-labelledby="ctf-tab-texture" data-process-panel="texture" hidden>
+              <div class="ctf-process-media" role="img" aria-label="Textura y pintura, pendientes de conectar" data-image-src="" data-video-src="" data-poster-src="">
+                <img alt="" loading="lazy" hidden />
+                <video muted loop playsinline preload="none" aria-hidden="true"></video>
+              </div>
+              <p>03 — TEXTURA / PINTURA</p>
+            </div>
+
+            <div id="ctf-panel-final" class="ctf-process-panel" role="tabpanel" aria-labelledby="ctf-tab-final" data-process-panel="final" hidden>
+              <div class="ctf-process-media" role="img" aria-label="Plano final compuesto, pendiente de conectar" data-image-src="" data-video-src="" data-poster-src="">
+                <img alt="" loading="lazy" hidden />
+                <video muted loop playsinline preload="none" aria-hidden="true"></video>
+              </div>
+              <p>04 — PLANO FINAL</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="ctf-language-concepts" aria-label="Conceptos del lenguaje visual">
+          <article>
+            <h3>CUERPO</h3>
+            <p>La animación conserva el peso, el esfuerzo y la tensión del movimiento.</p>
+          </article>
+          <article>
+            <h3>MATERIA</h3>
+            <p>Crayón, óleo y textura convierten la imagen en algo físico e imperfecto.</p>
+          </article>
+          <article>
+            <h3>MEMORIA</h3>
+            <p>La imagen no reconstruye el pasado de forma limpia: lo deja fragmentado, áspero y emocional.</p>
+          </article>
+        </div>
+
+        <nav class="ctf-scene-nav" aria-label="Navegación entre escenas">
+          <a href="#escena-02" class="ctf-scene-nav-link">← 02 MARÍA</a>
+          <a href="#escena-04" class="ctf-scene-nav-link">04 PRÓXIMA ESCENA →</a>
+        </nav>
+      </div>
+    </section>
+
+    <section id="escena-04" class="ctf-scene ctf-scene-production" tabindex="-1" aria-labelledby="ctf-production-title">
+      <div class="ctf-ambient ctf-ambient-production" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <div class="container ctf-production-layout">
+        <header class="ctf-production-intro">
+          <div>
+            <p class="ctf-production-number" aria-label="Escena 4 de 6"><span>04</span> / 06</p>
+            <h2 id="ctf-production-title">DE LA IMAGEN<br />A LA PELÍCULA</h2>
+          </div>
+          <p class="ctf-production-text">
+            Cada plano atraviesa un proceso de selección, rotoscopia, construcción
+            pictórica, composición y postproducción hasta convertirse en parte del
+            universo visual de Cenizas, Tierra y Fuego.
+          </p>
+        </header>
+
+        <dl class="ctf-production-stats" aria-label="Escala de producción">
+          <div data-stat="shots">
+            <dd>60</dd>
+            <dt>PLANOS</dt>
+          </div>
+          <div data-stat="months">
+            <dd>16</dd>
+            <dt>MESES</dt>
+          </div>
+          <div data-stat="budget">
+            <dd>$60 M</dd>
+            <dt>PRESUPUESTO</dt>
+          </div>
+        </dl>
+
+        <div class="ctf-pipeline" aria-labelledby="ctf-pipeline-title">
+          <p id="ctf-pipeline-title" class="ctf-pipeline-label">PROCESO DE PRODUCCIÓN</p>
+          <ol class="ctf-pipeline-list">
+            <li style="--pipeline-index: 0"><span>01</span><strong>RODAJE</strong></li>
+            <li style="--pipeline-index: 1"><span>02</span><strong>SELECCIÓN</strong></li>
+            <li style="--pipeline-index: 2"><span>03</span><strong>ROTOSCOPIA</strong></li>
+            <li style="--pipeline-index: 3"><span>04</span><strong>FONDOS Y COLOR</strong></li>
+            <li style="--pipeline-index: 4"><span>05</span><strong>COMPOSICIÓN</strong></li>
+            <li style="--pipeline-index: 5"><span>06</span><strong>POSTPRODUCCIÓN</strong></li>
+          </ol>
+        </div>
+
+        <div class="ctf-production-lower">
+          <aside class="ctf-project-status">
+            <p>ESTADO DEL PROYECTO</p>
+            <strong>Desarrollo visual avanzado y pruebas de animación realizadas.</strong>
+          </aside>
+
+          <aside class="ctf-industry-block" data-enabled="false" hidden>
+            <p>BUSCAMOS</p>
+            <ul>
+              <li>Financiación</li>
+              <li>Coproducción</li>
+              <li>Circulación</li>
+            </ul>
+          </aside>
+        </div>
+
+        <nav class="ctf-scene-nav" aria-label="Navegación entre escenas">
+          <a href="#escena-03" class="ctf-scene-nav-link">← 03 LENGUAJE VISUAL</a>
+          <a href="#escena-05" class="ctf-scene-nav-link">05 PRÓXIMA ESCENA →</a>
+        </nav>
+      </div>
+    </section>
+
+    <section id="escena-05" class="ctf-scene ctf-scene-territory" tabindex="-1" aria-labelledby="ctf-territory-title">
+      <div class="ctf-ambient ctf-ambient-territory" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <div class="container ctf-territory-layout">
+        <header class="ctf-territory-intro">
+          <div>
+            <p class="ctf-territory-number" aria-label="Escena 5 de 6"><span>05</span> / 06</p>
+            <h2 id="ctf-territory-title">DONDE NACE<br />LA HISTORIA</h2>
+            <p class="ctf-territory-kicker">BOYACÁ · COLOMBIA</p>
+          </div>
+          <p class="ctf-territory-text">
+            Cenizas, Tierra y Fuego nace de un territorio rural, de sus paisajes,
+            sus labores y de las historias que permanecen en quienes lo habitan.
+          </p>
+        </header>
+
+        <!-- Añadir una ruta WebP o AVIF en data-image-src cuando exista el visual territorial. -->
+        <figure class="ctf-territory-visual" role="img" aria-label="Visual territorial de Boyacá, pendiente de conectar" data-image-src="">
+          <img alt="" loading="lazy" decoding="async" hidden />
+        </figure>
+
+        <div class="ctf-territory-axes" aria-label="Territorio, equipo y retorno">
+          <svg class="ctf-territory-stroke" viewBox="0 0 1200 110" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M12 65 C 140 18, 262 91, 390 58 S 642 25, 764 68 S 1012 96, 1188 43" />
+            <path d="M16 71 C 148 27, 268 98, 398 64 S 650 33, 772 74 S 1018 102, 1184 50" />
+          </svg>
+
+          <article>
+            <h3>TERRITORIO</h3>
+            <p>El paisaje, la vida rural y la memoria de Boyacá atraviesan el universo del cortometraje.</p>
+          </article>
+          <article>
+            <h3>EQUIPO</h3>
+            <p>La producción integra talento y procesos creativos desarrollados desde la región.</p>
+          </article>
+          <article>
+            <h3>RETORNO</h3>
+            <p>El proyecto contempla espacios de socialización y devolución en Pesca y Tunja.</p>
+          </article>
+        </div>
+
+        <aside class="ctf-circulation-block" data-enabled="false" hidden>
+          <p>CIRCULACIÓN</p>
+          <strong>Festivales · muestras · espacios culturales</strong>
+        </aside>
+
+        <nav class="ctf-scene-nav" aria-label="Navegación entre escenas">
+          <a href="#escena-04" class="ctf-scene-nav-link">← 04 PRODUCCIÓN</a>
+          <a href="#escena-06" class="ctf-scene-nav-link">06 PRÓXIMA ESCENA →</a>
+        </nav>
+      </div>
+    </section>
+
+    <section id="escena-06" class="ctf-scene ctf-scene-finale" tabindex="-1" aria-labelledby="ctf-finale-title">
+      <div class="ctf-ambient ctf-ambient-finale" aria-hidden="true">
+        <span></span>
+        <span></span>
+      </div>
+
+      <div class="container ctf-finale-layout">
+        <p class="ctf-finale-number" aria-label="Escena 6 de 6"><span>06</span> / 06</p>
+
+        <div class="ctf-finale-frame">
+          <!-- Añadir una ruta WebP o AVIF en data-image-src cuando se defina el fotograma final. -->
+          <figure class="ctf-finale-visual" role="img" aria-label="Fotograma final del cortometraje, pendiente de conectar" data-image-src="">
+            <img alt="" loading="lazy" decoding="async" hidden />
+            <div class="ctf-finale-shade" aria-hidden="true"></div>
+          </figure>
+
+          <div class="ctf-finale-copy">
+            <h2 id="ctf-finale-title">CENIZAS,<br />TIERRA Y FUEGO</h2>
+            <p class="ctf-finale-tagline">[ FRASE FINAL / TAGLINE EN REVISIÓN ]</p>
+
+            <dl class="ctf-finale-credits" aria-label="Créditos principales">
+              <div>
+                <dt>Dirección</dt>
+                <dd>Angy Carolina Montoya Sotelo</dd>
+              </div>
+              <div>
+                <dt>Producción</dt>
+                <dd>Miguel Stiven Sanabria Mendivelso</dd>
+              </div>
+            </dl>
+
+            <p class="ctf-finale-studio">PICTORIS STUDIO · COLOMBIA</p>
+
+            <div class="ctf-finale-actions">
+              <button type="button" class="btn btn-primary ctf-finale-dossier" data-dossier-url="" aria-describedby="ctf-finale-status">VER DOSSIER</button>
+              <a href="#" class="btn btn-secondary ctf-finale-teaser" data-enabled="false" data-teaser-url="" target="_blank" rel="noopener noreferrer" hidden>VER TEASER</a>
+              <a href="https://wa.me/573143155217" class="btn btn-secondary" target="_blank" rel="noopener noreferrer" aria-label="Contactar a Pictoris Studio por WhatsApp">CONTACTO</a>
+              <p id="ctf-finale-status" class="ctf-finale-status" role="status" aria-live="polite"></p>
+            </div>
+
+            <aside class="ctf-finale-industry" data-enabled="false" hidden>
+              <p>BUSCAMOS</p>
+              <strong>Coproducción · Financiación · Circulación</strong>
+            </aside>
+          </div>
+        </div>
+
+        <svg class="ctf-finale-thread" viewBox="0 0 1200 80" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M8 42 C 160 19, 276 65, 410 38 S 668 24, 804 46 S 1040 59, 1192 40" />
+          <path d="M10 47 C 166 25, 280 70, 416 44 S 674 30, 810 51 S 1044 64, 1190 46" />
+        </svg>
+
+        <nav class="ctf-scene-nav ctf-finale-nav" aria-label="Navegación final">
+          <a href="#escena-05" class="ctf-scene-nav-link">← 05 TERRITORIO</a>
+          <a href="#escena-01" class="ctf-scene-nav-link">VOLVER AL INICIO ↑</a>
+        </nav>
+      </div>
+    </section>
   </main>
 
+  <nav class="ctf-presentation-nav" aria-label="Navegación de presentación">
+    <button type="button" class="ctf-presentation-button ctf-presentation-prev" aria-label="Escena anterior">
+      <span aria-hidden="true">←</span>
+    </button>
+    <p class="ctf-presentation-counter" aria-live="polite" aria-atomic="true">
+      <span class="ctf-presentation-current">01</span> / 06
+    </p>
+    <button type="button" class="ctf-presentation-button ctf-presentation-next" aria-label="Escena siguiente">
+      <span aria-hidden="true">→</span>
+    </button>
+  </nav>
+
   <script src="js/script.js?v=20260925"></script>
-  <script src="js/cenizas-tierra-y-fuego.js?v=20261114-scene02-4"></script>
+  <script src="js/cenizas-tierra-y-fuego.js?v=20261114-transitions"></script>
 </body>
 </html>
