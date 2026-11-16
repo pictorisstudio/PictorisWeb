@@ -233,19 +233,6 @@ class ParticleBackground {
   }
 }
 
-const PROCESS_VIDEO_SOURCES = Object.freeze({
-  referencia: "",
-  rotoscopia: "",
-  textura: "",
-  composicion: "",
-});
-
-const STORYBOARD_IMAGE_SOURCES = Object.freeze({
-  "storyboard-fuego": "",
-  "storyboard-tierra": "",
-  "storyboard-aire": "",
-});
-
 const TEAM_ROLE_NAMES = Object.freeze({
   "produccion-general": "",
   "direccion-animacion": "",
@@ -258,9 +245,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const mariaScene = document.querySelector(".ctf-scene-maria");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const languageScene = document.querySelector(".ctf-scene-language");
-  const processCards = [...document.querySelectorAll(".ctf-process-card")];
+  const processVideos = [...document.querySelectorAll("[data-process-video]")];
   const productionScene = document.querySelector(".ctf-scene-production");
-  const storyboardCards = [...document.querySelectorAll(".ctf-storyboard")];
+  const productionVideo = document.querySelector("[data-production-video]");
   const territoryScene = document.querySelector(".ctf-scene-territory");
   const pendingTeamRoles = [...document.querySelectorAll("[data-team-role]")];
   const finaleScene = document.querySelector(".ctf-scene-finale");
@@ -316,48 +303,9 @@ document.addEventListener("DOMContentLoaded", () => {
     mariaScene.classList.add("is-visible");
   }
 
-  function pauseProcessVideos(exceptVideo = null) {
-    processCards.forEach((card) => {
-      const video = card.querySelector("video");
-      if (video && video !== exceptVideo) video.pause();
-    });
-  }
-
-  processCards.forEach((card) => {
-    const processId = card.dataset.processId;
-    const source = PROCESS_VIDEO_SOURCES[processId]?.trim();
-    if (!source) return;
-
-    const media = card.querySelector(".ctf-process-media");
-    const placeholder = media?.querySelector(".ctf-video-placeholder");
-    if (!media) return;
-
-    const video = document.createElement("video");
-    video.src = source;
-    video.muted = true;
-    video.loop = true;
-    video.playsInline = true;
-    video.preload = "metadata";
-    video.setAttribute("aria-label", `Video de ${processId}`);
-    media.append(video);
-    placeholder?.remove();
-    card.tabIndex = 0;
-
-    const playThisVideo = () => {
-      pauseProcessVideos(video);
-      video.play().catch(() => {});
-    };
-
-    card.addEventListener("mouseenter", playThisVideo);
-    card.addEventListener("focus", playThisVideo);
-    card.addEventListener("mouseleave", () => video.pause());
-    card.addEventListener("blur", () => video.pause());
-  });
-
   if (languageScene && "IntersectionObserver" in window) {
     const languageObserver = new IntersectionObserver(([entry]) => {
       languageScene.classList.toggle("is-visible", entry.isIntersecting);
-      if (!entry.isIntersecting) pauseProcessVideos();
     }, { threshold: 0.16 });
 
     languageObserver.observe(languageScene);
@@ -365,23 +313,74 @@ document.addEventListener("DOMContentLoaded", () => {
     languageScene.classList.add("is-visible");
   }
 
-  storyboardCards.forEach((card) => {
-    const storyboardId = card.dataset.storyboardId;
-    const source = STORYBOARD_IMAGE_SOURCES[storyboardId]?.trim();
-    if (!source) return;
+  let processPlaybackRun = 0;
+  let processVideosEnabled = false;
 
-    const media = card.querySelector(".ctf-storyboard-media");
-    const placeholder = media?.querySelector(".ctf-storyboard-placeholder");
-    if (!media) return;
-
-    const image = document.createElement("img");
-    image.src = source;
-    image.alt = `Storyboard ${card.querySelector("h4")?.textContent?.trim() || "del capítulo"}`;
-    image.loading = "lazy";
-    image.decoding = "async";
-    media.append(image);
-    placeholder?.remove();
+  processVideos.forEach((video) => {
+    video.addEventListener("play", () => {
+      if (!processVideosEnabled) video.pause();
+    });
   });
+
+  function waitForVideoReady(video) {
+    if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) return Promise.resolve();
+
+    return new Promise((resolve) => {
+      const finish = () => {
+        window.clearTimeout(timeoutId);
+        video.removeEventListener("loadeddata", finish);
+        video.removeEventListener("error", finish);
+        resolve();
+      };
+      const timeoutId = window.setTimeout(finish, 1800);
+
+      video.addEventListener("loadeddata", finish, { once: true });
+      video.addEventListener("error", finish, { once: true });
+    });
+  }
+
+  async function setProcessVideosActive(isActive) {
+    const playbackRun = ++processPlaybackRun;
+    processVideosEnabled = isActive;
+
+    processVideos.forEach((video) => {
+      video.pause();
+      if (isActive) video.currentTime = 0;
+    });
+
+    if (!isActive || !processVideos.length) return;
+
+    await Promise.allSettled(processVideos.map(waitForVideoReady));
+    if (playbackRun !== processPlaybackRun) return;
+
+    processVideos.forEach((video) => {
+      video.currentTime = 0;
+    });
+    await Promise.allSettled(processVideos.map((video) => video.play()));
+  }
+
+  let productionPlaybackRun = 0;
+  let productionVideoEnabled = false;
+
+  productionVideo?.addEventListener("play", () => {
+    if (!productionVideoEnabled) productionVideo.pause();
+  });
+
+  async function setProductionVideoActive(isActive) {
+    const playbackRun = ++productionPlaybackRun;
+    productionVideoEnabled = isActive;
+    if (!productionVideo) return;
+
+    productionVideo.pause();
+    if (!isActive) return;
+
+    productionVideo.currentTime = 0;
+    await waitForVideoReady(productionVideo);
+    if (playbackRun !== productionPlaybackRun) return;
+
+    productionVideo.currentTime = 0;
+    await productionVideo.play().catch(() => {});
+  }
 
   if (productionScene && "IntersectionObserver" in window) {
     const productionObserver = new IntersectionObserver(([entry]) => {
@@ -461,12 +460,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const previousIndex = activeSceneIndex;
       activeSceneIndex = Math.max(0, Math.min(index, lastSceneIndex));
       const sceneNumber = String(activeSceneIndex + 1).padStart(2, "0");
+      const sceneChanged = activeSceneIndex !== previousIndex;
 
       if (source === "scroll" && activeSceneIndex !== previousIndex && !isTransitioning && !reducedMotion) {
         showLightScrollEntry(presentationScenes[activeSceneIndex]);
       }
 
       particleBackground?.setScene(activeSceneIndex);
+      if (source === "initial" || sceneChanged) {
+        setProcessVideosActive(presentationScenes[activeSceneIndex] === languageScene);
+        setProductionVideoActive(presentationScenes[activeSceneIndex] === productionScene);
+      }
       currentSceneLabel.textContent = sceneNumber;
       previousSceneButton.disabled = isTransitioning || activeSceneIndex === 0;
       nextSceneButton.disabled = isTransitioning || activeSceneIndex === lastSceneIndex;
