@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" media="print" fetchpriority="low" onload="this.media='all'" />
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" /></noscript>
   <link rel="stylesheet" href="css/style.css?v=20260926" />
-  <link rel="stylesheet" href="css/cenizas-tierra-y-fuego.css?v=20261114-transitions" />
+  <link rel="stylesheet" href="css/cenizas-tierra-y-fuego.css?v=20261115-cover-type" />
 </head>
 <body class="ctf-page">
   <header class="site-header">
@@ -62,21 +62,28 @@
         <span></span>
       </div>
 
-      <!--
-        Visual principal pendiente: prueba de María corriendo.
-        Para imagen, insertar <img> dentro de .ctf-visual-media.
-        Para video, insertar <video autoplay muted loop playsinline preload="metadata" poster="...">.
-      -->
-      <div class="ctf-visual" aria-label="Visual principal de María corriendo, pendiente de incorporar">
-        <div class="ctf-visual-media" data-visual-status="pending" aria-hidden="true"></div>
+      <div class="ctf-visual" aria-hidden="true">
+        <div class="ctf-visual-media" data-visual-status="ready">
+          <video
+            class="ctf-maria-runner"
+            src="assets/videos/cenizas-tierra-y-fuego/maria-corriendo-ojo-pez.webm"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="metadata"
+            tabindex="-1"
+            aria-hidden="true"
+          ></video>
+        </div>
         <div class="ctf-visual-shade" aria-hidden="true"></div>
       </div>
 
       <div class="container ctf-scene-layout">
         <div class="ctf-copy">
-          <p class="ctf-kicker">Una película de Pictoris Studio</p>
-          <h1 id="ctf-title">CENIZAS,<br />TIERRA Y FUEGO</h1>
-          <p class="ctf-tagline">[ TAGLINE EN REVISIÓN ]</p>
+          <p class="ctf-kicker"><span>Una película de</span> <span class="ctf-kicker-studio">Pictoris Studio</span></p>
+          <h1 id="ctf-title"><span>CENIZAS, TIERRA</span><span>Y VIENTO</span></h1>
+          <p class="ctf-tagline">¿Qué queda de una vida cuando nunca pudiste elegirla?</p>
         </div>
 
         <div class="ctf-scene-footer">
@@ -86,7 +93,7 @@
               <dd>Angy Carolina Montoya Sotelo</dd>
             </div>
             <div>
-              <dt>Producción</dt>
+              <dt>Producción de animación</dt>
               <dd>Miguel Stiven Sanabria Mendivelso</dd>
             </div>
           </dl>
@@ -107,67 +114,47 @@
 
       <div class="container ctf-maria-layout">
         <header class="ctf-maria-intro">
-          <div>
-            <p class="ctf-maria-number" aria-label="Escena 2 de 6"><span>02</span> / 06</p>
-            <h2 id="ctf-maria-title">MARÍA</h2>
-            <p class="ctf-maria-subtitle">UNA VIDA ATRAVESADA POR LO QUE NO PUDO ELEGIR</p>
-          </div>
-          <p class="ctf-maria-text">
-            María recorre distintas etapas de su vida marcada por decisiones impuestas,
-            el trabajo rural y una existencia cada vez más distante de aquello que alguna
-            vez quiso para sí.
-          </p>
+          <p class="ctf-maria-number" aria-label="Escena 2, La historia">02 / LA HISTORIA</p>
+          <h2 id="ctf-maria-title">TRES TIEMPOS. UNA MISMA VIDA.</h2>
+          <p class="ctf-maria-subtitle">Tres edades de María, tres capítulos de una misma película.</p>
         </header>
 
         <div class="ctf-ages" aria-label="Las tres edades de María">
-          <svg class="ctf-age-stroke" viewBox="0 0 1200 180" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M18 106 C 142 44, 246 146, 374 95 S 612 58, 738 106 S 982 147, 1182 72" />
-            <path d="M20 112 C 154 55, 250 153, 382 101 S 620 66, 744 112 S 984 154, 1180 79" />
-          </svg>
-
-          <!-- Sustituir data-video-src y poster cuando estén disponibles las pruebas reales. -->
-          <article class="ctf-age" data-age="14" tabindex="0">
-            <p class="ctf-age-label">14</p>
-            <div class="ctf-age-media" role="img" aria-label="Prueba animada de María a los 14 años, pendiente de conectar">
-              <video
-                muted
-                loop
-                playsinline
-                preload="none"
-                data-video-src=""
-                aria-hidden="true"
-              ></video>
+          <article class="ctf-age ctf-age--fire" data-age="14">
+            <div class="ctf-age-media">
+              <img src="assets/images/cenizas-tierra-y-fuego/maria-14-fuego.png" alt="María a los 14 años, capítulo Fuego" loading="eager" />
+            </div>
+            <div class="ctf-age-copy">
+              <p class="ctf-age-chapter">FUEGO</p>
+              <p class="ctf-age-label">14 AÑOS</p>
+              <p class="ctf-age-text">Una juventud marcada por decisiones impuestas.</p>
             </div>
           </article>
 
-          <article class="ctf-age" data-age="34" tabindex="0">
-            <p class="ctf-age-label">34</p>
-            <div class="ctf-age-media" role="img" aria-label="Prueba animada de María a los 34 años, pendiente de conectar">
-              <video
-                muted
-                loop
-                playsinline
-                preload="none"
-                data-video-src=""
-                aria-hidden="true"
-              ></video>
+          <article class="ctf-age ctf-age--earth" data-age="34">
+            <div class="ctf-age-media">
+              <img src="assets/images/cenizas-tierra-y-fuego/maria-34-tierra.png" alt="María a los 34 años, capítulo Tierra" loading="eager" />
+            </div>
+            <div class="ctf-age-copy">
+              <p class="ctf-age-chapter">TIERRA</p>
+              <p class="ctf-age-label">34 AÑOS</p>
+              <p class="ctf-age-text">El trabajo rural, la pérdida y los deseos desplazados.</p>
             </div>
           </article>
 
-          <article class="ctf-age" data-age="vejez" tabindex="0">
-            <p class="ctf-age-label">VEJEZ</p>
-            <div class="ctf-age-media" role="img" aria-label="Prueba animada de María en la vejez, pendiente de conectar">
-              <video
-                muted
-                loop
-                playsinline
-                preload="none"
-                data-video-src=""
-                aria-hidden="true"
-              ></video>
+          <article class="ctf-age ctf-age--air" data-age="76">
+            <div class="ctf-age-media">
+              <img src="assets/images/cenizas-tierra-y-fuego/maria-76-aire.png" alt="María a los 76 años, capítulo Aire" loading="eager" />
+            </div>
+            <div class="ctf-age-copy">
+              <p class="ctf-age-chapter">AIRE</p>
+              <p class="ctf-age-label">76 AÑOS</p>
+              <p class="ctf-age-text">La memoria de aquello que nunca desapareció.</p>
             </div>
           </article>
         </div>
+
+        <p class="ctf-maria-closing">El pasado no queda atrás. Permanece en María.</p>
 
         <nav class="ctf-scene-nav" aria-label="Navegación entre escenas">
           <a href="#escena-01" class="ctf-scene-nav-link">← 01 ENTRADA</a>
@@ -185,76 +172,54 @@
 
       <div class="container ctf-language-layout">
         <header class="ctf-language-intro">
-          <div>
-            <p class="ctf-language-number" aria-label="Escena 3 de 6"><span>03</span> / 06</p>
-            <h2 id="ctf-language-title">EL LENGUAJE<br />DE CENIZAS</h2>
-            <p class="ctf-language-kicker">CUERPO · MATERIA · MEMORIA</p>
-          </div>
-          <p class="ctf-language-text">
-            La película transforma el movimiento real mediante rotoscopia 2D, dibujo
-            expresivo y fondos pictóricos para construir una imagen física, imperfecta
-            y atravesada por la memoria.
-          </p>
+          <p class="ctf-language-number" aria-label="Escena 3, Desarrollo visual">03 / DESARROLLO VISUAL</p>
+          <h2 id="ctf-language-title">DEL MOVIMIENTO A LA PINTURA</h2>
+          <p class="ctf-language-kicker">Del registro de movimiento a una animación con identidad pictórica.</p>
         </header>
 
-        <div class="ctf-process">
-          <div class="ctf-process-tabs" role="tablist" aria-label="Etapas del proceso visual">
-            <button type="button" id="ctf-tab-reference" class="ctf-process-tab is-active" role="tab" aria-selected="true" aria-controls="ctf-panel-reference" data-process-target="reference">REFERENCIA</button>
-            <button type="button" id="ctf-tab-drawing" class="ctf-process-tab" role="tab" aria-selected="false" aria-controls="ctf-panel-drawing" data-process-target="drawing" tabindex="-1">DIBUJO</button>
-            <button type="button" id="ctf-tab-texture" class="ctf-process-tab" role="tab" aria-selected="false" aria-controls="ctf-panel-texture" data-process-target="texture" tabindex="-1">TEXTURA</button>
-            <button type="button" id="ctf-tab-final" class="ctf-process-tab" role="tab" aria-selected="false" aria-controls="ctf-panel-final" data-process-target="final" tabindex="-1">FINAL</button>
-          </div>
-
-          <div class="ctf-process-stage">
-            <!-- Añadir data-image-src o data-video-src y poster cuando existan los materiales reales. -->
-            <div id="ctf-panel-reference" class="ctf-process-panel is-active" role="tabpanel" aria-labelledby="ctf-tab-reference" data-process-panel="reference">
-              <div class="ctf-process-media" role="img" aria-label="Material de referencia, pendiente de conectar" data-image-src="" data-video-src="" data-poster-src="">
-                <img alt="" loading="lazy" hidden />
-                <video muted loop playsinline preload="none" aria-hidden="true"></video>
+        <div class="ctf-process ctf-process-grid" aria-label="Etapas del desarrollo visual">
+          <article class="ctf-process-card" data-process-id="referencia">
+            <div class="ctf-process-media" role="img" aria-label="Video de referencia pendiente">
+              <div class="ctf-video-placeholder" aria-hidden="true">
+                <svg viewBox="0 0 32 32" focusable="false"><rect x="4" y="7" width="17" height="18" rx="2"></rect><path d="m21 13 7-4v14l-7-4z"></path></svg>
+                <span>VIDEO PENDIENTE</span>
               </div>
-              <p>01 — REFERENCIA</p>
             </div>
-
-            <div id="ctf-panel-drawing" class="ctf-process-panel" role="tabpanel" aria-labelledby="ctf-tab-drawing" data-process-panel="drawing" hidden>
-              <div class="ctf-process-media" role="img" aria-label="Dibujo y rotoscopia, pendientes de conectar" data-image-src="" data-video-src="" data-poster-src="">
-                <img alt="" loading="lazy" hidden />
-                <video muted loop playsinline preload="none" aria-hidden="true"></video>
-              </div>
-              <p>02 — DIBUJO / ROTOSCOPIA</p>
-            </div>
-
-            <div id="ctf-panel-texture" class="ctf-process-panel" role="tabpanel" aria-labelledby="ctf-tab-texture" data-process-panel="texture" hidden>
-              <div class="ctf-process-media" role="img" aria-label="Textura y pintura, pendientes de conectar" data-image-src="" data-video-src="" data-poster-src="">
-                <img alt="" loading="lazy" hidden />
-                <video muted loop playsinline preload="none" aria-hidden="true"></video>
-              </div>
-              <p>03 — TEXTURA / PINTURA</p>
-            </div>
-
-            <div id="ctf-panel-final" class="ctf-process-panel" role="tabpanel" aria-labelledby="ctf-tab-final" data-process-panel="final" hidden>
-              <div class="ctf-process-media" role="img" aria-label="Plano final compuesto, pendiente de conectar" data-image-src="" data-video-src="" data-poster-src="">
-                <img alt="" loading="lazy" hidden />
-                <video muted loop playsinline preload="none" aria-hidden="true"></video>
-              </div>
-              <p>04 — PLANO FINAL</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="ctf-language-concepts" aria-label="Conceptos del lenguaje visual">
-          <article>
-            <h3>CUERPO</h3>
-            <p>La animación conserva el peso, el esfuerzo y la tensión del movimiento.</p>
+            <div class="ctf-process-copy"><span>01</span><div><h3>REFERENCIA</h3><p>Movimiento registrado.</p></div></div>
           </article>
-          <article>
-            <h3>MATERIA</h3>
-            <p>Crayón, óleo y textura convierten la imagen en algo físico e imperfecto.</p>
+
+          <article class="ctf-process-card" data-process-id="rotoscopia">
+            <div class="ctf-process-media" role="img" aria-label="Video de rotoscopia pendiente">
+              <div class="ctf-video-placeholder" aria-hidden="true">
+                <svg viewBox="0 0 32 32" focusable="false"><rect x="4" y="7" width="17" height="18" rx="2"></rect><path d="m21 13 7-4v14l-7-4z"></path></svg>
+                <span>VIDEO PENDIENTE</span>
+              </div>
+            </div>
+            <div class="ctf-process-copy"><span>02</span><div><h3>ROTOSCOPIA</h3><p>Interpretación del movimiento.</p></div></div>
           </article>
-          <article>
-            <h3>MEMORIA</h3>
-            <p>La imagen no reconstruye el pasado de forma limpia: lo deja fragmentado, áspero y emocional.</p>
+
+          <article class="ctf-process-card" data-process-id="textura">
+            <div class="ctf-process-media" role="img" aria-label="Video de textura y color pendiente">
+              <div class="ctf-video-placeholder" aria-hidden="true">
+                <svg viewBox="0 0 32 32" focusable="false"><rect x="4" y="7" width="17" height="18" rx="2"></rect><path d="m21 13 7-4v14l-7-4z"></path></svg>
+                <span>VIDEO PENDIENTE</span>
+              </div>
+            </div>
+            <div class="ctf-process-copy"><span>03</span><div><h3>TEXTURA Y COLOR</h3><p>Pinceles y paletas desarrollados.</p></div></div>
+          </article>
+
+          <article class="ctf-process-card" data-process-id="composicion">
+            <div class="ctf-process-media" role="img" aria-label="Video de composición pendiente">
+              <div class="ctf-video-placeholder" aria-hidden="true">
+                <svg viewBox="0 0 32 32" focusable="false"><rect x="4" y="7" width="17" height="18" rx="2"></rect><path d="m21 13 7-4v14l-7-4z"></path></svg>
+                <span>VIDEO PENDIENTE</span>
+              </div>
+            </div>
+            <div class="ctf-process-copy"><span>04</span><div><h3>COMPOSICIÓN</h3><p>Integración visual del plano.</p></div></div>
           </article>
         </div>
+
+        <p class="ctf-process-closing">Tres tratamientos gráficos desarrollados y aprobados durante la preproducción.</p>
 
         <nav class="ctf-scene-nav" aria-label="Navegación entre escenas">
           <a href="#escena-02" class="ctf-scene-nav-link">← 02 MARÍA</a>
@@ -272,59 +237,76 @@
 
       <div class="container ctf-production-layout">
         <header class="ctf-production-intro">
-          <div>
-            <p class="ctf-production-number" aria-label="Escena 4 de 6"><span>04</span> / 06</p>
-            <h2 id="ctf-production-title">DE LA IMAGEN<br />A LA PELÍCULA</h2>
-          </div>
-          <p class="ctf-production-text">
-            Cada plano atraviesa un proceso de selección, rotoscopia, construcción
-            pictórica, composición y postproducción hasta convertirse en parte del
-            universo visual de Cenizas, Tierra y Fuego.
-          </p>
+          <p class="ctf-production-number" aria-label="Escena 4, Producción de animación">04 / PRODUCCIÓN DE ANIMACIÓN</p>
+          <h2 id="ctf-production-title">DE LA IMAGEN A LA PELÍCULA</h2>
+          <p class="ctf-production-text">Cada plano se planifica según su complejidad, no solamente por su duración.</p>
         </header>
 
         <dl class="ctf-production-stats" aria-label="Escala de producción">
-          <div data-stat="shots">
+          <div>
             <dd>60</dd>
             <dt>PLANOS</dt>
           </div>
-          <div data-stat="months">
-            <dd>16</dd>
-            <dt>MESES</dt>
+          <div>
+            <dd>07:08</dd>
+            <dt>DURACIÓN PREVISTA</dt>
           </div>
-          <div data-stat="budget">
-            <dd>$60 M</dd>
-            <dt>PRESUPUESTO</dt>
+          <div>
+            <dd>12 FPS</dd>
+            <dt>CADENCIA DE ANIMACIÓN</dt>
           </div>
         </dl>
 
-        <div class="ctf-pipeline" aria-labelledby="ctf-pipeline-title">
-          <p id="ctf-pipeline-title" class="ctf-pipeline-label">PROCESO DE PRODUCCIÓN</p>
+        <section class="ctf-storyboards" aria-labelledby="ctf-storyboards-title">
+          <h3 id="ctf-storyboards-title">TRES CAPÍTULOS. DISTINTAS NECESIDADES DE ANIMACIÓN.</h3>
+          <div class="ctf-storyboard-grid">
+            <article class="ctf-storyboard" data-storyboard-id="storyboard-fuego">
+              <h4>FUEGO</h4>
+              <div class="ctf-storyboard-media" role="img" aria-label="Storyboard de Fuego pendiente">
+                <div class="ctf-storyboard-placeholder" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" focusable="false"><rect x="4" y="5" width="24" height="22" rx="2"></rect><circle cx="11" cy="12" r="2.5"></circle><path d="m7 23 6-6 4 4 3-3 5 5"></path></svg>
+                  <span>STORYBOARD PENDIENTE</span>
+                </div>
+              </div>
+              <p>Movimiento expresivo.</p>
+            </article>
+
+            <article class="ctf-storyboard" data-storyboard-id="storyboard-tierra">
+              <h4>TIERRA</h4>
+              <div class="ctf-storyboard-media" role="img" aria-label="Storyboard de Tierra pendiente">
+                <div class="ctf-storyboard-placeholder" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" focusable="false"><rect x="4" y="5" width="24" height="22" rx="2"></rect><circle cx="11" cy="12" r="2.5"></circle><path d="m7 23 6-6 4 4 3-3 5 5"></path></svg>
+                  <span>STORYBOARD PENDIENTE</span>
+                </div>
+              </div>
+              <p>Personaje y entorno.</p>
+            </article>
+
+            <article class="ctf-storyboard" data-storyboard-id="storyboard-aire">
+              <h4>AIRE</h4>
+              <div class="ctf-storyboard-media" role="img" aria-label="Storyboard de Aire pendiente">
+                <div class="ctf-storyboard-placeholder" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" focusable="false"><rect x="4" y="5" width="24" height="22" rx="2"></rect><circle cx="11" cy="12" r="2.5"></circle><path d="m7 23 6-6 4 4 3-3 5 5"></path></svg>
+                  <span>STORYBOARD PENDIENTE</span>
+                </div>
+              </div>
+              <p>Gestos, memoria y composición.</p>
+            </article>
+          </div>
+        </section>
+
+        <div class="ctf-pipeline" aria-label="Flujo de producción">
           <ol class="ctf-pipeline-list">
-            <li style="--pipeline-index: 0"><span>01</span><strong>RODAJE</strong></li>
-            <li style="--pipeline-index: 1"><span>02</span><strong>SELECCIÓN</strong></li>
-            <li style="--pipeline-index: 2"><span>03</span><strong>ROTOSCOPIA</strong></li>
-            <li style="--pipeline-index: 3"><span>04</span><strong>FONDOS Y COLOR</strong></li>
-            <li style="--pipeline-index: 4"><span>05</span><strong>COMPOSICIÓN</strong></li>
-            <li style="--pipeline-index: 5"><span>06</span><strong>POSTPRODUCCIÓN</strong></li>
+            <li style="--pipeline-index: 0">REFERENCIAS</li>
+            <li style="--pipeline-index: 1">ANIMACIÓN</li>
+            <li style="--pipeline-index: 2">FONDOS Y EFECTOS</li>
+            <li style="--pipeline-index: 3">COMPOSICIÓN</li>
+            <li style="--pipeline-index: 4">REVISIÓN</li>
+            <li style="--pipeline-index: 5">APROBACIÓN</li>
           </ol>
         </div>
 
-        <div class="ctf-production-lower">
-          <aside class="ctf-project-status">
-            <p>ESTADO DEL PROYECTO</p>
-            <strong>Desarrollo visual avanzado y pruebas de animación realizadas.</strong>
-          </aside>
-
-          <aside class="ctf-industry-block" data-enabled="false" hidden>
-            <p>BUSCAMOS</p>
-            <ul>
-              <li>Financiación</li>
-              <li>Coproducción</li>
-              <li>Circulación</li>
-            </ul>
-          </aside>
-        </div>
+        <p class="ctf-production-closing">Paquetes de planos definidos por duración, movimiento y complejidad.</p>
 
         <nav class="ctf-scene-nav" aria-label="Navegación entre escenas">
           <a href="#escena-03" class="ctf-scene-nav-link">← 03 LENGUAJE VISUAL</a>
@@ -340,48 +322,52 @@
         <span></span>
       </div>
 
-      <div class="container ctf-territory-layout">
-        <header class="ctf-territory-intro">
-          <div>
-            <p class="ctf-territory-number" aria-label="Escena 5 de 6"><span>05</span> / 06</p>
-            <h2 id="ctf-territory-title">DONDE NACE<br />LA HISTORIA</h2>
-            <p class="ctf-territory-kicker">BOYACÁ · COLOMBIA</p>
-          </div>
-          <p class="ctf-territory-text">
-            Cenizas, Tierra y Fuego nace de un territorio rural, de sus paisajes,
-            sus labores y de las historias que permanecen en quienes lo habitan.
-          </p>
+      <div class="container ctf-team-layout">
+        <header class="ctf-team-intro">
+          <p class="ctf-team-number" aria-label="Escena 5, Equipo y producción">05 / EQUIPO Y PRODUCCIÓN</p>
+          <h2 id="ctf-territory-title">UNA PRODUCCIÓN CON RESPONSABILIDADES DEFINIDAS</h2>
+          <p class="ctf-team-subtitle">Dirección creativa, coordinación de animación y seguimiento de entregables.</p>
         </header>
 
-        <!-- Añadir una ruta WebP o AVIF en data-image-src cuando exista el visual territorial. -->
-        <figure class="ctf-territory-visual" role="img" aria-label="Visual territorial de Boyacá, pendiente de conectar" data-image-src="">
-          <img alt="" loading="lazy" decoding="async" hidden />
-        </figure>
+        <div class="ctf-team-structure" aria-label="Estructura de coordinación de la producción">
+          <div class="ctf-team-primary">
+            <article class="ctf-team-role ctf-team-role--primary">
+              <p class="ctf-team-role-label">DIRECCIÓN</p>
+              <h3>Angy Carolina Montoya Sotelo</h3>
+              <p class="ctf-team-role-description">Narrativa y aprobación artística.</p>
+            </article>
 
-        <div class="ctf-territory-axes" aria-label="Territorio, equipo y retorno">
-          <svg class="ctf-territory-stroke" viewBox="0 0 1200 110" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M12 65 C 140 18, 262 91, 390 58 S 642 25, 764 68 S 1012 96, 1188 43" />
-            <path d="M16 71 C 148 27, 268 98, 398 64 S 650 33, 772 74 S 1018 102, 1184 50" />
-          </svg>
+            <article class="ctf-team-role ctf-team-role--primary">
+              <p class="ctf-team-role-label">PRODUCCIÓN DE ANIMACIÓN</p>
+              <h3>Miguel Stiven Sanabria Mendivelso</h3>
+              <p class="ctf-team-role-description">Organización de paquetes, coordinación y seguimiento.</p>
+            </article>
+          </div>
 
-          <article>
-            <h3>TERRITORIO</h3>
-            <p>El paisaje, la vida rural y la memoria de Boyacá atraviesan el universo del cortometraje.</p>
-          </article>
-          <article>
-            <h3>EQUIPO</h3>
-            <p>La producción integra talento y procesos creativos desarrollados desde la región.</p>
-          </article>
-          <article>
-            <h3>RETORNO</h3>
-            <p>El proyecto contempla espacios de socialización y devolución en Pesca y Tunja.</p>
-          </article>
+          <div class="ctf-team-connectors" aria-hidden="true"><span></span><span></span><span></span></div>
+
+          <div class="ctf-team-secondary">
+            <article class="ctf-team-role" data-team-role="produccion-general">
+              <p class="ctf-team-role-label">PRODUCCIÓN GENERAL / COPRODUCCIÓN</p>
+              <h3 data-team-name>Responsable definido — nombre por incorporar.</h3>
+              <p class="ctf-team-role-description">Gestión administrativa y contractual.</p>
+            </article>
+
+            <article class="ctf-team-role" data-team-role="direccion-animacion">
+              <p class="ctf-team-role-label">DIRECCIÓN DE ANIMACIÓN</p>
+              <h3 data-team-name>Responsable definido — nombre por incorporar.</h3>
+              <p class="ctf-team-role-description">Supervisión artística y técnica de la animación.</p>
+            </article>
+
+            <article class="ctf-team-role">
+              <p class="ctf-team-role-label">EQUIPO DE ANIMACIÓN</p>
+              <h3>6 animadores previstos.</h3>
+              <p class="ctf-team-role-description">Ejecución de planos mediante paquetes de trabajo.</p>
+            </article>
+          </div>
         </div>
 
-        <aside class="ctf-circulation-block" data-enabled="false" hidden>
-          <p>CIRCULACIÓN</p>
-          <strong>Festivales · muestras · espacios culturales</strong>
-        </aside>
+        <p class="ctf-team-closing">Cada plano cuenta con una ruta de coordinación, revisión y aprobación.</p>
 
         <nav class="ctf-scene-nav" aria-label="Navegación entre escenas">
           <a href="#escena-04" class="ctf-scene-nav-link">← 04 PRODUCCIÓN</a>
@@ -396,55 +382,101 @@
         <span></span>
       </div>
 
-      <div class="container ctf-finale-layout">
-        <p class="ctf-finale-number" aria-label="Escena 6 de 6"><span>06</span> / 06</p>
+      <div class="container ctf-finance-layout">
+        <header class="ctf-finance-intro">
+          <p class="ctf-finance-number" aria-label="Escena 6, Presupuesto y financiación">06 / PRESUPUESTO Y FINANCIACIÓN</p>
+          <h2 id="ctf-finale-title">RECURSOS PARA TERMINAR LA PELÍCULA</h2>
+          <p class="ctf-finance-subtitle">Financiación solicitada, recursos disponibles y desarrollo realizado.</p>
+        </header>
 
-        <div class="ctf-finale-frame">
-          <!-- Añadir una ruta WebP o AVIF en data-image-src cuando se defina el fotograma final. -->
-          <figure class="ctf-finale-visual" role="img" aria-label="Fotograma final del cortometraje, pendiente de conectar" data-image-src="">
-            <img alt="" loading="lazy" decoding="async" hidden />
-            <div class="ctf-finale-shade" aria-hidden="true"></div>
-          </figure>
-
-          <div class="ctf-finale-copy">
-            <h2 id="ctf-finale-title">CENIZAS,<br />TIERRA Y FUEGO</h2>
-            <p class="ctf-finale-tagline">[ FRASE FINAL / TAGLINE EN REVISIÓN ]</p>
-
-            <dl class="ctf-finale-credits" aria-label="Créditos principales">
-              <div>
-                <dt>Dirección</dt>
-                <dd>Angy Carolina Montoya Sotelo</dd>
-              </div>
-              <div>
-                <dt>Producción</dt>
-                <dd>Miguel Stiven Sanabria Mendivelso</dd>
-              </div>
-            </dl>
-
-            <p class="ctf-finale-studio">PICTORIS STUDIO · COLOMBIA</p>
-
-            <div class="ctf-finale-actions">
-              <button type="button" class="btn btn-primary ctf-finale-dossier" data-dossier-url="" aria-describedby="ctf-finale-status">VER DOSSIER</button>
-              <a href="#" class="btn btn-secondary ctf-finale-teaser" data-enabled="false" data-teaser-url="" target="_blank" rel="noopener noreferrer" hidden>VER TEASER</a>
-              <a href="https://wa.me/573143155217" class="btn btn-secondary" target="_blank" rel="noopener noreferrer" aria-label="Contactar a Pictoris Studio por WhatsApp">CONTACTO</a>
-              <p id="ctf-finale-status" class="ctf-finale-status" role="status" aria-live="polite"></p>
-            </div>
-
-            <aside class="ctf-finale-industry" data-enabled="false" hidden>
-              <p>BUSCAMOS</p>
-              <strong>Coproducción · Financiación · Circulación</strong>
-            </aside>
+        <section class="ctf-finance-primary" aria-labelledby="ctf-fdc-label">
+          <div>
+            <p id="ctf-fdc-label" class="ctf-finance-label">ESTÍMULO SOLICITADO AL FDC</p>
+            <p class="ctf-finance-amount ctf-finance-amount--primary">$60.000.000 <span>COP</span></p>
           </div>
+          <p class="ctf-finance-note">Solicitud en evaluación.</p>
+        </section>
+
+        <div class="ctf-finance-secondary">
+          <article>
+            <p class="ctf-finance-label">APORTE PROPIO DISPONIBLE</p>
+            <p class="ctf-finance-amount">$10.000.000 <span>COP</span></p>
+            <p class="ctf-finance-description">Recursos de Pictoris Studio destinados al proyecto.</p>
+          </article>
+
+          <article>
+            <p class="ctf-finance-label">INVERSIÓN YA REALIZADA</p>
+            <p class="ctf-finance-amount">≈ $14.000.000 <span>COP</span></p>
+            <p class="ctf-finance-description">Desarrollo artístico, técnico y pruebas de preproducción.</p>
+          </article>
         </div>
 
-        <svg class="ctf-finale-thread" viewBox="0 0 1200 80" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M8 42 C 160 19, 276 65, 410 38 S 668 24, 804 46 S 1040 59, 1192 40" />
-          <path d="M10 47 C 166 25, 280 70, 416 44 S 674 30, 810 51 S 1044 64, 1190 46" />
-        </svg>
+        <aside class="ctf-finance-in-kind">
+          <div>
+            <p class="ctf-finance-label">COPRODUCCIÓN CON APORTE EN ESPECIE</p>
+            <p class="ctf-finance-description">Servicios de producción general y gestión administrativa.</p>
+          </div>
+          <p class="ctf-finance-note">Valoración económica pendiente.</p>
+        </aside>
 
-        <nav class="ctf-scene-nav ctf-finale-nav" aria-label="Navegación final">
-          <a href="#escena-05" class="ctf-scene-nav-link">← 05 TERRITORIO</a>
-          <a href="#escena-01" class="ctf-scene-nav-link">VOLVER AL INICIO ↑</a>
+        <p class="ctf-finance-closing">El estímulo financiaría la producción pendiente; la inversión histórica no representa efectivo disponible.</p>
+
+        <nav class="ctf-scene-nav ctf-finale-nav" aria-label="Navegación entre escenas">
+          <a href="#escena-05" class="ctf-scene-nav-link">← 05 EQUIPO</a>
+          <a href="#escena-07" class="ctf-scene-nav-link">07 CRONOGRAMA →</a>
+        </nav>
+      </div>
+    </section>
+
+    <section id="escena-07" class="ctf-scene ctf-scene-schedule" tabindex="-1" aria-labelledby="ctf-schedule-title">
+      <div class="container ctf-schedule-layout">
+        <header class="ctf-schedule-intro">
+          <p class="ctf-schedule-number">07 / CRONOGRAMA Y CIRCULACIÓN</p>
+          <h2 id="ctf-schedule-title">16 MESES PARA COMPLETAR LA PELÍCULA</h2>
+          <p class="ctf-schedule-subtitle">Producción por capítulos, etapas superpuestas y cierre técnico.</p>
+        </header>
+
+        <div class="ctf-gantt" aria-label="Cronograma de producción de 16 meses">
+          <div class="ctf-gantt-scale" aria-hidden="true">
+            <span></span><span>01</span><span>02</span><span>03</span><span>04</span><span>05</span><span>06</span><span>07</span><span>08</span><span>09</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span>
+          </div>
+          <div class="ctf-gantt-row" style="--start: 1; --span: 3"><div><strong>PREPRODUCCIÓN Y PREPARACIÓN</strong><span>Meses 01–03</span></div><i></i></div>
+          <div class="ctf-gantt-row" style="--start: 3; --span: 4"><div><strong>FUEGO</strong><span>Meses 03–06</span></div><i></i></div>
+          <div class="ctf-gantt-row" style="--start: 5; --span: 6"><div><strong>TIERRA</strong><span>Meses 05–10</span></div><i></i></div>
+          <div class="ctf-gantt-row" style="--start: 7; --span: 6"><div><strong>AIRE</strong><span>Meses 07–12</span></div><i></i></div>
+          <div class="ctf-gantt-row" style="--start: 13; --span: 2"><div><strong>FINALIZACIÓN DE IMAGEN Y SONIDO</strong><span>Meses 13–14</span></div><i></i></div>
+          <div class="ctf-gantt-row" style="--start: 15; --span: 2"><div><strong>MÁSTER Y CIERRE</strong><span>Meses 15–16</span></div><i></i></div>
+        </div>
+
+        <aside class="ctf-circulation">
+          <p>CIRCULACIÓN EN BOYACÁ</p>
+          <strong>Cinemateca de Tunja</strong>
+          <span>Espacio de exhibición y encuentro con públicos.</span>
+        </aside>
+        <p class="ctf-schedule-closing">La producción se organiza por etapas y entregables verificables.</p>
+        <nav class="ctf-scene-nav ctf-schedule-nav" aria-label="Navegación entre escenas">
+          <a href="#escena-06" class="ctf-scene-nav-link">← 06 FINANCIACIÓN</a>
+          <a href="#escena-08" class="ctf-scene-nav-link">08 CIERRE →</a>
+        </nav>
+      </div>
+    </section>
+
+    <section id="escena-08" class="ctf-scene ctf-scene-closing" tabindex="-1" aria-labelledby="ctf-closing-title">
+      <div class="container ctf-closing-layout">
+        <div class="ctf-closing-copy">
+          <p class="ctf-closing-number">08 / CIERRE</p>
+          <h2 id="ctf-closing-title"><span>CENIZAS, TIERRA</span><span>Y VIENTO</span></h2>
+          <p class="ctf-closing-statement">Una vida atravesada por decisiones que nunca pudo tomar.</p>
+        </div>
+        <figure class="ctf-closing-maria" data-image-src="" aria-hidden="true">
+          <img alt="" hidden>
+        </figure>
+        <footer class="ctf-closing-credits">
+          <div><span>DIRECCIÓN</span><strong>Angy Carolina Montoya Sotelo</strong></div>
+          <div><span>PICTORIS STUDIO</span><strong>COLOMBIA</strong></div>
+        </footer>
+        <nav class="ctf-scene-nav ctf-closing-nav" aria-label="Navegación final">
+          <a href="#escena-07" class="ctf-scene-nav-link">← 07 CRONOGRAMA</a>
         </nav>
       </div>
     </section>
@@ -455,7 +487,7 @@
       <span aria-hidden="true">←</span>
     </button>
     <p class="ctf-presentation-counter" aria-live="polite" aria-atomic="true">
-      <span class="ctf-presentation-current">01</span> / 06
+      <span class="ctf-presentation-current">01</span> / 08
     </p>
     <button type="button" class="ctf-presentation-button ctf-presentation-next" aria-label="Escena siguiente">
       <span aria-hidden="true">→</span>
@@ -463,6 +495,6 @@
   </nav>
 
   <script src="js/script.js?v=20260925"></script>
-  <script src="js/cenizas-tierra-y-fuego.js?v=20261114-transitions"></script>
+  <script src="js/cenizas-tierra-y-fuego.js?v=20261115-maria-color"></script>
 </body>
 </html>

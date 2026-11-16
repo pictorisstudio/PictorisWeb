@@ -233,32 +233,52 @@ class ParticleBackground {
   }
 }
 
+const PROCESS_VIDEO_SOURCES = Object.freeze({
+  referencia: "",
+  rotoscopia: "",
+  textura: "",
+  composicion: "",
+});
+
+const STORYBOARD_IMAGE_SOURCES = Object.freeze({
+  "storyboard-fuego": "",
+  "storyboard-tierra": "",
+  "storyboard-aire": "",
+});
+
+const TEAM_ROLE_NAMES = Object.freeze({
+  "produccion-general": "",
+  "direccion-animacion": "",
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   const dossierButton = document.querySelector(".ctf-dossier-action");
   const dossierStatus = document.querySelector("#ctf-dossier-status");
   const projectVideo = document.querySelector(".ctf-visual-media video");
   const mariaScene = document.querySelector(".ctf-scene-maria");
-  const ageBlocks = [...document.querySelectorAll(".ctf-age")];
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const mobileLayout = window.matchMedia("(max-width: 640px)");
   const languageScene = document.querySelector(".ctf-scene-language");
-  const processTabs = [...document.querySelectorAll(".ctf-process-tab")];
-  const processPanels = [...document.querySelectorAll(".ctf-process-panel")];
+  const processCards = [...document.querySelectorAll(".ctf-process-card")];
   const productionScene = document.querySelector(".ctf-scene-production");
-  const industryBlock = document.querySelector(".ctf-industry-block");
+  const storyboardCards = [...document.querySelectorAll(".ctf-storyboard")];
   const territoryScene = document.querySelector(".ctf-scene-territory");
-  const territoryVisual = document.querySelector(".ctf-territory-visual");
-  const circulationBlock = document.querySelector(".ctf-circulation-block");
+  const pendingTeamRoles = [...document.querySelectorAll("[data-team-role]")];
   const finaleScene = document.querySelector(".ctf-scene-finale");
-  const finaleVisual = document.querySelector(".ctf-finale-visual");
-  const finaleDossier = document.querySelector(".ctf-finale-dossier");
-  const finaleTeaser = document.querySelector(".ctf-finale-teaser");
-  const finaleStatus = document.querySelector("#ctf-finale-status");
-  const finaleIndustry = document.querySelector(".ctf-finale-industry");
+  const scheduleScene = document.querySelector(".ctf-scene-schedule");
+  const closingScene = document.querySelector(".ctf-scene-closing");
+  const closingMaria = document.querySelector(".ctf-closing-maria");
   const particleCanvas = document.querySelector(".ctf-particle-canvas");
   const particleBackground = particleCanvas ? new ParticleBackground(particleCanvas, reducedMotion) : null;
 
-  ageBlocks.forEach((ageBlock) => ageBlock.querySelector("video")?.pause());
+  function configureProjectVideo() {
+    if (!projectVideo) return;
+    projectVideo.muted = true;
+    projectVideo.defaultPlaybackRate = 0.5;
+    projectVideo.playbackRate = 0.5;
+  }
+
+  configureProjectVideo();
+  projectVideo?.addEventListener("loadedmetadata", configureProjectVideo);
 
   if (dossierButton) {
     dossierButton.addEventListener("click", () => {
@@ -276,6 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (projectVideo && "IntersectionObserver" in window) {
     const videoObserver = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
+        configureProjectVideo();
         projectVideo.play().catch(() => {});
       } else {
         projectVideo.pause();
@@ -285,184 +306,58 @@ document.addEventListener("DOMContentLoaded", () => {
     videoObserver.observe(projectVideo);
   }
 
-  function prepareAgeVideo(ageBlock) {
-    const video = ageBlock.querySelector("video");
-    const source = video?.dataset.videoSrc?.trim();
-
-    if (!video || !source) return null;
-    if (video.dataset.sourceReady === "true") return video;
-
-    video.src = source;
-    video.preload = "metadata";
-    video.dataset.sourceReady = "true";
-    ageBlock.classList.add("has-media");
-    video.load();
-    return video;
-  }
-
-  function activateAge(activeBlock) {
-    ageBlocks.forEach((ageBlock) => {
-      const video = ageBlock.querySelector("video");
-      const isActive = ageBlock === activeBlock;
-      ageBlock.classList.toggle("is-active", isActive);
-
-      if (!video) return;
-      if (isActive) {
-        const preparedVideo = prepareAgeVideo(ageBlock);
-        if (preparedVideo) {
-          preparedVideo.play().catch(() => {});
-        } else {
-          video.pause();
-        }
-      } else {
-        video.pause();
-      }
-    });
-  }
-
-  function pauseAllAges() {
-    ageBlocks.forEach((ageBlock) => {
-      ageBlock.classList.remove("is-active");
-      ageBlock.querySelector("video")?.pause();
-    });
-  }
-
-  if (mariaScene && ageBlocks.length && "IntersectionObserver" in window) {
-    let sequenceTimers = [];
-
-    const clearSequence = () => {
-      sequenceTimers.forEach(window.clearTimeout);
-      sequenceTimers = [];
-    };
-
+  if (mariaScene && "IntersectionObserver" in window) {
     const sceneObserver = new IntersectionObserver(([entry]) => {
       mariaScene.classList.toggle("is-visible", entry.isIntersecting);
-
-      if (!entry.isIntersecting) {
-        clearSequence();
-        pauseAllAges();
-        return;
-      }
-
-      if (!mobileLayout.matches) {
-        clearSequence();
-        ageBlocks.forEach((ageBlock, index) => {
-          const delay = reducedMotion ? 0 : index * 650;
-          sequenceTimers.push(window.setTimeout(() => activateAge(ageBlock), delay));
-        });
-      }
     }, { threshold: 0.18 });
 
     sceneObserver.observe(mariaScene);
-
-    const ageObserver = new IntersectionObserver((entries) => {
-      if (!mobileLayout.matches) return;
-
-      const centered = entries
-        .filter((entry) => entry.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-      if (centered) activateAge(centered.target);
-    }, {
-      threshold: [0.35, 0.55, 0.75],
-      rootMargin: "-22% 0px -22% 0px",
-    });
-
-    ageBlocks.forEach((ageBlock) => {
-      ageObserver.observe(ageBlock);
-      ageBlock.addEventListener("mouseenter", () => {
-        if (!mobileLayout.matches) activateAge(ageBlock);
-      });
-      ageBlock.addEventListener("focus", () => activateAge(ageBlock));
-    });
   } else if (mariaScene) {
     mariaScene.classList.add("is-visible");
   }
 
-  function pauseProcessMedia(exceptPanel = null) {
-    processPanels.forEach((panel) => {
-      if (panel !== exceptPanel) panel.querySelector("video")?.pause();
+  function pauseProcessVideos(exceptVideo = null) {
+    processCards.forEach((card) => {
+      const video = card.querySelector("video");
+      if (video && video !== exceptVideo) video.pause();
     });
   }
 
-  function prepareProcessMedia(panel) {
-    const media = panel?.querySelector(".ctf-process-media");
-    if (!media || media.dataset.ready === "true") return media;
+  processCards.forEach((card) => {
+    const processId = card.dataset.processId;
+    const source = PROCESS_VIDEO_SOURCES[processId]?.trim();
+    if (!source) return;
 
-    const imageUrl = media.dataset.imageSrc?.trim();
-    const videoUrl = media.dataset.videoSrc?.trim();
-    const posterUrl = media.dataset.posterSrc?.trim();
-    const image = media.querySelector("img");
-    const video = media.querySelector("video");
+    const media = card.querySelector(".ctf-process-media");
+    const placeholder = media?.querySelector(".ctf-video-placeholder");
+    if (!media) return;
 
-    if (videoUrl && video) {
-      video.src = videoUrl;
-      if (posterUrl) video.poster = posterUrl;
-      video.preload = "metadata";
-      video.load();
-      media.dataset.mediaType = "video";
-    } else if (imageUrl && image) {
-      image.src = imageUrl;
-      image.hidden = false;
-      media.dataset.mediaType = "image";
-    } else {
-      media.dataset.mediaType = "pending";
-    }
+    const video = document.createElement("video");
+    video.src = source;
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.preload = "metadata";
+    video.setAttribute("aria-label", `Video de ${processId}`);
+    media.append(video);
+    placeholder?.remove();
+    card.tabIndex = 0;
 
-    media.dataset.ready = "true";
-    return media;
-  }
+    const playThisVideo = () => {
+      pauseProcessVideos(video);
+      video.play().catch(() => {});
+    };
 
-  function activateProcess(targetName, moveFocus = false) {
-    let activePanel = null;
-
-    processTabs.forEach((tab) => {
-      const isActive = tab.dataset.processTarget === targetName;
-      tab.classList.toggle("is-active", isActive);
-      tab.setAttribute("aria-selected", String(isActive));
-      tab.tabIndex = isActive ? 0 : -1;
-      if (isActive && moveFocus) tab.focus();
-    });
-
-    processPanels.forEach((panel) => {
-      const isActive = panel.dataset.processPanel === targetName;
-      panel.classList.toggle("is-active", isActive);
-      panel.hidden = !isActive;
-      if (isActive) activePanel = panel;
-    });
-
-    pauseProcessMedia(activePanel);
-    const media = prepareProcessMedia(activePanel);
-    if (media?.dataset.mediaType === "video") {
-      media.querySelector("video")?.play().catch(() => {});
-    }
-  }
-
-  processTabs.forEach((tab, index) => {
-    tab.addEventListener("click", () => activateProcess(tab.dataset.processTarget));
-    tab.addEventListener("keydown", (event) => {
-      if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
-      event.preventDefault();
-
-      let nextIndex = index;
-      if (["ArrowRight", "ArrowDown"].includes(event.key)) nextIndex = (index + 1) % processTabs.length;
-      if (["ArrowLeft", "ArrowUp"].includes(event.key)) nextIndex = (index - 1 + processTabs.length) % processTabs.length;
-      if (event.key === "Home") nextIndex = 0;
-      if (event.key === "End") nextIndex = processTabs.length - 1;
-      activateProcess(processTabs[nextIndex].dataset.processTarget, true);
-    });
+    card.addEventListener("mouseenter", playThisVideo);
+    card.addEventListener("focus", playThisVideo);
+    card.addEventListener("mouseleave", () => video.pause());
+    card.addEventListener("blur", () => video.pause());
   });
 
-  if (languageScene && processTabs.length && "IntersectionObserver" in window) {
+  if (languageScene && "IntersectionObserver" in window) {
     const languageObserver = new IntersectionObserver(([entry]) => {
       languageScene.classList.toggle("is-visible", entry.isIntersecting);
-
-      if (entry.isIntersecting) {
-        const activeTab = processTabs.find((tab) => tab.classList.contains("is-active"));
-        if (activeTab) activateProcess(activeTab.dataset.processTarget);
-      } else {
-        pauseProcessMedia();
-      }
+      if (!entry.isIntersecting) pauseProcessVideos();
     }, { threshold: 0.16 });
 
     languageObserver.observe(languageScene);
@@ -470,9 +365,23 @@ document.addEventListener("DOMContentLoaded", () => {
     languageScene.classList.add("is-visible");
   }
 
-  if (industryBlock?.dataset.enabled === "true") {
-    industryBlock.hidden = false;
-  }
+  storyboardCards.forEach((card) => {
+    const storyboardId = card.dataset.storyboardId;
+    const source = STORYBOARD_IMAGE_SOURCES[storyboardId]?.trim();
+    if (!source) return;
+
+    const media = card.querySelector(".ctf-storyboard-media");
+    const placeholder = media?.querySelector(".ctf-storyboard-placeholder");
+    if (!media) return;
+
+    const image = document.createElement("img");
+    image.src = source;
+    image.alt = `Storyboard ${card.querySelector("h4")?.textContent?.trim() || "del capítulo"}`;
+    image.loading = "lazy";
+    image.decoding = "async";
+    media.append(image);
+    placeholder?.remove();
+  });
 
   if (productionScene && "IntersectionObserver" in window) {
     const productionObserver = new IntersectionObserver(([entry]) => {
@@ -484,78 +393,49 @@ document.addEventListener("DOMContentLoaded", () => {
     productionScene.classList.add("is-visible");
   }
 
-  if (circulationBlock?.dataset.enabled === "true") {
-    circulationBlock.hidden = false;
-  }
-
-  function prepareTerritoryImage() {
-    const imageUrl = territoryVisual?.dataset.imageSrc?.trim();
-    const image = territoryVisual?.querySelector("img");
-
-    if (!territoryVisual || !image || !imageUrl || territoryVisual.dataset.ready === "true") return;
-
-    image.src = imageUrl;
-    image.hidden = false;
-    territoryVisual.dataset.ready = "true";
-  }
+  pendingTeamRoles.forEach((role) => {
+    const roleId = role.dataset.teamRole;
+    const name = TEAM_ROLE_NAMES[roleId]?.trim();
+    if (name) role.querySelector("[data-team-name]").textContent = name;
+  });
 
   if (territoryScene && "IntersectionObserver" in window) {
     const territoryObserver = new IntersectionObserver(([entry]) => {
       territoryScene.classList.toggle("is-visible", entry.isIntersecting);
-      if (entry.isIntersecting) prepareTerritoryImage();
     }, { threshold: 0.16 });
 
     territoryObserver.observe(territoryScene);
   } else if (territoryScene) {
     territoryScene.classList.add("is-visible");
-    prepareTerritoryImage();
-  }
-
-  if (finaleIndustry?.dataset.enabled === "true") {
-    finaleIndustry.hidden = false;
-  }
-
-  if (finaleTeaser?.dataset.enabled === "true" && finaleTeaser.dataset.teaserUrl?.trim()) {
-    finaleTeaser.href = finaleTeaser.dataset.teaserUrl.trim();
-    finaleTeaser.hidden = false;
-  }
-
-  finaleDossier?.addEventListener("click", () => {
-    const dossierUrl = finaleDossier.dataset.dossierUrl?.trim();
-
-    if (!dossierUrl) {
-      if (finaleStatus) finaleStatus.textContent = "Dossier próximamente disponible.";
-      return;
-    }
-
-    window.open(dossierUrl, "_blank", "noopener,noreferrer");
-  });
-
-  function prepareFinaleImage() {
-    const imageUrl = finaleVisual?.dataset.imageSrc?.trim();
-    const image = finaleVisual?.querySelector("img");
-
-    if (!finaleVisual || !image || !imageUrl || finaleVisual.dataset.ready === "true") return;
-
-    image.src = imageUrl;
-    image.hidden = false;
-    finaleVisual.dataset.ready = "true";
   }
 
   if (finaleScene && "IntersectionObserver" in window) {
     const finaleObserver = new IntersectionObserver(([entry]) => {
       finaleScene.classList.toggle("is-visible", entry.isIntersecting);
-      if (entry.isIntersecting) prepareFinaleImage();
     }, { threshold: 0.16 });
 
     finaleObserver.observe(finaleScene);
   } else if (finaleScene) {
     finaleScene.classList.add("is-visible");
-    prepareFinaleImage();
+  }
+
+  [scheduleScene, closingScene].forEach((scene) => {
+    if (!scene) return;
+    if (!("IntersectionObserver" in window)) { scene.classList.add("is-visible"); return; }
+    const observer = new IntersectionObserver(([entry]) => scene.classList.toggle("is-visible", entry.isIntersecting), { threshold: 0.16 });
+    observer.observe(scene);
+  });
+
+  const closingImageSource = closingMaria?.dataset.imageSrc?.trim();
+  const closingImage = closingMaria?.querySelector("img");
+  if (closingImageSource && closingImage) {
+    closingImage.src = closingImageSource;
+    closingImage.hidden = false;
+    closingMaria.removeAttribute("aria-hidden");
   }
 
   const presentationScenes = [...document.querySelectorAll(".ctf-scene")]
-    .filter((scene) => /^escena-0[1-6]$/.test(scene.id))
+    .filter((scene) => /^escena-0[1-8]$/.test(scene.id))
     .sort((firstScene, secondScene) => firstScene.id.localeCompare(secondScene.id));
   const presentationNav = document.querySelector(".ctf-presentation-nav");
   const previousSceneButton = document.querySelector(".ctf-presentation-prev");
@@ -637,18 +517,18 @@ document.addEventListener("DOMContentLoaded", () => {
     function resumeSceneVideos(scene) {
       scene.querySelectorAll("video").forEach((video) => {
         const shouldPlay = video === projectVideo ||
-          video.dataset.autoplay === "true" ||
-          Boolean(video.closest(".ctf-process-panel.is-active"));
+          video.dataset.autoplay === "true";
 
-        if (shouldPlay && video.src) video.play().catch(() => {});
+        if (shouldPlay && video.src) {
+          if (video === projectVideo) configureProjectVideo();
+          video.play().catch(() => {});
+        }
       });
     }
 
     function getTransitionTiming(pair) {
-      if (reducedMotion) return { exit: 120, enter: 160 };
-      if (pair === "04-05") return { exit: 300, enter: 500 };
-      if (pair === "05-06") return { exit: 300, enter: 480 };
-      return { exit: 270, enter: 450 };
+      if (reducedMotion) return { exit: 80, enter: 100 };
+      return { exit: 160, enter: 260 };
     }
 
     async function navigateToScene(index) {
