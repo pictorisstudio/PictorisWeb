@@ -26,9 +26,13 @@ class ParticleBackground {
     this.sceneIndex = 0;
     this.current = { ...ParticleBackground.sceneSettings[0] };
     this.target = { ...this.current };
-    this.colors = PARTICLE_DEBUG
+    this.darkSceneColors = PARTICLE_DEBUG
       ? ["rgba(248, 238, 215,", "rgba(224, 218, 202,", "rgba(222, 184, 143,"]
       : ["rgba(205, 201, 190,", "rgba(177, 171, 158,", "rgba(190, 166, 139,"];
+    this.lightSceneColors = PARTICLE_DEBUG
+      ? ["rgba(37, 34, 31,", "rgba(84, 78, 71,", "rgba(129, 101, 73,"]
+      : ["rgba(55, 51, 47,", "rgba(98, 91, 83,", "rgba(139, 111, 82,"];
+    this.colors = this.darkSceneColors;
     this.canvas.dataset.debug = String(PARTICLE_DEBUG);
 
     this.resize = this.resize.bind(this);
@@ -151,6 +155,7 @@ class ParticleBackground {
     const sceneChanged = safeIndex !== this.sceneIndex;
 
     this.sceneIndex = safeIndex;
+    this.colors = this.sceneIndex === 0 ? this.darkSceneColors : this.lightSceneColors;
     this.target = ParticleBackground.sceneSettings[this.sceneIndex];
     this.canvas.dataset.activeScene = String(this.sceneIndex + 1).padStart(2, "0");
     if (sceneChanged) console.info(`Active scene: ${this.canvas.dataset.activeScene}`);
@@ -233,29 +238,55 @@ class ParticleBackground {
   }
 }
 
-const TEAM_ROLE_NAMES = Object.freeze({
-  "produccion-general": "",
-  "direccion-animacion": "",
-});
-
 document.addEventListener("DOMContentLoaded", () => {
   const dossierButton = document.querySelector(".ctf-dossier-action");
   const dossierStatus = document.querySelector("#ctf-dossier-status");
   const projectVideo = document.querySelector(".ctf-visual-media video");
   const mariaScene = document.querySelector(".ctf-scene-maria");
+  const agePreviewButtons = [...document.querySelectorAll("[data-age-preview]")];
+  const ageModal = document.querySelector("[data-age-modal]");
+  const ageModalImage = document.querySelector("[data-age-modal-image]");
+  const ageModalTitle = document.querySelector("[data-age-modal-title]");
+  const ageModalClose = document.querySelector("[data-age-modal-close]");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const languageScene = document.querySelector(".ctf-scene-language");
   const processVideos = [...document.querySelectorAll("[data-process-video]")];
   const productionScene = document.querySelector(".ctf-scene-production");
   const productionVideo = document.querySelector("[data-production-video]");
   const territoryScene = document.querySelector(".ctf-scene-territory");
-  const pendingTeamRoles = [...document.querySelectorAll("[data-team-role]")];
+  const experienceVideos = [...document.querySelectorAll("[data-experience-video]")];
   const finaleScene = document.querySelector(".ctf-scene-finale");
   const scheduleScene = document.querySelector(".ctf-scene-schedule");
   const closingScene = document.querySelector(".ctf-scene-closing");
   const closingMaria = document.querySelector(".ctf-closing-maria");
   const particleCanvas = document.querySelector(".ctf-particle-canvas");
   const particleBackground = particleCanvas ? new ParticleBackground(particleCanvas, reducedMotion) : null;
+
+  function closeAgeModal() {
+    if (ageModal?.open) ageModal.close();
+  }
+
+  agePreviewButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const sourceImage = button.querySelector("img");
+      if (!ageModal || !ageModalImage || !ageModalTitle || !sourceImage) return;
+
+      ageModalImage.src = sourceImage.currentSrc || sourceImage.src;
+      ageModalImage.alt = sourceImage.alt;
+      ageModalTitle.textContent = button.dataset.title || sourceImage.alt;
+      ageModal.dataset.age = button.closest("[data-age]")?.dataset.age || "";
+      ageModal.showModal();
+      document.body.classList.add("ctf-age-modal-open");
+    });
+  });
+
+  ageModalClose?.addEventListener("click", closeAgeModal);
+  ageModal?.addEventListener("click", (event) => {
+    if (event.target === ageModal) closeAgeModal();
+  });
+  ageModal?.addEventListener("close", () => {
+    document.body.classList.remove("ctf-age-modal-open");
+  });
 
   function configureProjectVideo() {
     if (!projectVideo) return;
@@ -382,6 +413,35 @@ document.addEventListener("DOMContentLoaded", () => {
     await productionVideo.play().catch(() => {});
   }
 
+  let experiencePlaybackRun = 0;
+  let experienceVideosEnabled = false;
+
+  experienceVideos.forEach((video) => {
+    video.addEventListener("play", () => {
+      if (!experienceVideosEnabled) video.pause();
+    });
+  });
+
+  async function setExperienceVideosActive(isActive) {
+    const playbackRun = ++experiencePlaybackRun;
+    experienceVideosEnabled = isActive;
+
+    experienceVideos.forEach((video) => {
+      video.pause();
+      if (isActive) video.currentTime = 0;
+    });
+
+    if (!isActive || !experienceVideos.length) return;
+
+    await Promise.allSettled(experienceVideos.map(waitForVideoReady));
+    if (playbackRun !== experiencePlaybackRun) return;
+
+    experienceVideos.forEach((video) => {
+      video.currentTime = 0;
+    });
+    await Promise.allSettled(experienceVideos.map((video) => video.play()));
+  }
+
   if (productionScene && "IntersectionObserver" in window) {
     const productionObserver = new IntersectionObserver(([entry]) => {
       productionScene.classList.toggle("is-visible", entry.isIntersecting);
@@ -392,20 +452,16 @@ document.addEventListener("DOMContentLoaded", () => {
     productionScene.classList.add("is-visible");
   }
 
-  pendingTeamRoles.forEach((role) => {
-    const roleId = role.dataset.teamRole;
-    const name = TEAM_ROLE_NAMES[roleId]?.trim();
-    if (name) role.querySelector("[data-team-name]").textContent = name;
-  });
-
   if (territoryScene && "IntersectionObserver" in window) {
     const territoryObserver = new IntersectionObserver(([entry]) => {
       territoryScene.classList.toggle("is-visible", entry.isIntersecting);
+      setExperienceVideosActive(entry.isIntersecting);
     }, { threshold: 0.16 });
 
     territoryObserver.observe(territoryScene);
   } else if (territoryScene) {
     territoryScene.classList.add("is-visible");
+    setExperienceVideosActive(true);
   }
 
   if (finaleScene && "IntersectionObserver" in window) {
@@ -467,6 +523,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       particleBackground?.setScene(activeSceneIndex);
+      document.body.dataset.activeScene = sceneNumber;
       if (source === "initial" || sceneChanged) {
         setProcessVideosActive(presentationScenes[activeSceneIndex] === languageScene);
         setProductionVideoActive(presentationScenes[activeSceneIndex] === productionScene);
@@ -596,6 +653,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.addEventListener("keydown", (event) => {
       if (
+        ageModal?.open ||
         event.defaultPrevented ||
         event.repeat ||
         event.altKey ||
