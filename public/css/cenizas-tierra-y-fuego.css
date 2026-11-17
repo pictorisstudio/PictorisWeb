@@ -1463,7 +1463,7 @@
 }
 
 .ctf-finance-layout {
-  position: relative; z-index: 2; display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto auto auto;
+  position: relative; z-index: 2; display: grid; grid-template-rows: repeat(6, auto); align-content: space-between;
   gap: clamp(.45rem, 1.2svh, .9rem); width: min(calc(100% - 2rem), var(--container)); height: 100svh;
   margin-inline: auto; padding: clamp(4.2rem, 6.5svh, 5rem) 0 clamp(1rem, 2svh, 1.5rem);
 }
@@ -1476,8 +1476,8 @@
 .ctf-finance-amount--primary { margin-top: 0 !important; font-size: clamp(2.65rem, 4.8vw, 4.9rem); }
 .ctf-finance-amount span { font-size: .28em; letter-spacing: .08em; }
 .ctf-finance-primary .ctf-finance-label { margin-top: .35rem; color: var(--ctf-muted); letter-spacing: .08em; text-transform: none; }
-.ctf-finance-decisions { align-self: stretch; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(.75rem, 1.7vw, 1.4rem); width: min(100%, 1160px); margin-inline: auto; }
-.ctf-finance-decisions article { display: flex; flex-direction: column; justify-content: center; min-width: 0; padding: clamp(.9rem, 2svh, 1.45rem) clamp(.8rem, 1.5vw, 1.2rem); border-top: 1px solid rgba(241,238,229,.34); background: rgba(255,255,255,.025); }
+.ctf-finance-decisions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(.75rem, 1.7vw, 1.4rem); width: min(100%, 1160px); margin-inline: auto; }
+.ctf-finance-decisions article { display: flex; flex-direction: column; justify-content: center; min-width: 0; padding: clamp(.75rem, 1.4svh, 1.05rem) clamp(.8rem, 1.5vw, 1.2rem); border-top: 1px solid rgba(241,238,229,.34); background: rgba(255,255,255,.025); text-align: center; }
 .ctf-finance-decisions h3 { color: var(--ctf-ink); font-size: clamp(.79rem, 1vw, .98rem); letter-spacing: .09em; line-height: 1.25; }
 .ctf-finance-decisions h3 span { color: var(--ctf-dim); }
 .ctf-finance-decisions p { margin-top: clamp(.45rem, .9svh, .7rem); color: var(--ctf-muted); font-size: clamp(.76rem, .95vw, .91rem); line-height: 1.45; }
@@ -2117,6 +2117,7 @@
 .ctf-scene-language,
 .ctf-scene-production,
 .ctf-scene-territory,
+.ctf-scene-finale,
 .ctf-scene-schedule,
 .ctf-scene-closing {
   --ctf-ink: #171717;
@@ -2129,7 +2130,8 @@
 
 .ctf-scene-language::before,
 .ctf-scene-production::before,
-.ctf-scene-territory::before {
+.ctf-scene-territory::before,
+.ctf-scene-finale::before {
   opacity: 0.055;
   background-image:
     repeating-linear-gradient(105deg, transparent 0 31px, rgba(23, 23, 23, 0.13) 32px 33px),
@@ -2140,29 +2142,30 @@
 .ctf-scene-language h2,
 .ctf-scene-production h2,
 .ctf-scene-territory h2,
+.ctf-scene-finale h2,
 .ctf-scene-schedule h2,
 .ctf-scene-closing h2 {
   color: var(--ctf-ink);
 }
 
-.ctf-page[data-active-scene]:not([data-active-scene="01"]):not([data-active-scene="06"]) .site-header {
+.ctf-page[data-active-scene]:not([data-active-scene="01"]) .site-header {
   color: #171717;
   background: rgba(255, 255, 255, 0.88);
   border-bottom-color: rgba(23, 23, 23, 0.1);
 }
 
-.ctf-page[data-active-scene]:not([data-active-scene="01"]):not([data-active-scene="06"]) .site-header::after {
+.ctf-page[data-active-scene]:not([data-active-scene="01"]) .site-header::after {
   opacity: 0.25;
 }
 
-.ctf-page[data-active-scene]:not([data-active-scene="01"]):not([data-active-scene="06"]) .logo-text,
-.ctf-page[data-active-scene]:not([data-active-scene="01"]):not([data-active-scene="06"]) .nav-link,
-.ctf-page[data-active-scene]:not([data-active-scene="01"]):not([data-active-scene="06"]) .menu-toggle {
+.ctf-page[data-active-scene]:not([data-active-scene="01"]) .logo-text,
+.ctf-page[data-active-scene]:not([data-active-scene="01"]) .nav-link,
+.ctf-page[data-active-scene]:not([data-active-scene="01"]) .menu-toggle {
   color: #171717;
 }
 
-.ctf-page[data-active-scene]:not([data-active-scene="01"]):not([data-active-scene="06"]) .main-nav ul,
-.ctf-page[data-active-scene]:not([data-active-scene="01"]):not([data-active-scene="06"]) .menu-toggle {
+.ctf-page[data-active-scene]:not([data-active-scene="01"]) .main-nav ul,
+.ctf-page[data-active-scene]:not([data-active-scene="01"]) .menu-toggle {
   background: rgba(23, 23, 23, 0.025);
   border-color: rgba(23, 23, 23, 0.1);
 }
@@ -2228,29 +2231,34 @@
 }
 
 .ctf-scene-finale {
-  --ctf-ink: #f1eee5;
-  --ctf-muted: rgba(241, 238, 229, 0.72);
-  --ctf-dim: rgba(241, 238, 229, 0.5);
-  --ctf-line: rgba(241, 238, 229, 0.18);
+  --ctf-ink: #171717;
+  --ctf-muted: rgba(23, 23, 23, 0.7);
+  --ctf-dim: rgba(23, 23, 23, 0.52);
+  --ctf-line: rgba(23, 23, 23, 0.17);
   color: var(--ctf-ink);
-  background:
-    radial-gradient(circle at 72% 32%, rgba(108, 76, 45, 0.1), transparent 28%),
-    linear-gradient(155deg, #050504 0%, #0a0806 48%, #040403 100%);
+  background: #fff;
 }
 
 .ctf-scene-finale::before {
-  opacity: 0.08;
-  background-image: repeating-linear-gradient(112deg, transparent 0 41px, rgba(255, 255, 255, 0.02) 42px 43px);
+  opacity: 0.055;
+  background-image:
+    repeating-linear-gradient(105deg, transparent 0 31px, rgba(23, 23, 23, 0.13) 32px 33px),
+    repeating-linear-gradient(11deg, transparent 0 49px, rgba(139, 105, 73, 0.16) 50px 51px);
 }
 
 .ctf-scene-finale .ctf-finance-primary,
 .ctf-scene-finale .ctf-finance-support {
-  border-color: rgba(241, 238, 229, 0.18);
+  border-color: rgba(23, 23, 23, 0.17);
 }
 
 .ctf-scene-finale .ctf-finance-support article {
   background: transparent;
-  border-color: rgba(241, 238, 229, 0.12);
+  border-color: rgba(23, 23, 23, 0.13);
+}
+
+.ctf-scene-finale .ctf-finance-decisions article {
+  background: rgba(23, 23, 23, 0.025);
+  border-color: rgba(23, 23, 23, 0.2);
 }
 
 .ctf-gantt-scale span {

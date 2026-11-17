@@ -155,9 +155,7 @@ class ParticleBackground {
     const sceneChanged = safeIndex !== this.sceneIndex;
 
     this.sceneIndex = safeIndex;
-    this.colors = this.sceneIndex === 0 || this.sceneIndex === 5
-      ? this.darkSceneColors
-      : this.lightSceneColors;
+    this.colors = this.sceneIndex === 0 ? this.darkSceneColors : this.lightSceneColors;
     this.target = ParticleBackground.sceneSettings[this.sceneIndex];
     this.canvas.dataset.activeScene = String(this.sceneIndex + 1).padStart(2, "0");
     if (sceneChanged) console.info(`Active scene: ${this.canvas.dataset.activeScene}`);
