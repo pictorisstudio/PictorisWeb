@@ -155,7 +155,9 @@ class ParticleBackground {
     const sceneChanged = safeIndex !== this.sceneIndex;
 
     this.sceneIndex = safeIndex;
-    this.colors = this.sceneIndex === 0 ? this.darkSceneColors : this.lightSceneColors;
+    this.colors = this.sceneIndex === 0 || this.sceneIndex === 7
+      ? this.darkSceneColors
+      : this.lightSceneColors;
     this.target = ParticleBackground.sceneSettings[this.sceneIndex];
     this.canvas.dataset.activeScene = String(this.sceneIndex + 1).padStart(2, "0");
     if (sceneChanged) console.info(`Active scene: ${this.canvas.dataset.activeScene}`);
@@ -258,6 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const finaleScene = document.querySelector(".ctf-scene-finale");
   const scheduleScene = document.querySelector(".ctf-scene-schedule");
   const closingScene = document.querySelector(".ctf-scene-closing");
+  const closingVideo = document.querySelector("[data-closing-video]");
   const closingMaria = document.querySelector(".ctf-closing-maria");
   const particleCanvas = document.querySelector(".ctf-particle-canvas");
   const particleBackground = particleCanvas ? new ParticleBackground(particleCanvas, reducedMotion) : null;
@@ -288,15 +291,20 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.classList.remove("ctf-age-modal-open");
   });
 
-  function configureProjectVideo() {
-    if (!projectVideo) return;
-    projectVideo.muted = true;
-    projectVideo.defaultPlaybackRate = 0.5;
-    projectVideo.playbackRate = 0.5;
+  function configureCinematicVideo(video) {
+    if (!video) return;
+    video.muted = true;
+    video.defaultPlaybackRate = 0.5;
+    video.playbackRate = 0.5;
   }
 
+  function configureProjectVideo() { configureCinematicVideo(projectVideo); }
+  function configureClosingVideo() { configureCinematicVideo(closingVideo); }
+
   configureProjectVideo();
+  configureClosingVideo();
   projectVideo?.addEventListener("loadedmetadata", configureProjectVideo);
+  closingVideo?.addEventListener("loadedmetadata", configureClosingVideo);
 
   if (dossierButton) {
     dossierButton.addEventListener("click", () => {
@@ -322,6 +330,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }, { threshold: 0.2 });
 
     videoObserver.observe(projectVideo);
+  }
+
+  if (closingVideo && "IntersectionObserver" in window) {
+    const closingVideoObserver = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        configureClosingVideo();
+        closingVideo.play().catch(() => {});
+      } else {
+        closingVideo.pause();
+      }
+    }, { threshold: 0.2 });
+
+    closingVideoObserver.observe(closingVideo);
   }
 
   if (mariaScene && "IntersectionObserver" in window) {

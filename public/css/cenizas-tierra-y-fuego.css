@@ -509,6 +509,10 @@
   left: 36%;
 }
 
+.ctf-age--air .ctf-age-media img {
+  top: 38%;
+}
+
 .ctf-age-modal {
   width: min(92vw, 980px);
   max-width: none;
@@ -1473,7 +1477,7 @@
   gap: clamp(.22rem, .65svh, .52rem); width: min(calc(100% - 2rem), var(--container)); height: 100svh;
   margin-inline: auto; padding: clamp(4rem, 5.8svh, 4.6rem) 0 clamp(.75rem, 1.5svh, 1.2rem);
 }
-.ctf-finance-intro p, .ctf-finance-primary p, .ctf-finance-decisions h3, .ctf-finance-decisions p, .ctf-finance-support h3, .ctf-finance-support p, .ctf-finance-support-note, .ctf-finance-coproduction h3, .ctf-finance-coproduction p, .ctf-finance-circulation { margin: 0; }
+.ctf-finance-intro p, .ctf-finance-primary p, .ctf-finance-decisions h3, .ctf-finance-decisions p, .ctf-finance-support h3, .ctf-finance-support p, .ctf-finance-support-note, .ctf-finance-coproduction h3, .ctf-finance-coproduction p, .ctf-finance-exhibition h3, .ctf-finance-exhibition p, .ctf-finance-circulation { margin: 0; }
 .ctf-finance-number, .ctf-finance-label { color: var(--ctf-dim); font-size: clamp(.66rem, .85vw, .79rem); font-weight: 700; letter-spacing: .16em; }
 .ctf-finance-intro h2 { max-width: 1100px; margin: .3rem 0 0; font-size: clamp(1.75rem, 3vw, 3.15rem); line-height: .96; letter-spacing: -.04em; white-space: nowrap; }
 .ctf-finance-subtitle { margin-top: clamp(.3rem, .65svh, .5rem) !important; color: var(--ctf-muted); font-size: clamp(.78rem, 1.02vw, .98rem); line-height: 1.35; }
@@ -1496,6 +1500,10 @@
 .ctf-finance-coproduction { width: min(100%, 1040px); margin-inline: auto; padding: clamp(.42rem, .75svh, .58rem) clamp(.8rem, 1.6vw, 1.2rem); border-left: 3px solid #b76547; background: rgba(183,101,71,.07); text-align: center; }
 .ctf-finance-coproduction h3 { color: var(--ctf-ink); font-size: clamp(.76rem, .96vw, .94rem); letter-spacing: .09em; }
 .ctf-finance-coproduction p { margin-top: .16rem; color: var(--ctf-muted); font-size: clamp(.68rem, .84vw, .82rem); line-height: 1.25; }
+.ctf-finance-exhibition { width: min(100%, 1040px); margin-inline: auto; padding: clamp(.36rem, .65svh, .5rem) clamp(.8rem, 1.6vw, 1.2rem); border-left: 3px solid #b76547; background: rgba(183,101,71,.055); text-align: center; }
+.ctf-finance-exhibition h3 { color: var(--ctf-ink); font-size: clamp(.76rem, .96vw, .94rem); letter-spacing: .09em; }
+.ctf-finance-exhibition p { margin-top: .12rem; color: var(--ctf-muted); font-size: clamp(.68rem, .84vw, .82rem); line-height: 1.2; }
+.ctf-finance-exhibition .ctf-finance-exhibition-note { color: var(--ctf-dim); }
 .ctf-finance-circulation { color: var(--ctf-muted); font-size: clamp(.7rem, .88vw, .86rem); line-height: 1.25; text-align: center; }
 .ctf-finale-nav { align-self: end; margin-top: 0; padding-right: clamp(10rem, 17vw, 14rem); }
 
@@ -1514,13 +1522,14 @@
 .ctf-scene-finale:not(.is-visible) .ctf-finance-support,
 .ctf-scene-finale:not(.is-visible) .ctf-finance-support-note,
 .ctf-scene-finale:not(.is-visible) .ctf-finance-coproduction,
+.ctf-scene-finale:not(.is-visible) .ctf-finance-exhibition,
 .ctf-scene-finale:not(.is-visible) .ctf-finance-circulation,
 .ctf-scene-finale:not(.is-visible) .ctf-finale-nav {
   opacity: 0;
   transform: translateY(16px);
 }
 
-.ctf-finance-intro, .ctf-finance-primary, .ctf-finance-decisions, .ctf-finance-support, .ctf-finance-support-note, .ctf-finance-coproduction, .ctf-finance-circulation,
+.ctf-finance-intro, .ctf-finance-primary, .ctf-finance-decisions, .ctf-finance-support, .ctf-finance-support-note, .ctf-finance-coproduction, .ctf-finance-exhibition, .ctf-finance-circulation,
 .ctf-finale-nav {
   transition: opacity 900ms ease, transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -1528,7 +1537,7 @@
 .ctf-finance-primary { transition-delay: 80ms; }
 .ctf-finance-support, .ctf-finance-support-note { transition-delay: 140ms; }
 .ctf-finance-decisions { transition-delay: 200ms; }
-.ctf-finance-coproduction, .ctf-finance-circulation,
+.ctf-finance-coproduction, .ctf-finance-exhibition, .ctf-finance-circulation,
 .ctf-finale-nav { transition-delay: 300ms; }
 
 .ctf-scene-schedule, .ctf-scene-closing { position: relative; min-height: 100svh; overflow: hidden; background: #050505; }
@@ -2160,24 +2169,24 @@
   color: var(--ctf-ink);
 }
 
-.ctf-page[data-active-scene]:not([data-active-scene="01"]) .site-header {
+.ctf-page[data-active-scene]:not([data-active-scene="01"]):not([data-active-scene="08"]) .site-header {
   color: #171717;
   background: rgba(255, 255, 255, 0.88);
   border-bottom-color: rgba(23, 23, 23, 0.1);
 }
 
-.ctf-page[data-active-scene]:not([data-active-scene="01"]) .site-header::after {
+.ctf-page[data-active-scene]:not([data-active-scene="01"]):not([data-active-scene="08"]) .site-header::after {
   opacity: 0.25;
 }
 
-.ctf-page[data-active-scene]:not([data-active-scene="01"]) .logo-text,
-.ctf-page[data-active-scene]:not([data-active-scene="01"]) .nav-link,
-.ctf-page[data-active-scene]:not([data-active-scene="01"]) .menu-toggle {
+.ctf-page[data-active-scene]:not([data-active-scene="01"]):not([data-active-scene="08"]) .logo-text,
+.ctf-page[data-active-scene]:not([data-active-scene="01"]):not([data-active-scene="08"]) .nav-link,
+.ctf-page[data-active-scene]:not([data-active-scene="01"]):not([data-active-scene="08"]) .menu-toggle {
   color: #171717;
 }
 
-.ctf-page[data-active-scene]:not([data-active-scene="01"]) .main-nav ul,
-.ctf-page[data-active-scene]:not([data-active-scene="01"]) .menu-toggle {
+.ctf-page[data-active-scene]:not([data-active-scene="01"]):not([data-active-scene="08"]) .main-nav ul,
+.ctf-page[data-active-scene]:not([data-active-scene="01"]):not([data-active-scene="08"]) .menu-toggle {
   background: rgba(23, 23, 23, 0.025);
   border-color: rgba(23, 23, 23, 0.1);
 }
@@ -2404,6 +2413,58 @@
 
 .ctf-closing-credits strong {
   font-size: var(--ctf-type-body);
+}
+
+/* Scene 06 needs a slightly larger projection scale than the shared secondary type. */
+.ctf-scene-finale .ctf-finance-number {
+  font-size: clamp(0.8rem, 0.92vw, 0.94rem);
+}
+
+.ctf-scene-finale .ctf-finance-subtitle {
+  font-size: clamp(0.96rem, 1.08vw, 1.12rem);
+}
+
+.ctf-scene-finale .ctf-finance-primary .ctf-finance-label {
+  font-size: clamp(0.88rem, 1vw, 1.04rem);
+}
+
+.ctf-scene-finale .ctf-finance-decisions h3,
+.ctf-scene-finale .ctf-finance-support h3,
+.ctf-scene-finale .ctf-finance-coproduction h3,
+.ctf-scene-finale .ctf-finance-exhibition h3 {
+  font-size: clamp(0.86rem, 0.94vw, 1rem);
+}
+
+.ctf-scene-finale .ctf-finance-decisions p,
+.ctf-scene-finale .ctf-finance-support p:not(.ctf-finance-amount),
+.ctf-scene-finale .ctf-finance-coproduction p,
+.ctf-scene-finale .ctf-finance-exhibition p,
+.ctf-scene-finale .ctf-finance-circulation {
+  font-size: clamp(0.86rem, 0.94vw, 1rem);
+}
+
+.ctf-scene-finale .ctf-finance-support-note {
+  color: var(--ctf-ink);
+  font-size: clamp(1.12rem, 1.45vw, 1.5rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+}
+
+/* Scene 08 mirrors the opening image treatment while preserving its own layout. */
+.ctf-scene-closing {
+  --ctf-ink: #f1eee5;
+  --ctf-muted: rgba(241, 238, 229, 0.68);
+  --ctf-dim: rgba(241, 238, 229, 0.46);
+  --ctf-line: rgba(241, 238, 229, 0.16);
+  color: var(--ctf-ink);
+  background:
+    radial-gradient(circle at 68% 28%, rgba(102, 75, 46, 0.18), transparent 34%),
+    linear-gradient(145deg, #080806 0%, #0d0b08 48%, #050505 100%);
+}
+
+.ctf-scene-closing .ctf-closing-credits {
+  border-color: rgba(241, 238, 229, 0.18);
 }
 
 @media (max-width: 1400px) and (min-width: 901px) {
