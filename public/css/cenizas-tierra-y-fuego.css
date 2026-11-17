@@ -737,7 +737,7 @@
 .ctf-language-kicker {
   margin-top: clamp(0.4rem, 0.9svh, 0.7rem);
   color: var(--ctf-muted);
-  font-size: clamp(0.84rem, 1.16vw, 1.05rem);
+  font-size: clamp(0.92rem, 1.28vw, 1.16rem);
   line-height: 1.45;
 }
 
@@ -785,7 +785,7 @@
 .ctf-process-label {
   padding-top: clamp(0.3rem, 0.65svh, 0.5rem);
   color: var(--ctf-ink);
-  font-size: clamp(0.71rem, 0.92vw, 0.9rem);
+  font-size: clamp(0.85rem, 1.1vw, 1.08rem);
   font-weight: 700;
   letter-spacing: 0.14em;
   line-height: 1.35;
@@ -816,7 +816,7 @@
 
 .ctf-process-stats dt {
   color: var(--ctf-ink);
-  font-size: clamp(0.67rem, 0.85vw, 0.83rem);
+  font-size: clamp(0.84rem, 1.06vw, 1.04rem);
   font-weight: 700;
   letter-spacing: 0.13em;
 }
@@ -824,13 +824,19 @@
 .ctf-process-stats dd {
   margin-top: 0.16rem;
   color: var(--ctf-muted);
-  font-size: clamp(0.64rem, 0.8vw, 0.79rem);
+  font-size: clamp(0.77rem, 0.96vw, 0.95rem);
   line-height: 1.3;
 }
 
 .ctf-ambient-language {
   z-index: 0;
   opacity: 0.3;
+}
+
+@media (max-width: 1400px) {
+  .ctf-scene-language .ctf-process-stats {
+    width: min(100%, 760px);
+  }
 }
 
 .ctf-scene-language:not(.is-visible) .ctf-language-intro,
@@ -1379,8 +1385,8 @@
 
 .ctf-experience-metrics {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  width: min(100%, 1000px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: min(100%, 760px);
   margin-inline: auto;
   padding: clamp(0.4rem, 0.8svh, 0.65rem) 0;
   border-top: 1px solid rgba(241, 238, 229, 0.14);
@@ -1399,7 +1405,7 @@
 
 .ctf-experience-metrics dt {
   color: var(--ctf-ink);
-  font-size: clamp(0.92rem, 1.23vw, 1.21rem);
+  font-size: clamp(1.05rem, 1.45vw, 1.42rem);
   font-weight: 800;
   letter-spacing: 0.07em;
   line-height: 1.05;
@@ -2172,6 +2178,41 @@
 
 .ctf-particle-canvas {
   mix-blend-mode: normal;
+}
+
+/* Global layer contract: scene background → particles → scene content. */
+.ctf-particle-canvas {
+  z-index: 1;
+}
+
+.ctf-scene-entry,
+.ctf-scene-maria,
+.ctf-scene-language,
+.ctf-scene-production,
+.ctf-scene-territory,
+.ctf-scene-finale,
+.ctf-scene-schedule,
+.ctf-scene-closing {
+  isolation: auto;
+}
+
+.ctf-scene-entry::after,
+.ctf-scene-maria::before,
+.ctf-scene-language::before,
+.ctf-scene-production::before,
+.ctf-scene-territory::before,
+.ctf-scene-finale::before,
+.ctf-scene > .ctf-ambient {
+  z-index: 0;
+}
+
+.ctf-scene > .ctf-visual {
+  z-index: 2;
+}
+
+.ctf-scene > .container {
+  position: relative;
+  z-index: 3;
 }
 
 .ctf-process-media,
