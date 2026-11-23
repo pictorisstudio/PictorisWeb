@@ -38,6 +38,46 @@ document.addEventListener("click", (e) => {
   if (!link) return;
 
   const href = link.getAttribute("href");
+  let destinationUrl;
+
+  try {
+    destinationUrl = href ? new URL(href, window.location.href) : null;
+  } catch {
+    destinationUrl = null;
+  }
+
+  const normalizeDocumentPath = (pathname) =>
+    pathname.endsWith("/") ? `${pathname}index.html` : pathname;
+
+  const isSameDocument =
+    destinationUrl &&
+    destinationUrl.origin === window.location.origin &&
+    normalizeDocumentPath(destinationUrl.pathname) ===
+      normalizeDocumentPath(window.location.pathname) &&
+    destinationUrl.search === window.location.search;
+
+  if (isSameDocument) {
+    const targetId = decodeURIComponent(destinationUrl.hash.slice(1));
+    const target = targetId ? document.getElementById(targetId) : null;
+
+    e.preventDefault();
+    resetPageTransition();
+
+    const scrollBehavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? "auto"
+      : "smooth";
+
+    if (target) {
+      target.scrollIntoView({ behavior: scrollBehavior, block: "start" });
+      window.history.pushState(null, "", destinationUrl.hash);
+    } else if (!destinationUrl.hash) {
+      window.scrollTo({ top: 0, behavior: scrollBehavior });
+      window.history.pushState(null, "", window.location.pathname + window.location.search);
+    }
+
+    return;
+  }
+
   const isInternal =
     href &&
     !href.startsWith("http") &&

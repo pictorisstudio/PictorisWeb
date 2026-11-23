@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Voces Animadas de Boyacá, vitrina en construcción para la animación emergente del territorio." />
+  <title>Voces Animadas de Boyacá | Pictoris Studio</title>
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" href="favicon.png" type="image/png" sizes="512x512" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=20261122-nav" />
+  <link rel="stylesheet" href="css/initiatives.css?v=20261122" />
+</head>
+<body class="initiative-page voices-page">
+  <header class="site-header">
+    <div class="container header-content">
+      <a href="index.html" class="logo">
+        <span class="logo-mark"></span>
+        <span class="logo-text">Pictoris Studio</span>
+      </a>
+      <nav class="main-nav" id="main-navigation">
+        <ul>
+          <li><a href="index.html" class="nav-link">Inicio</a></li>
+          <li><a href="index.html#proyectos" class="nav-link">Proyectos</a></li>
+          <li><a href="index.html#servicios" class="nav-link">Servicios</a></li>
+          <li><a href="experiencias.html" class="nav-link active">Experiencias</a></li>
+          <li><a href="nosotros.html" class="nav-link">Nosotros</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions">
+        <button class="menu-toggle" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="main-navigation">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="initiative-main">
+    <section class="initiative-hero voices-hero">
+      <div class="container">
+        <p class="initiative-kicker">Vitrina de animación emergente</p>
+        <h1>VOCES ANIMADAS DE BOYACÁ</h1>
+        <p class="voices-subtitle">Nuevas miradas de la animación desde las regiones.</p>
+        <p class="voices-description">Un espacio dedicado a descubrir y visibilizar obras, procesos y creadores de animación emergente de Boyacá. Buscamos conectar diferentes propuestas artísticas y ampliar las posibilidades de circulación de la animación desarrollada desde el territorio.</p>
+        <p class="voices-message">Estamos construyendo esta muestra y recopilando obras de creadores de animación de Boyacá.</p>
+        <div class="initiative-actions">
+          <a href="experiencias.html" class="btn btn-secondary">Volver a Experiencias</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="initiative-section" aria-labelledby="voices-gallery-title">
+      <div class="container">
+        <div class="initiative-section-heading">
+          <div>
+            <p class="initiative-section-label">Galería</p>
+            <h2 id="voices-gallery-title">Muestra en construcción</h2>
+          </div>
+          <p class="initiative-planned-note">Los perfiles se incorporarán únicamente con material autorizado.</p>
+        </div>
+        <div class="voices-gallery" id="voices-gallery" aria-live="polite">
+          <div class="voices-empty">
+            <p>La galería todavía no tiene artistas publicados. La estructura está preparada para incorporar nombre, municipio, técnica, descripción, imagen, obra destacada y enlaces autorizados.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-shell">
+        <div class="footer-brand">
+          <a href="index.html" class="footer-logo">PICTORIS STUDIO</a>
+          <p class="footer-description">Visuales, experiencias y marketing visual para marcas, artistas y proyectos que necesitan verse claros, atractivos y memorables.</p>
+        </div>
+        <div class="footer-links-group">
+          <h3>Mapa del sitio</h3>
+          <ul>
+            <li><a href="index.html">Visuales</a></li>
+            <li><a href="experiencias.html">Experiencias</a></li>
+            <li><a href="marketing.html">Marketing</a></li>
+            <li><a href="nosotros.html">Nosotros</a></li>
+          </ul>
+        </div>
+        <div class="footer-contact">
+          <h3>Contacto</h3>
+          <p>+57 314 315 5217</p>
+          <p><a href="https://www.instagram.com/pictoris.studio/" target="_blank" rel="noopener noreferrer">Instagram</a></p>
+          <p>Tunja · Boyacá · Colombia</p>
+        </div>
+      </div>
+      <div class="footer-bottom"><p>© 2026 Pictoris Studio. Todos los derechos reservados.</p></div>
+    </div>
+  </footer>
+
+  <script src="js/voces-animadas-data.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const gallery = document.getElementById("voices-gallery");
+      const creators = window.VOCES_ANIMADAS_CREATORS || [];
+      if (!gallery || creators.length === 0) return;
+
+      gallery.replaceChildren();
+      creators.forEach((creator) => {
+        const card = document.createElement("article");
+        card.className = "voice-card";
+
+        if (creator.imagen) {
+          const image = document.createElement("img");
+          image.src = creator.imagen;
+          image.alt = creator.nombre ? `Obra de ${creator.nombre}` : "Obra de animación";
+          image.loading = "lazy";
+          card.appendChild(image);
+        }
+
+        const content = document.createElement("div");
+        content.className = "voice-card-content";
+        const title = document.createElement("h3");
+        title.textContent = creator.nombre || "Perfil por confirmar";
+        content.appendChild(title);
+
+        [creator.municipio, creator.tecnica, creator.descripcion, creator.obraDestacada]
+          .filter(Boolean)
+          .forEach((value) => {
+            const paragraph = document.createElement("p");
+            paragraph.textContent = value;
+            content.appendChild(paragraph);
+          });
+
+        if (Array.isArray(creator.enlacesAutorizados) && creator.enlacesAutorizados.length > 0) {
+          const links = document.createElement("div");
+          links.className = "voice-card-links";
+          creator.enlacesAutorizados.forEach((item) => {
+            if (!item || !item.url || !item.etiqueta) return;
+            const link = document.createElement("a");
+            link.className = "btn btn-secondary";
+            link.href = item.url;
+            link.textContent = item.etiqueta;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            links.appendChild(link);
+          });
+          content.appendChild(links);
+        }
+
+        card.appendChild(content);
+        gallery.appendChild(card);
+      });
+    });
+  </script>
+  <script src="js/script.js?v=20261122-anchor-nav"></script>
+</body>
+</html>
